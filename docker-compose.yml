@@ -1,0 +1,24 @@
+services:
+  pulsor:
+    image: alpine # créer une image plus évoluée à partir d'alpine
+    restart: always
+
+  validator:
+    image: alpine # créer une image plus évoluée à partir d'alpine
+    restart: always
+
+  db_locale:
+    image: redis
+    restart: always
+    environment:
+      ME_CONFIG_REDIS_ADMINUSERNAME: admin
+      ME_CONFIG_REDIS_ADMINPASSWORD: pass
+      ME_CONFIG_REDIS_URL: redis://admin:pass@redislocale:6379/ 
+
+  db_distante:
+    image: mysql
+    restart: always
+    environment:
+      ME_CONFIG_REDIS_ADMINUSERNAME: admin
+      ME_CONFIG_REDIS_ADMINPASSWORD: pass
+      ME_CONFIG_REDIS_URL: mysql://admin:pass@redisdistante:3306/ 
