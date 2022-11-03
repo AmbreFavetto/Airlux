@@ -8,23 +8,33 @@ services:
       - ./src/pulsor:/var/pulsor
 
   validator:
-    build: ./docker_files/validator
+    build: 
+      context: ./
+      dockerfile: ./docker_files/validator/Dockerfile
     restart: always
     volumes:
       - ./src/validator:/var/validator
 
   db_locale:
-    image: redis
+    build:
+      context: ./
+      dockerfile: ./docker_files/db_locale/Dockerfile
     restart: always
     environment:
       ME_CONFIG_REDIS_ADMINUSERNAME: admin
       ME_CONFIG_REDIS_ADMINPASSWORD: pass
-      ME_CONFIG_REDIS_URL: redis://admin:pass@redislocale:6379/ 
+      ME_CONFIG_REDIS_URL: redis://admin:pass@redislocale:6379/
+    volumes:
+      - ./src/db_locale:/var/db_locale 
 
   db_distante:
-    image: mysql
+    build:
+      context: ./
+      dockerfile: ./docker_files/db_distante/Dockerfile
     restart: always
     environment:
       ME_CONFIG_REDIS_ADMINUSERNAME: admin
       ME_CONFIG_REDIS_ADMINPASSWORD: pass
       ME_CONFIG_REDIS_URL: mysql://admin:pass@redisdistante:3306/ 
+    volumes:
+      - ./src/db_distante:/var/db_distante 
