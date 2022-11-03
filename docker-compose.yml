@@ -1,14 +1,14 @@
 services:
   pulsor:
     build:
-      context: .\
-      dockerfile: .\docker_files\pulsor\Dockerfile
+      context: ./
+      dockerfile: ./docker_files/pulsor/Dockerfile
     restart: always
     volumes:
       - ./src/pulsor:/var/pulsor
 
   validator:
-    build: .\docker_files\validator
+    build: ./docker_files/validator
     restart: always
     volumes:
       - ./src/validator:/var/validator
