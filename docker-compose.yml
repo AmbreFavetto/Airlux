@@ -2,10 +2,14 @@ services:
   pulsor:
     build: .\docker_files\pulsor
     restart: always
+    volumes:
+      - ./src/pulsor:/var/pulsor
 
   validator:
-    image: alpine 
+    build: .\docker_files\validator
     restart: always
+    volumes:
+      - ./src/validator:/var/validator
 
   db_locale:
     image: redis
