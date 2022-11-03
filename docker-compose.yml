@@ -1,6 +1,8 @@
 services:
   pulsor:
-    build: .\docker_files\pulsor
+    build:
+      context: .\
+      dockerfile: .\docker_files\pulsor\Dockerfile
     restart: always
     volumes:
       - ./src/pulsor:/var/pulsor
