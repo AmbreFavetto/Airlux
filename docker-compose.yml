@@ -1,10 +1,10 @@
 services:
   pulsor:
-    image: alpine # créer une image plus évoluée à partir d'alpine
+    build: .\docker_files\pulsor
     restart: always
 
   validator:
-    image: alpine # créer une image plus évoluée à partir d'alpine
+    image: alpine 
     restart: always
 
   db_locale:
