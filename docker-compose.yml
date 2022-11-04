@@ -34,6 +34,7 @@ services:
     volumes:
       - ./src/db_locale:/var/db_locale 
 
+
   db_distante-mysql:
     image: mysql
     container_name: dist_mysqlcontainer
