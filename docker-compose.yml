@@ -36,4 +36,10 @@ services:
       ME_CONFIG_MYSQL_ADMINPASSWORD: pass
       ME_CONFIG_MYSQL_URL: mysql://admin:pass@mysqldistante:3306/ 
     volumes:
-      - ./src/db_distante:/var/db_distante 
+      - my-db:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'db'
+      MYSQL_USER: 'user'
+      MYSQL_PASSWORD: '123'
+      MYSQL_ROOT_PASSWORD: '123'
+      
