@@ -32,8 +32,8 @@ services:
       dockerfile: ./docker_files/db_distante/Dockerfile
     restart: always
     environment:
-      ME_CONFIG_REDIS_ADMINUSERNAME: admin
-      ME_CONFIG_REDIS_ADMINPASSWORD: pass
-      ME_CONFIG_REDIS_URL: mysql://admin:pass@redisdistante:3306/ 
+      ME_CONFIG_MYSQL_ADMINUSERNAME: admin
+      ME_CONFIG_MYSQL_ADMINPASSWORD: pass
+      ME_CONFIG_MYSQL_URL: mysql://admin:pass@mysqldistante:3306/ 
     volumes:
       - ./src/db_distante:/var/db_distante 
