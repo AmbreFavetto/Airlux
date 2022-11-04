@@ -1,9 +1,13 @@
 RANDOM=$$
 
-touch numbers.redis
-> numbers.redis
+touch /var/tmp/numbers.redis
+> /var/tmp/numbers.redis
 
-for i in `seq 10`
+while [ 1 ]
 do
-    echo 'HSET number '$RANDOM >> numbers.redis
+    echo 'HSET number '$RANDOM >> /var/tmp/numbers.redis
+    sleep 10
 done
+
+# faire un script python et l'executer dans le bash
+# le script python doit envoyer le fichier vers l'api (url bdd redis the same !!!)
