@@ -39,6 +39,10 @@ services:
       context: ./
       dockerfile: ./docker_files/db_distante/Dockerfile
     restart: always
+    ports:
+      - '3306:3306'
+    expose:
+      - '3306'
     environment:
       ME_CONFIG_MYSQL_ADMINUSERNAME: admin
       ME_CONFIG_MYSQL_ADMINPASSWORD: pass
