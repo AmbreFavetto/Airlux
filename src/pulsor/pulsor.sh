@@ -1,13 +1,10 @@
 RANDOM=$$
 
-touch /var/tmp/numbers.redis
-> /var/tmp/numbers.redis
-
 I=1
 
 while [ 1 ]
 do
-    echo 'HSET number field'$I '"'$RANDOM'"' | nc db_locale 6379
+    echo 'HSET number:'$I 'value "'$RANDOM'" message "coucou"' | nc db_locale 6379
     I=$((I+1))
     sleep 10
 done
