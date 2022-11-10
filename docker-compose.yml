@@ -7,12 +7,12 @@ services:
       - ./src/pulsor:/var/pulsor
 
   validator:
-    build: 
-      context: ./
-      dockerfile: ./docker_files/validator/Dockerfile
-    restart: always
-    volumes:
-      - ./src/validator:/var/validator
+   build: 
+     context: ./
+     dockerfile: ./docker_files/validator/Dockerfile
+   restart: always
+   volumes:
+     - ./src/validator:/var/validator
 
   transfer:
     build: 

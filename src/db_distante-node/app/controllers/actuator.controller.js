@@ -1,7 +1,7 @@
 import database from '../db.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js'; // ?????????
-import QUERY from '../query/sensor.query.js';
+import QUERY from '../query/sensors.query.js';
 
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
