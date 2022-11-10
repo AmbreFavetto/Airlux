@@ -45,4 +45,18 @@ services:
       ME_CONFIG_MYSQL_URL: mysql://admin:pass@mysqldistante:3306/ 
     volumes:
       - ./src/db_distante:/var/lib/mysql
+
+  mqtt:
+    build:
+      context: ./
+      dockerfile: ./docker_files/mosquitto/Dockerfile
+    restart: always
+    volumes:
+      - ./src/mosquitto:/var/mosquitto
+      - ./config:/mosquitto/config
+      - ./config:/mosquitto/data
+      - ./config:/mosquitto/log
+    ports:
+      - 1883:1883
+      - 9001:9001
       
