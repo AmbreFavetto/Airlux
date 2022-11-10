@@ -18,3 +18,6 @@ app.get('/', (req, res) => res.send(new Response(HttpStatus.OK.code, HttpStatus.
 app.all('*', (req, res) => res.status(HttpStatus.NOT_FOUND.code)
   .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, 'Route does not exist on the server')));
 app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));
+
+
+// TO MAJ 
