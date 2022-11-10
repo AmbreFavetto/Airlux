@@ -26,19 +26,81 @@ services:
     volumes:
       - ./src/db_locale:/var/db_locale 
 
-  db_distante:
-    build:
-      context: ./
-      dockerfile: ./docker_files/db_distante/Dockerfile
-    restart: always
-    ports:
-      - '3306:3306'
-    expose:
-      - '3306'
-    environment:
-      ME_CONFIG_MYSQL_ADMINUSERNAME: admin
-      ME_CONFIG_MYSQL_ADMINPASSWORD: pass
-      ME_CONFIG_MYSQL_URL: mysql://admin:pass@mysqldistante:3306/ 
+  db_distante-mysql:
+    image: mysql
+    container_name: dist_mysqlcontainer
+    command: --default-authentication-plugin=mysql_native_password
+    restart: unless-stopped
     volumes:
-      - ./src/db_distante:/var/lib/mysql
+      - ./dbinit/init.sql:/docker-entrypoint-initdb.d/0_init.sql
+      - ./src/db_distante-mysql:/var/lib/mysql
+    ports:
+      - 3306:3306
+    expose:
+      - 3306
+    environment:
+      MYSQL_DATABASE: patientsdb
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: letmein
+      MYSQL_ROOT_PASSWORD: letmein
+      SERVICE_TAGS: prod
+      SERVICE_NAME: mysqldb
+    networks:
+      - internalnet
+
+  db_distante-node:
+    container_name: dist_nodeappcontainer
+    build: 
+      context: ./docker_files/db_distante-node
+      dockerfile: Dockerfile
+    image: nodeapp:v1
+    volumes:
+      - ./src/db_distante-node:/usr/app
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    environment:
+      DB_HOST: mysqldb
+      DB_PORT: 3306
+      DB_USER: 'admin'
+      DB_PASSWORD: 'letmein'
+      DB_NAME: patientsdb
+      DB_CONNECTION_LIMIT: 20
+      SERVICE_TAGS: prod
+      SERVICE_NAME: nodeappservice
+      SERVER_PORT: 3000
+    depends_on:
+      - db_distante-mysql
+    networks:
+      - internalnet
+
+networks:
+  internalnet:
+    driver: bridge
+
+
+  #db_distante-mysql:
+  #  build:
+  #    context: ./
+  #    dockerfile: ./docker_files/db_distante-mysql/Dockerfile
+  #  restart: always
+   # expose:
+   #   - '3306'
+  #  environment:
+  #    ME_CONFIG_MYSQL_ADMINUSERNAME: admin
+  #    ME_CONFIG_MYSQL_ADMINPASSWORD: pass
+  #    ME_CONFIG_MYSQL_URL: mysql://admin:pass@mysqldistante:3306/ 
+   # volumes:
+  #    - ./src/db_distante:/var/lib/mysql
+
+  #db_distante-node:
+  #  build:
+   #   context: ./
+  #    dockerfile: ./docker_files/db_distante-node/Dockerfile
+   # restart: always
+    #ports:
+    #  - '3306:3306'
+   # volumes:
+    #  - ./src/db_distante:/var/lib/nodejs
       
