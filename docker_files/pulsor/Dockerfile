@@ -1,5 +1,4 @@
 FROM alpine
-
 RUN apk add --no-cache bash
 RUN apk update
 RUN apk upgrade
