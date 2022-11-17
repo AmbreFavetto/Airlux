@@ -3,11 +3,11 @@ import { getBatiments, createBatiment, getBatiment, deleteBatiment, updateBatime
 
 const batimentRoutes = express.Router();
 
-batimentRoutes.route('/')
+batimentRoutes.route('/batiment/')
   .get(getBatiments)
   .post(createBatiment);
 
-  batimentRoutes.route('/:id')
+  batimentRoutes.route('/batiment/:id')
   .get(getBatiment)
   .put(updateBatiment)
   .delete(deleteBatiment);

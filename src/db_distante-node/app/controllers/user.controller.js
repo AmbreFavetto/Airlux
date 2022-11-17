@@ -1,4 +1,4 @@
-import database from '../db.config.js';
+import database from '../config/db.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js'; // ?????????
 import QUERY from '../query/user.query.js';

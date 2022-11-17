@@ -1,13 +1,13 @@
 import express from 'express';
-import { getRooms, createRoom, getRoom, deleteRoom, updateRoom } from '../controllers/floor.controller.js';
+import { getRooms, createRoom, getRoom, deleteRoom, updateRoom } from '../controllers/room.controller.js';
 
 const roomRoutes = express.Router();
 
-roomRoutes.route('/')
+roomRoutes.route('/room/')
   .get(getRooms)
   .post(createRoom);
 
-  roomRoutes.route('/:id')
+  roomRoutes.route('/room/:id')
   .get(getRoom)
   .put(updateRoom)
   .delete(deleteRoom);
