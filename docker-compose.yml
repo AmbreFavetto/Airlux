@@ -88,29 +88,3 @@ services:
 networks:
   internalnet:
     driver: bridge
-
-
-  #db_distante-mysql:
-  #  build:
-  #    context: ./
-  #    dockerfile: ./docker_files/db_distante-mysql/Dockerfile
-  #  restart: always
-   # expose:
-   #   - '3306'
-  #  environment:
-  #    ME_CONFIG_MYSQL_ADMINUSERNAME: admin
-  #    ME_CONFIG_MYSQL_ADMINPASSWORD: pass
-  #    ME_CONFIG_MYSQL_URL: mysql://admin:pass@mysqldistante:3306/ 
-   # volumes:
-  #    - ./src/db_distante:/var/lib/mysql
-
-  #db_distante-node:
-  #  build:
-   #   context: ./
-  #    dockerfile: ./docker_files/db_distante-node/Dockerfile
-   # restart: always
-    #ports:
-    #  - '3306:3306'
-   # volumes:
-    #  - ./src/db_distante:/var/lib/nodejs
-      
