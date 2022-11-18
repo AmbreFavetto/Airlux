@@ -3,12 +3,12 @@ import ip from 'ip';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import Response from './domain/response.js';
-import HttpStatusBatiment from './controllers/batiment.controller.js';
+import HttpStatusBuilding from './controllers/building.controller.js';
 import HttpStatusDevice from './controllers/device.controller.js';
 import HttpStatusFloor from './controllers/floor.controller.js';
 import HttpStatusRoom from './controllers/room.controller.js';
 import HttpStatusUser from './controllers/user.controller.js';
-import routesBatiment from './routes/batiment.routes.js';
+import routesBuilding from './routes/building.routes.js';
 import routesDevice from './routes/device.routes.js';
 import routesFloor from './routes/floor.routes.js';
 import routesRoom from './routes/room.routes.js';
@@ -22,11 +22,11 @@ const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
-//Batiment
-app.use('/', routesBatiment);
-app.get('/', (req, res) => res.send(new Response(HttpStatusBatiment.OK.code, HttpStatusBatiment.OK.status, 'Airlux DB distante API, v1.0.0 - All Systems Go')));
-app.all('*', (req, res) => res.status(HttpStatusBatiment.NOT_FOUND.code)
-  .send(new Response(HttpStatusBatiment.NOT_FOUND.code, HttpStatusBatiment.NOT_FOUND.status, 'Route does not exist on the server')));
+//Building
+app.use('/', routesBuilding);
+app.get('/', (req, res) => res.send(new Response(HttpStatusBuilding.OK.code, HttpStatusBuilding.OK.status, 'Airlux DB distante API, v1.0.0 - All Systems Go')));
+app.all('*', (req, res) => res.status(HttpStatusBuilding.NOT_FOUND.code)
+  .send(new Response(HttpStatusBuilding.NOT_FOUND.code, HttpStatusBuilding.NOT_FOUND.status, 'Route does not exist on the server')));
 
 //Device
 app.use('/', routesDevice);
