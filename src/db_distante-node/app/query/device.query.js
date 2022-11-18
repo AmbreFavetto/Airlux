@@ -8,11 +8,3 @@ const QUERY = {
   };
   
   export default QUERY;
-
-
-
-  //DEVICE + BATIMENT + USER
-  // user : nom prenom email mdp(argon2) isAdmin batID
-  ///Bat: name 
-  ///floor: name batID
-  ///room : name floorID batID
