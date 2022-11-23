@@ -5,3 +5,4 @@ npm-debug.log
 .env
 .DS_Store
 src/db_distante-node/node_modules
+src/db_distante/initMysql
