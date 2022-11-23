@@ -4,5 +4,5 @@ npm-debug.log
 .nyc
 .env
 .DS_Store
-src/db_distante-node/node_modules
-src/db_distante/initMysql
+src/api_distante/node_modules
+src/db_distante/initMysql/*
