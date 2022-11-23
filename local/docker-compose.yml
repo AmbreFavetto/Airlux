@@ -1,0 +1,40 @@
+services:
+  db_locale:
+    build:
+      context: ./
+      dockerfile: ./docker_files/db_locale/Dockerfile
+    restart: always
+    environment:
+      ME_CONFIG_REDIS_ADMINUSERNAME: admin
+      ME_CONFIG_REDIS_ADMINPASSWORD: pass
+      ME_CONFIG_REDIS_URL: redis://admin:pass@redislocale:6379/
+    volumes:
+      - ./src/db_locale:/var/db_locale 
+    #ports:
+
+  mqtt:
+    build:
+      context: ./
+      dockerfile: ./docker_files/mosquitto/Dockerfile
+    restart: always
+    volumes:
+      - ./src/mosquitto:/var/mosquitto
+      - ./config:/mosquitto/config
+      - ./config:/mosquitto/data
+      - ./config:/mosquitto/log
+    ports:
+      - 1883:1883
+      - 9001:9001
+
+  validator:
+    build: 
+      context: ./
+      dockerfile: ./docker_files/validator/Dockerfile
+    restart: always
+    volumes:
+      - ./src/validator:/var/validator
+    ports: 
+      - 1883 # expose for mosquitto
+      - 6379 # expose for redis
+
+# TODO add api locale

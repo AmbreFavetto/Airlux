@@ -1,0 +1,8 @@
+services:
+  pulsor:
+    build:
+      context: ./
+      dockerfile: ./docker_files/pulsor/Dockerfile
+    volumes:
+      - ./src/pulsor:/var/pulsor
+    #ports:

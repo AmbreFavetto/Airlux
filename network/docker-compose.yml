@@ -1,0 +1,9 @@
+services:
+  transfer:
+    build: 
+      context: ./
+      dockerfile: ./docker_files/transfer/Dockerfile
+    restart: always
+    volumes:
+      - ./src/transfer:/var/transfer
+    #ports:
