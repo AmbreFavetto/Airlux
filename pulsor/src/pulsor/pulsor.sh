@@ -1,11 +1,11 @@
 #!/bin/bash
-RANDOM=$$
+#RANDOM=$$
 
 #I=1
 
 #while [ 1 ]
 #do
-    return $RANDOM
+    exit $RANDOM
  #   echo 'HSET number:'$I 'value "'$VALUE'" message "coucou"' | nc db_locale 6379
  #   echo 'ZADD number_list '$I 'number:'$I | nc db_locale 6379
   #  echo 'ZADD number_value '$VALUE 'number:'$I | nc db_locale 6379

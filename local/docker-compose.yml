@@ -16,15 +16,14 @@ services:
     build:
       context: ./
       dockerfile: ./docker_files/mosquitto/Dockerfile
-    restart: always
+    restart: unless-stopped
     volumes:
       - ./src/mosquitto:/var/mosquitto
-      - ./config:/mosquitto/config
-      - ./config:/mosquitto/data
-      - ./config:/mosquitto/log
+      - ./src/mosquitto/config:/mosquitto/config
+      - ./src/mosquitto/config:/mosquitto/data
+      - ./src/mosquitto/config:/mosquitto/log
     ports:
       - 1883:1883
-      - 9001:9001
 
   validator:
     build: 
