@@ -15,7 +15,7 @@ services:
       SERVICE_TAGS: prod
       SERVICE_NAME: mysqldb
     networks:
-      - internalnet
+      - cloud_network
 
   api_cloud:
     build: 
@@ -38,7 +38,7 @@ services:
     depends_on:
       - db_cloud
     networks:
-      - internalnet
+      - cloud_network
 
 networks:
-  internalnet:
+  cloud_network:
