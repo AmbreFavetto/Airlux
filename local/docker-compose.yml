@@ -38,10 +38,11 @@ services:
     build:
       context: ./
       dockerfile: ./docker_files/mosquitto/Dockerfile
-    ports:
-      - 1883:1883
+    restart: unless-stopped
     volumes:
       - ./src/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    ports:
+      - 1883:1883
     networks:
       - local_network
 
