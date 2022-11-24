@@ -13,6 +13,10 @@ print("ok 2")
 
 client.connect(host, port)
 print("ok 3")
+
+# une fois que le client sera connecté, il faut envoyer la value return dans le bash + la phrase pour insérer en bdd
+# + l'index i
+
 # while 1:
 #     value = subprocess.run(["/var/pulsor/pulsor.sh"])
 #     print(value)

@@ -5,4 +5,10 @@ services:
       dockerfile: ./docker_files/pulsor/Dockerfile
     volumes:
       - ./src/pulsor:/var/pulsor
+    networks:
+      - local_local-network
     #ports:
+
+networks:
+  local_local-network:
+    external: true
