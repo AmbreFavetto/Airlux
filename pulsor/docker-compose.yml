@@ -7,7 +7,6 @@ services:
       - ./src/pulsor:/var/pulsor
     networks:
       - local_local-network
-    #ports:
 
 networks:
   local_local-network:
