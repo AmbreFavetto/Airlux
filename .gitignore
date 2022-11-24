@@ -4,6 +4,5 @@ npm-debug.log
 .nyc
 .env
 .DS_Store
-cloud/src/api_distante/node_modules
-local/src/api_distante/node_modules
-cloud/src/db_distante/initdb
+cloud/src/api_cloud/node_modules
+cloud/src/db_cloud/initdb

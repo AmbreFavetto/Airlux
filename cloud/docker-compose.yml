@@ -1,42 +1,42 @@
 services:
-  db_distante:
+  db_cloud:
     image: mysql
     #command: --authentication_policy=mysql_native_password
     #restart: unless-stopped
     volumes:
-      - ./src/db_distante/initdb:/var/lib/mysql
+      - ./src/db_cloud/initdb:/var/lib/mysql
       #- ./dbinit/init.sql:/docker-entrypoint-initdb.d/0_init.sql
-      - ./src/db_distante/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
+      - ./src/db_cloud/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
     environment:
-      MYSQL_DATABASE: patientsdb
+      MYSQL_DATABASE: airluxDB
       MYSQL_USER: admin
-      MYSQL_PASSWORD: letmein
+      MYSQL_PASSWORD: abc123
       MYSQL_ROOT_PASSWORD: letmein
       SERVICE_TAGS: prod
       SERVICE_NAME: mysqldb
     networks:
       - internalnet
 
-  api_distante:
+  api_cloud:
     build: 
       context: ./
-      dockerfile: ./docker_files/api_distante/Dockerfile
+      dockerfile: ./docker_files/api_cloud/Dockerfile
     volumes:
-      - ./src/api_distante:/usr/app
+      - ./src/api_cloud:/usr/app
     ports:
       - 3000:3000
     environment:
       DB_HOST: mysqldb
       DB_PORT: 3306
       DB_USER: 'admin'
-      DB_PASSWORD: 'letmein'
-      DB_NAME: patientsdb
+      DB_PASSWORD: 'abc123'
+      DB_NAME: airluxDB
       DB_CONNECTION_LIMIT: 20
       SERVICE_TAGS: prod
       SERVICE_NAME: nodeappservice
       SERVER_PORT: 3000
     depends_on:
-      - db_distante
+      - db_cloud
     networks:
       - internalnet
 
