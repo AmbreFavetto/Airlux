@@ -1,0 +1,11 @@
+services:
+  validator:
+    build: 
+      context: ./
+      dockerfile: ./docker_files/validator/Dockerfile
+    restart: always
+    volumes:
+      - ./src/validator:/var/validator
+    ports: 
+      - 1883 # expose for mosquitto
+      - 6379 # expose for redis

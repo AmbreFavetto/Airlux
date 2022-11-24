@@ -7,7 +7,7 @@ buildingRoutes.route('/building/')
   .get(getBuildings)
   .post(createBuilding);
 
-  buildingRoutes.route('/building/:id')
+buildingRoutes.route('/building/:id')
   .get(getBuilding)
   .put(updateBuilding)
   .delete(deleteBuilding);
