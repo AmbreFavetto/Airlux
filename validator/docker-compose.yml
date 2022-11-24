@@ -9,9 +9,12 @@ services:
     ports: 
       - 1883 # expose for mosquitto
       - 6379 # expose for redis
+    networks:
+      - local_local_network
+      - cloud_cloud_network
 
 networks:
-  local_local-network:
+  local_local_network:
     external: true
   cloud_cloud_network:
     external: true

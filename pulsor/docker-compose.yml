@@ -6,9 +6,9 @@ services:
     volumes:
       - ./src/pulsor:/var/pulsor
     networks:
-      - local_local-network
-    #ports:
+      - local_local_network
+
 
 networks:
-  local_local-network:
+  local_local_network:
     external: true
