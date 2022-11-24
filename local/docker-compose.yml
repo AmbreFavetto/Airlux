@@ -12,19 +12,24 @@ services:
       - ./src/db_locale:/var/db_locale 
     #ports:
 
-  mqtt:
-    build:
-      context: ./
-      dockerfile: ./docker_files/mosquitto/Dockerfile
-    restart: always
-    volumes:
-      - ./src/mosquitto:/var/mosquitto
-      - ./config:/mosquitto/config
-      - ./config:/mosquitto/data
-      - ./config:/mosquitto/log
+  # mqtt:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./docker_files/mosquitto/Dockerfile
+  #   restart: unless-stopped
+  #   volumes:
+  #     - ./src/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+  #   ports:
+  #     - 1883:1883
+  local-mqtt:
+    container_name: local-mqtt
+    image: eclipse-mosquitto:2.0.15
     ports:
       - 1883:1883
-      - 9001:9001
+    volumes:
+      - ./src/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
+    networks:
+      - local-network
 
   validator:
     build: 
@@ -36,5 +41,8 @@ services:
     ports: 
       - 1883 # expose for mosquitto
       - 6379 # expose for redis
+
+networks:
+  local-network:
 
 # TODO add api locale
