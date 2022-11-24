@@ -24,7 +24,7 @@ app.use(express.json());
 
 //Building
 app.use('/', routesBuilding);
-app.get('/', (req, res) => res.send(new Response(HttpStatusBuilding.OK.code, HttpStatusBulding.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
+app.get('/', (req, res) => res.send(new Response(HttpStatusBuilding.OK.code, HttpStatusBuilding.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
 app.all('*', (req, res) => res.status(HttpStatusBuilding.NOT_FOUND.code)
   .send(new Response(HttpStatusBuilding.NOT_FOUND.code, HttpStatusBulding.NOT_FOUND.status, 'Route does not exist on the server')));
 
