@@ -6,7 +6,7 @@ services:
     volumes:
       - ./src/pulsor:/var/pulsor
     networks:
-      - local_local_network
+      - local_local-network
 
 
 networks:
