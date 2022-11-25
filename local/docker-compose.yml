@@ -7,9 +7,9 @@ services:
     environment:
       ME_CONFIG_REDIS_ADMINUSERNAME: admin
       ME_CONFIG_REDIS_ADMINPASSWORD: pass
-      ME_CONFIG_REDIS_URL: redis://admin:pass@redislocale:6379/
+      ME_CONFIG_REDIS_URL: redis://admin:pass@redislocal:6379/
     volumes:
-      - ./src/db_locale:/var/db_locale
+      - ./src/db_local:/var/db_local
 
   api_local:
     build: 
@@ -20,15 +20,12 @@ services:
     ports:
       - 3000:3000
     environment:
-      DB_HOST: mysqldb
-      DB_PORT: 3306
-      DB_USER: 'admin'
-      DB_PASSWORD: 'letmein'
-      DB_NAME: patientsdb
-      DB_CONNECTION_LIMIT: 20
+      REDIS_DATABASE: airluxLocalDB
+      REDIS_USER: admin
+      REDIS_PASSWORD: abc123
+      REDIS_ROOT_PASSWORD: letmein
       SERVICE_TAGS: prod
-      SERVICE_NAME: nodeappservice
-      SERVER_PORT: 3000
+      SERVICE_NAME: redisdb
     depends_on:
       - db_local
     networks:

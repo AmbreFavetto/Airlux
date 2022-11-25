@@ -1,0 +1,28 @@
+{
+  "name": "api-redis",
+  "version": "1.0.0",
+  "description": "Node.js Restful CRUD API with Node.js, Express and Redis",
+  "type": "module",
+  "main": "servers.js",
+  "scripts": {
+    "airlux-local-db": "node ./app/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "redis",
+    "restapi"
+  ],
+  "author": "Ambre",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "ip": "^1.1.8",
+    "ioredis": "^5.2.4", 
+    "pino": "^8.7.0",
+    "pino-pretty": "^9.1.1"
+  }
+}
