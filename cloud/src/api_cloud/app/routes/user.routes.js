@@ -3,11 +3,11 @@ import { getUsers, createUser, getUser, deleteUser, updateUser } from '../contro
 
 const userRoutes = express.Router();
 
-userRoutes.route('/user/')
+userRoutes.route('/')
   .get(getUsers)
   .post(createUser);
 
-  userRoutes.route('/user/:id')
+  userRoutes.route('/:id')
   .get(getUser)
   .put(updateUser)
   .delete(deleteUser);

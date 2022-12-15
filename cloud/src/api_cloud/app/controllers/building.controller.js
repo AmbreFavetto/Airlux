@@ -15,7 +15,10 @@ const HttpStatus = {
 export const getBuildings = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching buildings`);
   database.query(QUERY.SELECT_BUILDINGS, (error, results) => {
+    console.log(error)
     if (!results) {
+      console.log("VHO")
+      console.log(results)
       res.status(HttpStatus.OK.code)
         .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No buildings found`));
     } else {

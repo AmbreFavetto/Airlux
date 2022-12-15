@@ -7,7 +7,9 @@ RUN npm install ip
 RUN npm install dotenv
 RUN npm install cors
 RUN npm install pino
+RUN npm install mysql
 RUN npm install pino-pretty
-CMD tail -f /dev/null
-#CMD ["npm", "run", "airlux-cloud-db"]
-ENTRYPOINT ["npm" , "run", "airlux-cloud-db"]
+RUN npm install ws
+#CMD tail -f /dev/null
+CMD ["npm", "run", "start:prod"]
+#ENTRYPOINT ["npm" , "run", "airlux-cloud-db"]

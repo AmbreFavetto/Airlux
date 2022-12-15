@@ -15,7 +15,12 @@ const HttpStatus = {
 export const getUsers = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching users`);
   database.query(QUERY.SELECT_USERS, (error, results) => {
+    console.log("VHO2")
+    console.log(results)
+    console.log(error)
     if (!results) {
+      console.log("VHO2")
+      console.log(results)
       res.status(HttpStatus.OK.code)
         .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No users found`));
     } else {

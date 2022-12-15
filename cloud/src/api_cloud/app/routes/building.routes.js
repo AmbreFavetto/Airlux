@@ -1,13 +1,13 @@
 import express from 'express';
-import { getBuilding, createBuilding, getBuildings, deleteBuilding, updateBuilding } from '../controllers/building.controller.js';
+import { getBuilding, createBuilding, getBuildings, deleteBuilding, updateBuilding} from '../controllers/building.controller.js';
 
 const buildingRoutes = express.Router();
 
-buildingRoutes.route('/building/')
+buildingRoutes.route('/')
   .get(getBuildings)
   .post(createBuilding);
 
-  buildingRoutes.route('/building/:id')
+  buildingRoutes.route('/:id')
   .get(getBuilding)
   .put(updateBuilding)
   .delete(deleteBuilding);
