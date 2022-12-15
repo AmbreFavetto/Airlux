@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exit $RANDOM
+exit $(($RANDOM%11))
