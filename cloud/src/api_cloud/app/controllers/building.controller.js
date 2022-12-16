@@ -30,16 +30,22 @@ export const getBuildings = (req, res) => {
 
 export const createBuilding = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating building`);
+  logger.info(req.body);
+  logger.info("VHO1");
+  logger.info(Object.values(req.body));
   database.query(QUERY.CREATE_BUILDING_PROCEDURE, Object.values(req.body), (error, results) => {
+    logger.info(results);
+    logger.info("VHO2");
     if (!results) {
+      logger.info("VHO3");
+      logger.info(error.message);
       logger.error(error.message);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
     } else {
       //const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
-      const building = results[0][0];
       res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`, { building }));
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
     }
   });
 };

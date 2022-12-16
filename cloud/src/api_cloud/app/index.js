@@ -25,7 +25,7 @@ app.use(express.json());
 //Building
 app.use('/building/', routesBuilding);
 app.get('/building', (req, res) => res.send(new Response(HttpStatusBuilding.OK.code, HttpStatusBuilding.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
-app.post('/building',)
+
 //Device
 app.use('/device/', routesDevice);
 app.get('/device', (req, res) => res.send(new Response(HttpStatusDevice.OK.code, HttpStatusDevice.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
