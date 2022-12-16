@@ -14,7 +14,7 @@ const HttpStatus = {
 
 export const getBuildings = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching buildings`);
-  database.query(QUERY.SELECT_BUILDINGS, (error, results) => {
+  database.hgetall("buildings", (error, results) => {
     if (!results) {
       res.status(HttpStatus.OK.code)
         .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No buildings found`));
@@ -27,16 +27,14 @@ export const getBuildings = (req, res) => {
 
 export const createBuilding = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating building`);
-  database.query(QUERY.CREATE_BUILDING_PROCEDURE, Object.values(req.body), (error, results) => {
+  database.hset("buildings",Object.entries(req.body), (error, results) => {
     if (!results) {
       logger.error(error.message);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
     } else {
-      //const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
-      const building = results[0][0];
       res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`, { building }));
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`, { results }));
     }
   });
 };

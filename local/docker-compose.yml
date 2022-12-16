@@ -4,6 +4,7 @@ services:
       context: ./
       dockerfile: ./docker_files/db_local/Dockerfile
     restart: always
+    hostname: db_local
     environment:
       ME_CONFIG_REDIS_ADMINUSERNAME: admin
       ME_CONFIG_REDIS_ADMINPASSWORD: pass
@@ -20,17 +21,18 @@ services:
     ports:
       - 3000:3000
     environment:
-      REDIS_DATABASE: airluxLocalDB
-      REDIS_USER: admin
-      REDIS_PASSWORD: abc123
-      REDIS_ROOT_PASSWORD: letmein
+      DB_HOST: db_local
+      DB_PORT: 6379
+      DB_USER: 'admin'
+      DB_PASSWORD: 'abc123'
+      DB_NAME: airlux_local_DB
+      DB_CONNECTION_LIMIT: 20
       SERVICE_TAGS: prod
-      SERVICE_NAME: redisdb
+      SERVICE_NAME: nodeappservice
+      SERVER_PORT: 3000
     depends_on:
       - db_local
-    networks:
-      - local_network
-
+   
   mqtt:
     build:
       context: ./
@@ -40,8 +42,3 @@ services:
       - ./src/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
     ports:
       - 1883:1883
-    networks:
-      - local_network
-
-networks:
-  local_network:

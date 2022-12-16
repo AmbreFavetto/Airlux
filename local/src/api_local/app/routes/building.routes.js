@@ -3,7 +3,7 @@ import { getBuilding, createBuilding, getBuildings, deleteBuilding, updateBuildi
 
 const buildingRoutes = express.Router();
 
-buildingRoutes.route('/building/')
+buildingRoutes.route('/building')
   .get(getBuildings)
   .post(createBuilding);
 
