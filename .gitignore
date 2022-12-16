@@ -6,3 +6,4 @@ npm-debug.log
 .DS_Store
 cloud/src/api_cloud/node_modules
 cloud/src/db_cloud/initdb
+cloud/src/api_cloud/package-lock.json
