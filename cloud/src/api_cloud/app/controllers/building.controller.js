@@ -43,7 +43,6 @@ export const createBuilding = (req, res) => {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
     } else {
-      //const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
       res.status(HttpStatus.CREATED.code)
         .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
     }

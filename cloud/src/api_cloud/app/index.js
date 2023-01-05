@@ -8,11 +8,13 @@ import HttpStatusDevice from './controllers/device.controller.js';
 import HttpStatusFloor from './controllers/floor.controller.js';
 import HttpStatusRoom from './controllers/room.controller.js';
 import HttpStatusUser from './controllers/user.controller.js';
+import HttpStatusTimeseries from './controllers/timeseries.controller.js';
 import routesBuilding from './routes/building.routes.js';
 import routesDevice from './routes/device.routes.js';
 import routesFloor from './routes/floor.routes.js';
 import routesRoom from './routes/room.routes.js';
 import routesUser from './routes/user.routes.js';
+import routesTimeseries from './routes/timeseries.routes.js';
 import logger from './util/logger.js';
 
 
@@ -41,6 +43,11 @@ app.get('/room', (req, res) => res.send(new Response(HttpStatusRoom.OK.code, Htt
 //User
 app.use('/user/', routesUser);
 app.get('/user', (req, res) => res.send(new Response(HttpStatusUser.OK.code, HttpStatusUser.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
+
+//Timesries
+app.use('/timeseries/', routesTimeseries);
+app.get('/timeseries', (req, res) => res.send(new Response(HttpStatusTimeseries.OK.code, HttpStatusTimeseries.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
+
 app.all('*', (req, res) => res.status(HttpStatusUser.NOT_FOUND.code)
   .send(new Response(HttpStatusUser.NOT_FOUND.code, HttpStatusUser.NOT_FOUND.status, 'Route does not exist on the server')));
 
