@@ -1,3 +1,5 @@
+import 'package:app_airlux/buildings/addBuilding_page.dart';
+import 'package:app_airlux/shared/bottomButton.dart';
 import 'package:flutter/material.dart';
 
 class BuildingsPage extends StatefulWidget {
@@ -14,9 +16,24 @@ class BuildingsPageState extends State<BuildingsPage> {
         title: const Text('Batiments'),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text('Page des batiments'),
+          SizedBox(height: 10.0),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              BottomButton(
+                title: 'Ajouter un batiment',
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AddBuildingPage(),
+                      ));
+                },
+              ),
+            ],
+          ),
         ],
       ),
     );
