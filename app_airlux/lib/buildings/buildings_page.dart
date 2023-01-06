@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
 
-class BuildingsPage extends StatelessWidget {
+class BuildingsPage extends StatefulWidget {
   const BuildingsPage({super.key});
-  static const String title = 'Bâtiments';
-
   @override
-  Widget build(BuildContext context) => Scaffold(
-    // changer le nom avec la classe qui permet la navigation
-    //drawer: NavigationDrawerWidget(),
-    appBar: AppBar(
-      title: const Text(BuildingsPage.title),
-      centerTitle: true,
-      backgroundColor: const Color(0x009fc5e8),
-    ),
-  );
+  BuildingsPageState createState() => BuildingsPageState();
 }
 
-class buildPage extends StatefulWidget {
-  @override
-  _buildPage createState() => _buildPage();
-}
-
-class _buildPage extends State<buildPage> {
+class BuildingsPageState extends State<BuildingsPage> {
   @override
   Widget build(BuildContext context) {
-    return Column();
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Batiments'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Page des batiments'),
+        ],
+      ),
+    );
   }
 }

@@ -18,6 +18,8 @@ class FormInputText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: icon != null
+            ? const EdgeInsets.symmetric(horizontal: 5) : const EdgeInsets.symmetric(horizontal: 15),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             color: Colors.white,
