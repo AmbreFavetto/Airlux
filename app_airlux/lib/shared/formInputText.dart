@@ -1,36 +1,43 @@
 import 'package:flutter/material.dart';
 
 class FormInputText extends StatelessWidget {
-  const FormInputText({
-    Key? key,
-    required this.name,
-    required this.inputTitle,
-  }) : super(key: key);
+  const FormInputText(
+      {Key? key,
+      required this.name,
+      required this.inputTitle,
+      required this.textType,
+      this.icon})
+      : super(key: key);
 
   final TextEditingController name;
   final String inputTitle;
+  final TextInputType textType;
+  final IconData? icon;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-        alignment: Alignment.centerLeft,
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        alignment: Alignment.center,
         decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(10),
             boxShadow: const [
               BoxShadow(color: Colors.black26, offset: Offset(0, 2))
             ]),
-        height: 50,
         child: TextField(
             controller: name,
-            keyboardType: TextInputType.emailAddress,
+            keyboardType: textType,
             style: const TextStyle(color: Colors.black87),
-            textAlign: TextAlign.center,
             decoration: InputDecoration(
                 border: InputBorder.none,
-                contentPadding: const EdgeInsets.only(top: 14),
-                hintText: inputTitle,
-                hintStyle: const TextStyle(color: Colors.black38))));
+                labelText: inputTitle,
+                hintStyle: const TextStyle(color: Colors.black38),
+                prefixIcon: icon != null
+                    ? Icon(
+                        icon,
+                        color: Colors.black,
+                      )
+                    : null)));
   }
 }
