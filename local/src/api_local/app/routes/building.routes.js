@@ -3,11 +3,11 @@ import { getBuilding, createBuilding, getBuildings, deleteBuilding, updateBuildi
 
 const buildingRoutes = express.Router();
 
-buildingRoutes.route('/building')
+buildingRoutes.route('/')
   .get(getBuildings)
   .post(createBuilding);
 
-  buildingRoutes.route('/building/:id')
+  buildingRoutes.route('/:id')
   .get(getBuilding)
   .put(updateBuilding)
   .delete(deleteBuilding);

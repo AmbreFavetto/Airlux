@@ -1,7 +1,6 @@
 import database from '../config/db.config.js';
 import Response from '../domain/response.js';
-import logger from '../util/logger.js'; // ?????????
-import QUERY from '../query/device.query.js';
+import logger from '../util/logger.js';
 
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
@@ -12,81 +11,87 @@ const HttpStatus = {
   INTERNAL_SERVER_ERROR: { code: 500, status: 'INTERNAL_SERVER_ERROR' }
 };
 
-export const getDevices = (req, res) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching devices`);
-  database.query(QUERY.SELECT_DEVICES, (error, results) => {
-    if (!results) {
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No device found`));
+export const getDevices = async (req, res) => {
+  var devices= await getResults();
+  if(devices == -1) {
+    res.status(HttpStatus.OK.code)
+          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No Devices found`));
+  } else {
+    res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Devices retrieved`, {devices}))
+  }
+};
+
+async function getResults() {
+  const keys = await database.keys('devices:*')
+  const promises = keys.map(async (key) => {
+    const result = await database.hgetall(key);
+    if (!result) {
+      return -1;
     } else {
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Devices retrieved`, { devices: results }));
+      return { [key]: result };
     }
   });
-};
+  return Object.assign({}, ...await Promise.all(promises));
+}
 
 export const createDevice = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating device`);
-  database.query(QUERY.CREATE_DEVICE_PROCEDURE, Object.values(req.body), (error, results) => {
+  database.hset("devices:" + Date.now(),req.body, (error, results) => {
     if (!results) {
       logger.error(error.message);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
     } else {
-      //const patient = { id: results.insertedId, ...req.body, created_at: new Date() };
-      const device = results[0][0];
       res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`, { device }));
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`, { results }));
     }
   });
 };
 
-export const getDevice = (req, res) => {
+export const getDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching device`);
-  database.query(QUERY.SELECT_DEVICE, [req.params.id], (error, results) => {
-    if (!results[0]) {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
-    } else {
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device retrieved`, results[0]));
-    }
-  });
+  const result = await database.hgetall(req.params.id);
+  if (Object.keys(result).length == 0 || !req.params.id.startsWith("devices:")) {
+    res.status(HttpStatus.NOT_FOUND.code)
+      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
+  } else {
+    res.status(HttpStatus.OK.code)
+      .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device retrieved`, { [req.params.id]: result }));
+  }
 };
 
-export const updateDevice = (req, res) => {
+export const updateDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching device`);
-  database.query(QUERY.SELECT_DEVICE, [req.params.id], (error, results) => {
-    if (!results[0]) {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
-    } else {
-      logger.info(`${req.method} ${req.originalUrl}, updating device`);
-      database.query(QUERY.UPDATE_DEVICE, [...Object.values(req.body), req.params.id], (error, results) => {
-        if (!error) {
-          res.status(HttpStatus.OK.code)
-            .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device updated`, { id: req.params.id, ...req.body }));
-        } else {
-          logger.error(error.message);
-          res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-            .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-        }
-      });
-    }
-  });
+  const result = await database.hgetall(req.params.id);
+  if (Object.keys(result).length == 0 || !req.params.id.startsWith("devices:")) {
+    res.status(HttpStatus.NOT_FOUND.code)
+      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
+  } else {
+    database.hset(req.params.id, req.body, function (error, results) {
+      if(error){
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+      } else {
+        res.status(HttpStatus.CREATED.code)
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device updated`, { results }));
+      }
+    });
+  }
 };
 
 export const deleteDevice = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting Device`);
-  database.query(QUERY.DELETE_DEVICE, [req.params.id], (error, results) => {
-    if (results.affectedRows > 0) {
-      res.status(HttpStatus.OK.code)
-        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`, results[0]));
-    } else {
+  if(req.params.id.startsWith("devices:")) {
+    database.del(req.params.id, (error, results) => {
+      if (results > 0) {
+        res.status(HttpStatus.OK.code)
+          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`, results[0]));
+      }
+    });
+  } else {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
-    }
-  });
+  }
 };
 
 export default HttpStatus;

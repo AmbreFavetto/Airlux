@@ -3,11 +3,11 @@ import { getRooms, createRoom, getRoom, deleteRoom, updateRoom } from '../contro
 
 const roomRoutes = express.Router();
 
-roomRoutes.route('/room/')
+roomRoutes.route('/')
   .get(getRooms)
   .post(createRoom);
 
-  roomRoutes.route('/room/:id')
+  roomRoutes.route('/:id')
   .get(getRoom)
   .put(updateRoom)
   .delete(deleteRoom);
