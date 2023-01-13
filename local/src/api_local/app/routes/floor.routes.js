@@ -3,11 +3,11 @@ import { getFloors, createFloor, getFloor, deleteFloor, updateFloor } from '../c
 
 const floorRoutes = express.Router();
 
-floorRoutes.route('/floor/')
+floorRoutes.route('/')
   .get(getFloors)
   .post(createFloor);
 
-  floorRoutes.route('/floor/:id')
+  floorRoutes.route('/:id')
   .get(getFloor)
   .put(updateFloor)
   .delete(deleteFloor);

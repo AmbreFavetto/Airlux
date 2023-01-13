@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../main.dart';
+import '../shared/formInputText.dart';
+import '../shared/bottomButton.dart';
+import 'buildings_page.dart';
 
 class AddBuildingPage extends StatefulWidget {
   const AddBuildingPage({super.key});
@@ -23,8 +25,8 @@ class AddBuildingPageState extends State<AddBuildingPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const SizedBox(width: 10.0, height: 10.0),
-              InputText(name: title, inputTitle: 'Nom du bâtiment'),
+              const SizedBox(width: 10.0, height: 20.0),
+              FormInputText(name: title, inputTitle: 'Nom du bâtiment', textType: TextInputType.text),
               Container(
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(8),
@@ -32,53 +34,38 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF003b71),
-                      ),
-                      child: const Text('Retour'),
-                      onPressed: () => {
-                        if (title.text.isNotEmpty)
-                          {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MyApp()),
-                            ),
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Le bâtiment a été ajouté.'),
-                              ),
-                            ),
-                          }
-                        else
-                          {
-                            print('pas ok'),
-                          }
+                    BottomButton(
+                      title: 'Retour',
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BuildingsPage(),
+                            ));
                       },
                     ),
                     const SizedBox(width: 10.0, height: 0.0),
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF003b71),
-                      ),
-                      child: const Text('Sauvegarder'),
-                      onPressed: () => {
-                        if (title.text.isNotEmpty)
-                          {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => MyApp()),
+                    BottomButton(
+                      title: 'Sauvegarder',
+                      onTap: () {
+                        if (title.text.isNotEmpty){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const BuildingsPage()),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Le bâtiment a été ajouté.'),
                             ),
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Le bâtiment a été ajouté.'),
-                              ),
+                          );
+                        }
+                        else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Formulaire invalide.'),
                             ),
-                          }
-                        else
-                          {
-                            print('pas ok'),
-                          }
+                          );
+                        }
                       },
                     ),
                   ],
@@ -87,40 +74,5 @@ class AddBuildingPageState extends State<AddBuildingPage> {
             ],
           )),
     );
-  }
-}
-
-class InputText extends StatelessWidget {
-  const InputText({
-    Key? key,
-    required this.name,
-    required this.inputTitle,
-  }) : super(key: key);
-
-  final TextEditingController name;
-  final String inputTitle;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        margin: const EdgeInsets.only(left: 20.0, right: 20.0),
-        alignment: Alignment.centerLeft,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: const [
-              BoxShadow(color: Colors.black26, offset: Offset(0, 2))
-            ]),
-        height: 50,
-        child: TextField(
-            controller: name,
-            keyboardType: TextInputType.emailAddress,
-            style: const TextStyle(color: Colors.black87),
-            textAlign: TextAlign.center,
-            decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.only(top: 14),
-                hintText: inputTitle,
-                hintStyle: const TextStyle(color: Colors.black38))));
   }
 }

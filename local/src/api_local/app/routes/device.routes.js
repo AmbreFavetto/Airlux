@@ -3,11 +3,11 @@ import { getDevices, createDevice, getDevice, deleteDevice, updateDevice } from 
 
 const deviceRoutes = express.Router();
 
-deviceRoutes.route('/device/')
+deviceRoutes.route('/')
   .get(getDevices)
   .post(createDevice);
 
-  deviceRoutes.route('/device/:id')
+  deviceRoutes.route('/:id')
   .get(getDevice)
   .put(updateDevice)
   .delete(deleteDevice);
