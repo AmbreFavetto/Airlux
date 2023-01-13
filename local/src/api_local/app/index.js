@@ -2,17 +2,12 @@ import express from 'express';
 import ip from 'ip';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import Response from './domain/response.js';
-import HttpStatusBuilding from './controllers/building.controller.js';
-import HttpStatusDevice from './controllers/device.controller.js';
-import HttpStatusFloor from './controllers/floor.controller.js';
-import HttpStatusRoom from './controllers/room.controller.js';
-import HttpStatusUser from './controllers/user.controller.js';
 import routesBuilding from './routes/building.routes.js';
 import routesDevice from './routes/device.routes.js';
 import routesFloor from './routes/floor.routes.js';
 import routesRoom from './routes/room.routes.js';
 import routesUser from './routes/user.routes.js';
+import routesScenario from './routes/scenario.routes.js'
 import logger from './util/logger.js';
 
 
@@ -31,6 +26,8 @@ app.use('/floor', routesFloor);
 //Room
 app.use('/room', routesRoom);
 //User
- app.use('/user', routesUser);
+app.use('/user', routesUser);
+//Scenario
+app.use('/scenario', routesScenario);
 
 app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));
