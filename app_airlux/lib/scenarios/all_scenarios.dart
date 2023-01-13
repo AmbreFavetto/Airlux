@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_airlux/models/scenarios/scenario_data.dart';
-
+import '../buildings/buildings_page.dart';
+import '../shared/bottomButton.dart';
 var str;
 
 class AllScenariosPage extends StatelessWidget {
@@ -12,19 +13,37 @@ class AllScenariosPage extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Mes Scenarios'),
         ),
-        body: Consumer<ScenarioData>(
-            builder: (context, scenarioData, child) => ListView.builder(
-                  itemBuilder: (context, index) {
-                    final scenario = scenarioData.scenarios[index];
-                    scenarioData.getAllScenarios();
-                    return ScenContainer(
-                      scenName: scenario.name.toString(),
-                      scenId: scenario.id?.toInt(),
-                      onDelete: () => scenarioData.deleteScenario(scenario),
-                    );
-                  },
-                  itemCount: scenarioData.scenarios.length,
-                )));
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            BottomButton(
+              title: '+',
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const BuildingsPage(),
+                    ));
+              },
+            ),
+            Expanded(
+              child: Consumer<ScenarioData>(
+                  builder: (context, scenarioData, child) => ListView.builder(
+                        itemBuilder: (context, index) {
+                          final scenario = scenarioData.scenarios[index];
+                          scenarioData.getAllScenarios();
+                          return ScenContainer(
+                            scenName: scenario.name.toString(),
+                            scenId: scenario.id?.toInt(),
+                            onDelete: () =>
+                                scenarioData.deleteScenario(scenario),
+                          );
+                        },
+                        itemCount: scenarioData.scenarios.length,
+                      )),
+            )
+          ],
+        ));
   }
 }
 
@@ -45,7 +64,8 @@ class ScenContainer extends StatelessWidget {
     return Column(
       children: [
         Container(
-            margin: const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+            margin: const EdgeInsets.only(
+                left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: const Color(0xff006991),
