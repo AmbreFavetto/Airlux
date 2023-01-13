@@ -15,10 +15,13 @@ class AllScenariosPage extends StatelessWidget {
         body: Consumer<ScenarioData>(
             builder: (context, scenarioData, child) => ListView.builder(
                   itemBuilder: (context, index) {
-                    scenarioData.getAllScenarios2();
+                    final scenario = scenarioData.scenarios[index];
+                    scenarioData.getAllScenarios();
                     return ScenContainer(
-                        scenName: scenarioData.scenarios[index].name.toString(),
-                        scenId: scenarioData.scenarios[index].id?.toInt());
+                      scenName: scenario.name.toString(),
+                      scenId: scenario.id?.toInt(),
+                      onDelete: () => scenarioData.deleteScenario(scenario),
+                    );
                   },
                   itemCount: scenarioData.scenarios.length,
                 )));
@@ -26,20 +29,23 @@ class AllScenariosPage extends StatelessWidget {
 }
 
 class ScenContainer extends StatelessWidget {
-  const ScenContainer({Key? key, required this.scenName, required this.scenId})
+  ScenContainer(
+      {Key? key,
+      required this.scenName,
+      required this.scenId,
+      required this.onDelete})
       : super(key: key);
 
+  final void Function() onDelete;
   final String scenName;
   final int? scenId;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        SizedBox(
-          height: 10,
-        ),
         Container(
-            margin: const EdgeInsets.only(left: 10.0, right: 10.0),
+            margin: const EdgeInsets.only(left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: const Color(0xff006991),
@@ -65,16 +71,10 @@ class ScenContainer extends StatelessWidget {
                       int a = 0; // Direction : page EDIT scenario
                     }),
                 IconButton(
-                    icon: const Icon(Icons.delete_outline, color: Colors.white),
-                    tooltip: 'Delete',
-                    onPressed: () {
-                      print(scenId);
-                      //deleteScen();
-
-                      //int id = str['data']['buildings']['building_id'][scenId];
-                      //print(id);
-                      // Delete scenario
-                    }),
+                  icon: const Icon(Icons.delete_outline, color: Colors.white),
+                  tooltip: 'Delete',
+                  onPressed: onDelete,
+                ),
               ],
             )),
       ],
