@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../shared/formInputText.dart';
-import '../shared/bottomButton.dart';
+import '../shared/formBottomButton.dart';
 import 'buildings_page.dart';
 
 class AddBuildingPage extends StatefulWidget {
@@ -34,7 +34,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    BottomButton(
+                    FormBottomButton(
                       title: 'Retour',
                       onTap: () {
                         Navigator.push(
@@ -45,7 +45,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                       },
                     ),
                     const SizedBox(width: 10.0, height: 0.0),
-                    BottomButton(
+                    FormBottomButton(
                       title: 'Sauvegarder',
                       onTap: () {
                         if (title.text.isNotEmpty){
