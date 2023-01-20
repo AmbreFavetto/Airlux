@@ -1,6 +1,7 @@
 import database from '../config/db.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js';
+import device from '../models/device.model.js';
 
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
@@ -34,18 +35,32 @@ async function getResults() {
   return Object.assign({}, ...await Promise.all(promises));
 }
 
-export const createDevice = (req, res) => {
+export const createDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating device`);
-  database.hset("devices:" + Date.now(),req.body, (error, results) => {
-    if (!results) {
-      logger.error(error.message);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  
+  const validationResult = device.validate(req.body, device.userSchema);
+  if (validationResult.error) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, validationResult.error.message));
+  } else {
+    const rooms_keys = await database.keys('rooms:*')
+    if(rooms_keys.includes(req.body.room_id)) {
+      database.hset("devices:" + Date.now(),req.body, (error, results) => {
+        if (!results) {
+          logger.error(error.message);
+          res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+            .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+        } else {
+          res.status(HttpStatus.CREATED.code)
+            .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`, { results }));
+        }
+      });
     } else {
-      res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`, { results }));
-    }
-  });
+      res.status(HttpStatus.BAD_REQUEST.code)
+        .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'room_id provided does not exist'));
+    }   
+  }
+  
 };
 
 export const getDevice = async (req, res) => {

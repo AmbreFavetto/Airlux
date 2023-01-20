@@ -1,6 +1,8 @@
 import database from '../config/db.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js'; 
+import floorCreateSchema, {floorUpdateSchema} from '../models/floor.model.js';
+import {v4 as uuidv4} from 'uuid';
 
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
@@ -11,87 +13,122 @@ const HttpStatus = {
   INTERNAL_SERVER_ERROR: { code: 500, status: 'INTERNAL_SERVER_ERROR' }
 };
 
-export const getFloors = async (req, res) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching floors`);
-  var floors= await getResults();
-  if(floors == -1) {
-    res.status(HttpStatus.OK.code)
-          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No floors found`));
-  } else {
-    res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floors retrieved`, {floors}))
-  }
-};
-
-async function getResults() {
-  const keys = await database.keys('floors:*')
-  const promises = keys.map(async (key) => {
-    const result = await database.hgetall(key);
-    if (!result) {
-      return -1;
-    } else {
-      return { [key]: result };
-    }
-  });
-  return Object.assign({}, ...await Promise.all(promises));
+function setData(req) {
+  const data = {
+    name: req.body.name,
+    building_id: req.body.building_id
+  };
+  return data;
 }
 
 export const createFloor = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating floor`);
-  database.hset("floors:" + Date.now(),req.body, (error, results) => {
-    if (!results) {
-      logger.error(error.message);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-    } else {
-      res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor created`, { results }));
-    }
-  });
+  const { error } = floorCreateSchema.validate(req.body);
+  if (error) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
+    return;
+  } 
+  const buildingIdsExist = await database.exists(`buildings:${req.body.building_id}`);
+  if (!buildingIdsExist) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+    .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the building_id provided does not exist'));
+    return;
+  } 
+  const key = `floors:${uuidv4()}`; 
+  var data = setData(req);
+  try {
+    const result = await database.hmset(key, data);
+    res.status(HttpStatus.CREATED.code)
+      .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor created`, { result }));
+  } catch (err) {
+    logger.error(err.message);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  }
+};
+
+export const getFloors = async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}, fetching floors`);
+  try {
+    const keys = await database.keys('floors:*');
+    let floors = await Promise.all(keys.map(async key => {
+      const data = await database.hgetall(key);
+      return { [key]: data };
+    }));
+    res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floors retrieved`, { floors }));
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+    .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, error));
+  }
 };
 
 export const getFloor = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching floor`);
-  const result = await database.hgetall(req.params.id);
-  if (Object.keys(result).length == 0 || !req.params.id.startsWith("floors:")) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
-  } else {
+  if (!(await database.exists(`floors:${req.params.id}`))) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+    .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'floor_id provided does not exist'));
+    return;
+  }  
+  try {
+    const result = await database.hgetall(`floors:${req.params.id}`);
     res.status(HttpStatus.OK.code)
-      .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floor retrieved`, { [req.params.id]: result }));
-  }
+      .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floor retrieved`, { [`floors:${req.params.id}`]: result }));
+  } catch(error) {
+    res.status(HttpStatus.NOT_FOUND.code)
+      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id floors:${req.params.id} was not found`));
+  }   
 };
 
 export const updateFloor = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching floor`);
-  const result = await database.hgetall(req.params.id);
-  if (Object.keys(result).length == 0 || !req.params.id.startsWith("floors:")) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
-  } else {
-    database.hset(req.params.id, req.body, function (error, results) {
-      if(error){
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-      } else {
-        res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor updated`, { results }));
-      }
-    });
+  const { error } = floorUpdateSchema.validate(req.body);
+  if (error) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
+      return;
   }
+  if (!(await database.exists(`floors:${req.params.id}`))) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'floor_id provided does not exist'));
+      return;
+  } 
+  if(req.body.building_id && !(await database.exists(`buildings:${req.body.building_id}`))) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+    .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the building_id provided does not exist'));
+    return;
+  }
+  try{
+    await database.hmset(`floors:${req.params.id}`, req.body);
+    res.status(HttpStatus.CREATED.code)
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor updated`));
+  } catch(error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  } 
 };
 
-export const deleteFloor = (req, res) => {
+export const deleteFloor = async(req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting floor`);
-  if(req.params.id.startsWith("floors:")) {
-    database.del(req.params.id, (error, results) => {
-      if (results > 0) {
-        res.status(HttpStatus.OK.code)
-          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`, results[0]));
-      }
-    });
-  } else {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
+  try{
+    const floorExists = await database.exists(`floors:${req.params.id}`)
+    if (!floorExists) {
+      return res.status(HttpStatus.BAD_REQUEST.code)
+        .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'floor_id provided does not exist'));
+    }
+    await database.del(`floors:${req.params.id}`)
+    if(res) {
+      return res.status(HttpStatus.OK.code)
+       .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
+    } else{
+      return {
+      statusCode: HttpStatus.OK.code,
+      message: `Floor deleted`
+      };
+    }
+  } catch(error) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 

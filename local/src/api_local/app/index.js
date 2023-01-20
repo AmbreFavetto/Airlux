@@ -10,10 +10,10 @@ import routesUser from './routes/user.routes.js';
 import routesScenario from './routes/scenario.routes.js'
 import logger from './util/logger.js';
 
-
 dotenv.config();
 const PORT = 3000;
 const app = express();
+
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 
