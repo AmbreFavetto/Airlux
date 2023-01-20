@@ -1,6 +1,10 @@
 import database from '../config/db.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js'; 
+import buildingCreateSchema, {buildingUpdateSchema} from '../models/building.model.js';
+import {v4 as uuidv4} from 'uuid';
+import { deleteFloor } from './floor.controller.js';
+import { updateUser } from './user.controller.js';
 
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
@@ -11,87 +15,143 @@ const HttpStatus = {
   INTERNAL_SERVER_ERROR: { code: 500, status: 'INTERNAL_SERVER_ERROR' }
 };
 
-export const getBuildings = async (req, res) =>  {
-  logger.info(`${req.method} ${req.originalUrl}, fetching buildings`); 
-  var buildings= await getResults();
-  if(buildings == -1) {
-    res.status(HttpStatus.OK.code)
-          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No buildings found`));
-  } else {
-    res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, {buildings}))
-  }
-};
-
-async function getResults() {
-  const keys = await database.keys('buildings:*')
-  const promises = keys.map(async (key) => {
-    const result = await database.hgetall(key);
-    if (!result) {
-      return -1;
-    } else {
-      return { [key]: result };
-    }
-  });
-  return Object.assign({}, ...await Promise.all(promises));
+function setData(req) {
+  const data = {
+    name: req.body.name,
+  };
+  return data;
 }
 
-export const createBuilding = (req, res) => {
+export const createBuilding = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating building`);
-  database.hset("buildings:" + Date.now(),req.body, (error, results) => {
-    if (!results) {
-      logger.error(error.message);
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-    } else {
-      res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`, { results }));
+  const { error } = buildingCreateSchema.validate(req.body);
+  if (error) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
+  } else {
+      const key = `buildings:${uuidv4()}`; 
+      var data = setData(req);
+      try {
+        const result = await database.hmset(key, data);
+        res.status(HttpStatus.CREATED.code)
+          .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`, { result }));
+      } catch (err) {
+        logger.error(err.message);
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+      }
     }
-  });
+  };
+
+export const getBuildings = async (req, res) =>  {
+  logger.info(`${req.method} ${req.originalUrl}, fetching buildings`); 
+  try {
+    const keys = await database.keys('buildings:*');
+    let buildings = await Promise.all(keys.map(async key => {
+      const data = await database.hgetall(key);
+      return { [key]: data };
+    }));
+    res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings }));
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+    .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, error));
+  }
 };
 
 export const getBuilding = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching building`);
-  const result = await database.hgetall(req.params.id);
-  if (Object.keys(result).length == 0 || !req.params.id.startsWith("buildings:")) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
+  if (!(await database.exists(`buildings:${req.params.id}`))) {
+    // building_id provided does not exist
+    res.status(HttpStatus.BAD_REQUEST.code)
+    .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'building_id provided does not exist'));
   } else {
-    res.status(HttpStatus.OK.code)
-      .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Building retrieved`, { [req.params.id]: result }));
-  }
+    try {
+      const result = await database.hgetall(`buildings:${req.params.id}`);
+      res.status(HttpStatus.OK.code)
+        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Building retrieved`, { [`buildings:${req.params.id}`]: result }));
+    } catch(error) {
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id buildings:${req.params.id} was not found`));
+    }
+  }    
 };
 
 export const updateBuilding = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching building`);
-  const result = await database.hgetall(req.params.id);
-  if (Object.keys(result).length == 0 || !req.params.id.startsWith("buildings:")) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
-  } else {
-    database.hset(req.params.id, req.body, function (error, results) {
-      if(error){
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-      } else {
+  const { error } = buildingUpdateSchema.validate(req.body);  
+  if(error) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
+  }else {
+    if (!(await database.exists(`buildings:${req.params.id}`))) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'building_id provided does not exist'));
+    } else {
+      try{
+        await database.hmset(`buildings:${req.params.id}`, req.body);
         res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building updated`, { results }));
-      }
-    });
-  }
+            .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building updated`));
+      } catch(error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+              .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+      } 
+    }
+  }  
 };
 
-export const deleteBuilding = (req, res) => {
+let hasError = false;
+
+export const deleteBuilding = async(req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting building`);
-  if(req.params.id.startsWith("buildings:")) {
-    database.del(req.params.id, (error, results) => {
-      if (results > 0) {
-        res.status(HttpStatus.OK.code)
-          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings deleted`, results[0]));
+
+  try{
+    const buildingExists = await database.exists(`buildings:${req.params.id}`)
+    if (!(buildingExists)) {
+      return res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'building_id provided does not exist'));
+    } 
+    const floorsIds = await database.keys(`floors:*`);
+    const floorsToDelete = [];
+    await Promise.all(floorsIds.map(async id => {
+      const floorData = await database.hgetall(id);
+      if (floorData.building_id === req.params.id.toString()) {
+        floorsToDelete.push(id);
       }
-    });
-  } else {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Buildings by id ${req.params.id} was not found`));
+    }));
+    if(floorsToDelete.length > 0) {
+      await Promise.all(floorsToDelete.map(async id => {
+        id = id.split(":")[1];
+        const floorRes = await deleteFloor({ params: { id: id }, method: "DELETE", originalUrl: `/floor/${id}` });
+        if (floorRes.statusCode !== HttpStatus.OK.code) {
+          hasError = true;
+          return;
+        }
+      }));      
+    }
+
+    // remove building_id from user if user.building_id === req.params.id 
+    let usersIds = await database.keys('users:*');
+    await Promise.all(usersIds.map(async id => {
+      const userData = await database.hgetall(id);
+      let userDataUpdate = userData.building_id.split(",");
+      if(userDataUpdate.indexOf(req.params.id) != -1) {
+        userDataUpdate.splice(userDataUpdate.indexOf(req.params.id), 1);
+        id = id.split(":")[1];
+        const userRes = await updateUser({params: {id: id}, body: {building_id: userDataUpdate}, method: "UPDATE", originalUrl: `/user/${id}`})
+        if (userRes.statusCode !== HttpStatus.OK.code) {
+          hasError = true;
+          return;
+        }
+      }
+    }));   
+    if(!hasError) {
+      await database.del(`buildings:${req.params.id}`);
+      res.status(HttpStatus.OK.code)
+        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
+    }   
+  } catch(error){
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+    .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
