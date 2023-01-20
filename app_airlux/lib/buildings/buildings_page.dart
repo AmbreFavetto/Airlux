@@ -1,6 +1,9 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
-import 'package:app_airlux/shared/bottomButton.dart';
+import 'package:app_airlux/models/buildings/building_data.dart';
+import 'package:app_airlux/shared/addButton.dart';
+import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class BuildingsPage extends StatefulWidget {
   const BuildingsPage({super.key});
@@ -16,26 +19,36 @@ class BuildingsPageState extends State<BuildingsPage> {
         title: const Text('Batiments'),
       ),
       body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          SizedBox(height: 10.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              BottomButton(
-                title: 'Ajouter un batiment',
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AddBuildingPage(),
-                      ));
+          Expanded(
+            child: Consumer<BuildingData>(
+              builder: (context, buildingData, child) => ListView.builder(
+                itemBuilder: (context, index) {
+                  final building = buildingData.buildings[index];
+                  buildingData.getAllBuildings();
+                  return ObjectContainer(
+                    onDelete: () => buildingData.deleteBuilding(building),
+                    onEdit: () => {},
+                    title: building.name.toString(),
+                    id: building.id?.toInt(),
+                  );
                 },
+                itemCount: buildingData.buildings.length,
               ),
-            ],
-          ),
+            ),
+          )
         ],
       ),
+      floatingActionButton: AddButton(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AddBuildingPage(),
+                ));
+          },
+          title: 'Ajouter un batiment'),
     );
   }
 }
