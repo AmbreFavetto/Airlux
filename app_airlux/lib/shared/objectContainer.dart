@@ -5,12 +5,14 @@ class ObjectContainer extends StatelessWidget {
       {Key? key,
       required this.onDelete,
       required this.onEdit,
+      required this.onSelect,
       required this.title,
       this.id})
       : super(key: key);
 
   final void Function() onDelete;
   final void Function() onEdit;
+  final void Function() onSelect;
   final String title;
   final int? id;
 
@@ -18,7 +20,9 @@ class ObjectContainer extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
+        InkWell(
+          onTap: onSelect,
+          child: Container(
             margin: const EdgeInsets.only(
                 left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
             alignment: Alignment.center,
@@ -50,7 +54,9 @@ class ObjectContainer extends StatelessWidget {
                   onPressed: onDelete,
                 ),
               ],
-            )),
+            ),
+          ),
+        ),
       ],
     );
   }

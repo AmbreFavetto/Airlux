@@ -1,4 +1,5 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
+import 'package:app_airlux/buildings/buildingInfo_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
@@ -30,6 +31,13 @@ class BuildingsPageState extends State<BuildingsPage> {
                   return ObjectContainer(
                     onDelete: () => buildingData.deleteBuilding(building),
                     onEdit: () => {},
+                    onSelect: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const BuildingInfoPage(),
+                          ));
+                    },
                     title: building.name.toString(),
                     id: building.id?.toInt(),
                   );
