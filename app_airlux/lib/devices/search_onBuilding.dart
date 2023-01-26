@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/devices/floor_data.dart';
 
 import '../buildings/buildings_page.dart';
-import '../models/devices/building_data.dart';
+import '../models/buildings/building_data.dart';
 import 'search_onFloor.dart';
 
 var str;
