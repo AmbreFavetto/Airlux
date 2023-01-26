@@ -1,52 +1,79 @@
+import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:flutter/material.dart';
+import '../../shared/formBottomButton.dart';
+import '../../shared/formInputText.dart';
+import 'floors_page.dart';
 
-class AddFloorPage extends StatelessWidget {
-  static const String title = 'Ajouter un étage';
-
+class AddFloorPage extends StatefulWidget {
+  const AddFloorPage({super.key});
   @override
-  Widget build(BuildContext context) => Scaffold(
-    // changer el nom avec la classe qui permet la navigation
-    //drawer: NavigationDrawerWidget(),
-    appBar: AppBar(
-      title: const Text(AddFloorPage.title),
-      centerTitle: true,
-      backgroundColor: const Color(0x009fc5e8),
-    ),
-  );
+  AddFloorPageState createState() => AddFloorPageState();
 }
 
-class buildForm extends StatefulWidget {
-  @override
-  _buildForm createState() => _buildForm();
-}
+class AddFloorPageState extends State<AddFloorPage> {
+  final _formKey = GlobalKey<FormState>();
 
-class _buildForm extends State<buildForm> {
-  TextEditingController name = TextEditingController();
+  TextEditingController title = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        Container(
-            alignment: Alignment.centerLeft,
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black26, offset: Offset(0, 2))
-                ]),
-            height: 60,
-            child: TextField(
-                controller: name,
-                keyboardType: TextInputType.text,
-                style: TextStyle(color: Colors.black87),
-                decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.only(top: 14),
-                    prefixIcon: Icon(Icons.business, color: Colors.black),
-                    hintText: 'Nom de l\'étage',
-                    hintStyle: TextStyle(color: Colors.black38)))),
-      ],
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Ajouter un étage'),
+      ),
+      body: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const SizedBox(width: 10.0, height: 20.0),
+              FormInputText(name: title, inputTitle: 'Nom étage', textType: TextInputType.text),
+              Container(
+                alignment: Alignment.center,
+                padding: const EdgeInsets.all(8),
+                height: 100,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FormBottomButton(
+                      title: 'Retour',
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const BuildingsPage(),
+                            ));
+                      },
+                    ),
+                    const SizedBox(width: 10.0, height: 0.0),
+                    FormBottomButton(
+                      title: 'Sauvegarder',
+                      onTap: () {
+                        if (title.text.isNotEmpty){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const BuildingsPage()),
+                          );
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Étage ajouté.'),
+                            ),
+                          );
+                        }
+                        else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Formulaire invalide.'),
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )),
     );
   }
 }

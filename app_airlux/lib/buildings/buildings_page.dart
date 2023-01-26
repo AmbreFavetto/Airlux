@@ -1,18 +1,15 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
-import 'package:app_airlux/buildings/buildingInfo_page.dart';
+import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class BuildingsPage extends StatefulWidget {
-  const BuildingsPage({super.key});
-  @override
-  BuildingsPageState createState() => BuildingsPageState();
-}
+import '../models/buildings/floors/floor_data.dart';
 
-class BuildingsPageState extends State<BuildingsPage> {
+class BuildingsPage extends StatelessWidget {
+  const BuildingsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,11 +29,16 @@ class BuildingsPageState extends State<BuildingsPage> {
                     onDelete: () => buildingData.deleteBuilding(building),
                     onEdit: () => {},
                     onSelect: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const BuildingInfoPage(),
-                          ));
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return ChangeNotifierProvider(
+                            create: (BuildContext context) => FloorData(),
+                            child: MaterialApp(
+                              home: FloorsPage(id: building.id?.toInt()),
+                            ),
+                          );
+                        },
+                      ));
                     },
                     title: building.name.toString(),
                     id: building.id?.toInt(),
