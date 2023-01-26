@@ -1,8 +1,14 @@
 import Joi from 'joi'
 
-const deviceSchema = Joi.object().keys({
+const deviceCreateSchema = Joi.object().keys({
     name: Joi.string().required(),
-    room_id: Joi.string().regex(/^rooms:[0-9]+/).required()
+    room_id: Joi.string().required()
   });
 
-export default deviceSchema;
+const deviceUpdateSchema = Joi.object().keys({
+  name: Joi.string().optional(),
+  room_id: Joi.string().optional()
+});
+
+export default deviceCreateSchema;
+export {deviceUpdateSchema};

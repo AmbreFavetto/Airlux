@@ -129,7 +129,6 @@ export const deleteBuilding = async(req, res) => {
       }));      
     }
 
-    // remove building_id from user if user.building_id === req.params.id 
     let usersIds = await database.keys('users:*');
     await Promise.all(usersIds.map(async id => {
       const userData = await database.hgetall(id);

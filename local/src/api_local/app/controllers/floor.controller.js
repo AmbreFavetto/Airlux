@@ -3,6 +3,7 @@ import Response from '../domain/response.js';
 import logger from '../util/logger.js'; 
 import floorCreateSchema, {floorUpdateSchema} from '../models/floor.model.js';
 import {v4 as uuidv4} from 'uuid';
+import { deleteRoom } from './room.controller.js';
 
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
@@ -108,6 +109,8 @@ export const updateFloor = async (req, res) => {
   } 
 };
 
+let hasError = false;
+
 export const deleteFloor = async(req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting floor`);
   try{
@@ -116,16 +119,36 @@ export const deleteFloor = async(req, res) => {
       return res.status(HttpStatus.BAD_REQUEST.code)
         .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'floor_id provided does not exist'));
     }
-    await database.del(`floors:${req.params.id}`)
-    if(res) {
-      return res.status(HttpStatus.OK.code)
-       .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
-    } else{
-      return {
-      statusCode: HttpStatus.OK.code,
-      message: `Floor deleted`
-      };
+    const roomsIds = await database.keys(`rooms:*`);
+    const roomsToDelete = [];
+    await Promise.all(roomsIds.map(async id => {
+      const roomData = await database.hgetall(id);
+      if (roomData.floor_id === req.params.id.toString()) {
+        roomsToDelete.push(id);
+      }
+    }));
+    if(roomsToDelete.length > 0) {
+      await Promise.all(roomsToDelete.map(async id => {
+        id = id.split(":")[1];
+        const roomRes = await deleteRoom({ params: { id: id }, method: "DELETE", originalUrl: `/room/${id}` });
+        if (roomRes.statusCode !== HttpStatus.OK.code) {
+          hasError = true;
+          return;
+        }
+      }));      
     }
+    if(!hasError) {
+      await database.del(`floors:${req.params.id}`)
+      if(res) {
+        return res.status(HttpStatus.OK.code)
+        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
+      } else{
+        return {
+        statusCode: HttpStatus.OK.code,
+        message: `Floor deleted`
+        };
+      }
+    }   
   } catch(error) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));

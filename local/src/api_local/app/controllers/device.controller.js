@@ -2,6 +2,8 @@ import database from '../config/db.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js';
 import device from '../models/device.model.js';
+import {v4 as uuidv4} from 'uuid';
+import deviceCreateSchema, {deviceUpdateSchema} from '../models/device.model.js';
 
 const HttpStatus = {
   OK: { code: 200, status: 'OK' },
@@ -12,100 +14,122 @@ const HttpStatus = {
   INTERNAL_SERVER_ERROR: { code: 500, status: 'INTERNAL_SERVER_ERROR' }
 };
 
-export const getDevices = async (req, res) => {
-  var devices= await getResults();
-  if(devices == -1) {
-    res.status(HttpStatus.OK.code)
-          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No Devices found`));
-  } else {
-    res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Devices retrieved`, {devices}))
-  }
-};
-
-async function getResults() {
-  const keys = await database.keys('devices:*')
-  const promises = keys.map(async (key) => {
-    const result = await database.hgetall(key);
-    if (!result) {
-      return -1;
-    } else {
-      return { [key]: result };
-    }
-  });
-  return Object.assign({}, ...await Promise.all(promises));
+function setData(req) {
+  const data = {
+    name: req.body.name,
+    room_id: req.body.room_id
+  };
+  return data;
 }
 
 export const createDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating device`);
-  
-  const validationResult = device.validate(req.body, device.userSchema);
-  if (validationResult.error) {
+  const { error } = deviceCreateSchema.validate(req.body);
+  if (error) {
     res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, validationResult.error.message));
-  } else {
-    const rooms_keys = await database.keys('rooms:*')
-    if(rooms_keys.includes(req.body.room_id)) {
-      database.hset("devices:" + Date.now(),req.body, (error, results) => {
-        if (!results) {
-          logger.error(error.message);
-          res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-            .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-        } else {
-          res.status(HttpStatus.CREATED.code)
-            .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`, { results }));
-        }
-      });
-    } else {
-      res.status(HttpStatus.BAD_REQUEST.code)
-        .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'room_id provided does not exist'));
-    }   
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
+    return;
+  } 
+  const roomIdExist = await database.exists(`rooms:${req.body.room_id}`);
+  if (!roomIdExist) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+    .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the room_id provided does not exist'));
+    return;
+  } 
+  const key = `devices:${uuidv4()}`; 
+  var data = setData(req);
+  try {
+    const result = await database.hmset(key, data);
+    res.status(HttpStatus.CREATED.code)
+      .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`, { result }));
+  } catch (err) {
+    logger.error(err.message);
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
-  
+};
+
+export const getDevices = async (req, res) => {
+  logger.info(`${req.method} ${req.originalUrl}, fetching devices`);
+  try {
+    const keys = await database.keys('devices:*');
+    let devices = await Promise.all(keys.map(async key => {
+      const data = await database.hgetall(key);
+      return { [key]: data };
+    }));
+    res.status(HttpStatus.OK.code).send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Devices retrieved`, { devices }));
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+    .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, error));
+  }
 };
 
 export const getDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching device`);
-  const result = await database.hgetall(req.params.id);
-  if (Object.keys(result).length == 0 || !req.params.id.startsWith("devices:")) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
-  } else {
+  if (!(await database.exists(`devices:${req.params.id}`))) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+    .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'device_id provided does not exist'));
+    return;
+  }  
+  try {
+    const result = await database.hgetall(`devices:${req.params.id}`);
     res.status(HttpStatus.OK.code)
-      .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device retrieved`, { [req.params.id]: result }));
-  }
+      .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device retrieved`, { [`devices:${req.params.id}`]: result }));
+  } catch(error) {
+    res.status(HttpStatus.NOT_FOUND.code)
+      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id devices:${req.params.id} was not found`));
+  } 
 };
 
 export const updateDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching device`);
-  const result = await database.hgetall(req.params.id);
-  if (Object.keys(result).length == 0 || !req.params.id.startsWith("devices:")) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
-  } else {
-    database.hset(req.params.id, req.body, function (error, results) {
-      if(error){
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-      } else {
-        res.status(HttpStatus.CREATED.code)
-        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device updated`, { results }));
-      }
-    });
+  const { error } = deviceUpdateSchema.validate(req.body);
+  if (error) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
+      return;
   }
+  if (!(await database.exists(`devices:${req.params.id}`))) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+      .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'device_id provided does not exist'));
+      return;
+  } 
+  if(req.body.room_id && !(await database.exists(`rooms:${req.body.room_id}`))) {
+    res.status(HttpStatus.BAD_REQUEST.code)
+    .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the room_id provided does not exist'));
+    return;
+  }
+  try{
+    await database.hmset(`devices:${req.params.id}`, req.body);
+    res.status(HttpStatus.CREATED.code)
+        .send(new Response(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device updated`));
+  } catch(error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+          .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  } 
 };
 
-export const deleteDevice = (req, res) => {
+export const deleteDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting Device`);
-  if(req.params.id.startsWith("devices:")) {
-    database.del(req.params.id, (error, results) => {
-      if (results > 0) {
-        res.status(HttpStatus.OK.code)
-          .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`, results[0]));
-      }
-    });
-  } else {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new Response(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
+  try{
+    const deviceExists = await database.exists(`devices:${req.params.id}`)
+    if (!deviceExists) {
+      return res.status(HttpStatus.BAD_REQUEST.code)
+        .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'device_id provided does not exist'));
+    }
+    await database.del(`devices:${req.params.id}`)
+    if(res) {
+      return res.status(HttpStatus.OK.code)
+       .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`));
+    } else{
+      return {
+      statusCode: HttpStatus.OK.code,
+      message: `Device deleted`
+      };
+    }
+  } catch(error) {
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+        .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
