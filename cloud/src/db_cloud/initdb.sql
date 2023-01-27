@@ -3,9 +3,9 @@ CREATE DATABASE IF NOT EXISTS airlux_cloud_db;
 USE airlux_cloud_db;
 
 CREATE TABLE building (
-  building_id BIGINT NOT NULL AUTO_INCREMENT,
-  name  VARCHAR(255) DEFAULT NULL,
-  PRIMARY KEY (building_id)
+  building_id     BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  name            VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (building_id) 
 );
 
 CREATE TABLE user (
@@ -15,40 +15,48 @@ CREATE TABLE user (
   email           VARCHAR(255) DEFAULT NULL,
   password        VARCHAR(255) DEFAULT NULL,
   is_admin        BOOLEAN,
-  building_id     BIGINT NOT NULL,
   PRIMARY KEY (user_id)
+);
+
+CREATE TABLE user_building (
+  id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id         BIGINT UNSIGNED,
+  building_id     BIGINT UNSIGNED,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES user (user_id) ON DELETE CASCADE,
+  FOREIGN KEY (building_id) REFERENCES building (building_id) ON DELETE CASCADE
 );
 
 CREATE TABLE floor (
   floor_id        BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   number          BIGINT UNSIGNED NOT NULL,
-  building_id     BIGINT NOT NULL,
-  PRIMARY KEY (floor_id)
+  building_id     BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (floor_id),
+  FOREIGN KEY (building_id) REFERENCES building (building_id) ON DELETE CASCADE
 );
 
 
 CREATE TABLE room (
   room_id         BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name            VARCHAR(255) DEFAULT NULL,
-  floor_id        BIGINT NOT NULL,
-  building_id     BIGINT NOT NULL,
-  PRIMARY KEY (room_id)
+  floor_id        BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (room_id),
+  FOREIGN KEY (floor_id) REFERENCES floor (floor_id) ON DELETE CASCADE
 );
 
 
 CREATE TABLE device (
   device_id       BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name            VARCHAR(255) DEFAULT NULL,
-  floor_id        BIGINT NOT NULL,
-  building_id     BIGINT NOT NULL,
-  room_id         BIGINT NOT NULL,
-  PRIMARY KEY (device_id)
+  room_id         BIGINT UNSIGNED NOT NULL,
+  type            ENUM("actuator", "sensor") DEFAULT NULL,
+  PRIMARY KEY (device_id),
+  FOREIGN KEY (room_id) REFERENCES room (room_id) ON DELETE CASCADE
 );
 
 CREATE TABLE scenario (
   scenario_id     BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   name            VARCHAR(255) DEFAULT NULL,
-  scenario_state  BOOLEAN NOT NULL DEFAULT 0,
   PRIMARY KEY (scenario_id)
 );
 
@@ -56,7 +64,10 @@ CREATE TABLE scenario_device (
   id              BIGINT UNSIGNED NOT NULL,
   scenario_id     BIGINT UNSIGNED NOT NULL,
   device_id       BIGINT UNSIGNED NOT NULL,
-  PRIMARY KEY (id)
+  enable_device   BOOLEAN NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  FOREIGN KEY (scenario_id) REFERENCES scenario (scenario_id) ON DELETE CASCADE,
+  FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
 );
 
 
@@ -64,38 +75,45 @@ CREATE TABLE timeseries (
   device_id       BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   unit            VARCHAR(255) DEFAULT NULL,
   timestamp       BIGINT NOT NULL,
-  value           BIGINT NOT NULL,
+  value           FLOAT,
   PRIMARY KEY (device_id)
 );
 
-INSERT INTO building(name) VALUES ("batiment num1");
-INSERT INTO building(name) VALUES ("batiment num2");
-INSERT INTO building(name) VALUES ("batiment num3");
-INSERT INTO building(name) VALUES ("batiment num4");
-INSERT INTO building(name) VALUES ("batiment num5");
-INSERT INTO building(name) VALUES ("batiment num6");
-INSERT INTO building(name) VALUES ("batiment num7");
-INSERT INTO building(name) VALUES ("batiment num8");
-INSERT INTO building(name) VALUES ("batiment num9");
-INSERT INTO building(name) VALUES ("batiment num10");
-INSERT INTO building(name) VALUES ("batiment num11");
-INSERT INTO building(name) VALUES ("batiment num12");
+INSERT INTO building(name) VALUES ("batiment num  1");
+INSERT INTO building(name) VALUES ("batiment num  2");
+INSERT INTO building(name) VALUES ("batiment num  3");
+INSERT INTO building(name) VALUES ("batiment num  4");
+INSERT INTO building(name) VALUES ("batiment num  5");
+INSERT INTO building(name) VALUES ("batiment num  6");
+INSERT INTO building(name) VALUES ("batiment num  7");
+INSERT INTO building(name) VALUES ("batiment num  8");
+INSERT INTO building(name) VALUES ("batiment num  9");
+INSERT INTO building(name) VALUES ("batiment num  10");
+INSERT INTO building(name) VALUES ("batiment num  11");
+INSERT INTO building(name) VALUES ("batiment num  12");
 
 INSERT INTO floor(number, building_id) VALUES (0, 1);
 INSERT INTO floor(number, building_id) VALUES (1, 1);
 INSERT INTO floor(number, building_id) VALUES (2, 1);
 INSERT INTO floor(number, building_id) VALUES (3, 1);
+INSERT INTO floor(number, building_id) VALUES (0, 2);
+INSERT INTO floor(number, building_id) VALUES (1, 2);
+INSERT INTO floor(number, building_id) VALUES (2, 2);
+INSERT INTO floor(number, building_id) VALUES (0, 3);
 
-INSERT INTO room(name, floor_id, building_id) VALUES ("Salon", 1, 1);
-INSERT INTO room(name, floor_id, building_id) VALUES ("Salle a manger", 1, 1);
-INSERT INTO room(name, floor_id, building_id) VALUES ("Salon de repos", 2, 1);
-INSERT INTO room(name, floor_id, building_id) VALUES ("Salle de bain", 1, 2);
+INSERT INTO room(name, floor_id) VALUES ("Salon", 1);
+INSERT INTO room(name, floor_id) VALUES ("Salle a manger", 1);
+INSERT INTO room(name, floor_id) VALUES ("Salon de repos", 1);
+INSERT INTO room(name, floor_id) VALUES ("Salle de bain", 1);
+INSERT INTO room(name, floor_id) VALUES ("Salle de jeu",2);
+INSERT INTO room(name, floor_id) VALUES ("Toilettes", 2);
+INSERT INTO room(name, floor_id) VALUES ("Salle de bain", 3);
 
-INSERT INTO device(name, floor_id, building_id, room_id) VALUES ("Capteur temperature", 1, 1, 1);
-INSERT INTO device(name, floor_id, building_id, room_id) VALUES ("Interupteur", 1, 1, 1);
-INSERT INTO device(name, floor_id, building_id, room_id) VALUES ("Interupteur lumiere", 2, 1, 1);
-INSERT INTO device(name, floor_id, building_id, room_id) VALUES ("Capteur lumiere", 2, 1, 1);
-INSERT INTO device(name, floor_id, building_id, room_id) VALUES ("Capteur temperature", 2, 1, 2);
+INSERT INTO device(name, room_id) VALUES ("Capteur temperature", 1);
+INSERT INTO device(name, room_id) VALUES ("Interupteur", 1);
+INSERT INTO device(name, room_id) VALUES ("Interupteur lumiere", 2);
+INSERT INTO device(name, room_id) VALUES ("Capteur lumiere", 2);
+INSERT INTO device(name, room_id) VALUES ("Capteur temperature", 3);
 
 DELIMITER //
 CREATE PROCEDURE create_building_and_return(IN name VARCHAR(255))
