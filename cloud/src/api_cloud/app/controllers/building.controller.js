@@ -17,7 +17,6 @@ export const getBuildings = (req, res) => {
   database.query(QUERY.SELECT_BUILDINGS, (error, results) => {
     console.log(error)
     if (!results) {
-      console.log("VHO")
       console.log(results)
       res.status(HttpStatus.OK.code)
         .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `No buildings found`));
@@ -31,13 +30,10 @@ export const getBuildings = (req, res) => {
 export const createBuilding = (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, creating building`);
   logger.info(req.body);
-  logger.info("VHO1");
   logger.info(Object.values(req.body));
   database.query(QUERY.CREATE_BUILDING_PROCEDURE, Object.values(req.body), (error, results) => {
     logger.info(results);
-    logger.info("VHO2");
     if (!results) {
-      logger.info("VHO3");
       logger.info(error.message);
       logger.error(error.message);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
