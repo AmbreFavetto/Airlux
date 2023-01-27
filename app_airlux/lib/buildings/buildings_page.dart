@@ -34,7 +34,7 @@ class BuildingsPage extends StatelessWidget {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => FloorData(),
                             child: MaterialApp(
-                              home: FloorsPage(id: building.id?.toInt()),
+                              home: FloorsPage(id: building.id?.toInt(), buildingName: building.name.toString()),
                             ),
                           );
                         },

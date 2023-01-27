@@ -1,6 +1,6 @@
 class Floor {
   Floor({this.number,  this.id, this.building_id});
-  int? number;
+  int? number = null;
   int? id = null;
   int? building_id = null;
 

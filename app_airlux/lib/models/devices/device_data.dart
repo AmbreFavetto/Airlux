@@ -4,16 +4,16 @@ import 'package:flutter/cupertino.dart';
 import 'device.dart';
 import 'package:http/http.dart' as http;
 
-class ScenarioData extends ChangeNotifier {
+class DeviceData extends ChangeNotifier {
   var str;
 
-  List<Device> scenarios = [Device(name: 'oneRoom', id: 0, room_id: 1)];
+  List<Device> devices = [Device(name: 'firstDevice', id: 1, room_id: 1), Device(name: 'secondDevice', id: 2, room_id: 2)];
 
-  void getAllScenarios() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/building'));
+  void getAllDevices() async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/device'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
-      final List<dynamic> results = str['data']['buildings'];
+      final List<dynamic> results = str['data']['devices'];
       devices = results.map((e) => Device.fromJson(e)).toList();
       notifyListeners();
     } else {
@@ -21,10 +21,23 @@ class ScenarioData extends ChangeNotifier {
     }
   }
 
-  void deleteScenario(Scenario scenario) async {
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3000/building/' + scenario.id.toString()));
+  void getDevicesByRoomId(int? id) async{
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/device'));
     if (response.statusCode == 200) {
-      getAllScenarios();
+      str = json.decode(response.body);
+      final List<dynamic> results = str['data']['devices'];
+      results.removeWhere((item) => item["room_id"]!=id);
+      devices = results.map((e) => Device.fromJson(e)).toList();
+      notifyListeners();
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  void deleteDevice(Device device) async {
+    final response = await http.delete(Uri.parse('http://10.0.2.2:3000/device' + device.id.toString()));
+    if (response.statusCode == 200) {
+      getAllDevices();
     } else {
       throw Exception('Failed to load data');
     }

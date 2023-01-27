@@ -1,103 +1,58 @@
+import 'package:app_airlux/buildings/buildings_page.dart';
+import 'package:app_airlux/models/devices/device_data.dart';
+import 'package:app_airlux/shared/addButton.dart';
+import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
-import 'package:app_airlux/models/scenarios/scenario_data.dart';
-import '../buildings/buildings_page.dart';
-import '../shared/formBottomButton.dart';
-var str;
 
-class AllScenariosPage extends StatelessWidget {
+class DevicesPage extends StatelessWidget {
+  const DevicesPage({super.key, required this.id, required this.name});
+  final int? id;
+  final String? name;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('Mes Scenarios'),
-        ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            FormBottomButton(
-              title: '+',
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const BuildingsPage(),
-                    ));
-              },
+      appBar: AppBar(
+        title: const Text('Devices'),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(height: 15),
+          Text('Salle : $name',
+              style: const TextStyle(color: Color(0xFF003b71))),
+          const SizedBox(height: 15),
+          Expanded(
+            child: Consumer<DeviceData>(
+              builder: (context, deviceData, child) => ListView.builder(
+                itemBuilder: (context, index) {
+                  final device = deviceData.devices[index];
+                  deviceData.getDevicesByRoomId(id);
+                  return ObjectContainer(
+                    onDelete: () => deviceData.deleteDevice(device),
+                    onEdit: () => {},
+                    onSelect: () {
+
+                    },
+                    title: device.name.toString(),
+                    id: device.id?.toInt(),
+                  );
+                },
+                itemCount: deviceData.devices.length,
+              ),
             ),
-            Expanded(
-              child: Consumer<ScenarioData>(
-                  builder: (context, scenarioData, child) => ListView.builder(
-                        itemBuilder: (context, index) {
-                          final scenario = scenarioData.scenarios[index];
-                          scenarioData.getAllScenarios();
-                          return ScenContainer(
-                            scenName: scenario.name.toString(),
-                            scenId: scenario.id?.toInt(),
-                            onDelete: () =>
-                                scenarioData.deleteScenario(scenario),
-                          );
-                        },
-                        itemCount: scenarioData.scenarios.length,
-                      )),
-            )
-          ],
-        ));
-  }
-}
-
-class ScenContainer extends StatelessWidget {
-  ScenContainer(
-      {Key? key,
-      required this.scenName,
-      required this.scenId,
-      required this.onDelete})
-      : super(key: key);
-
-  final void Function() onDelete;
-  final String scenName;
-  final int? scenId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-            margin: const EdgeInsets.only(
-                left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-                color: const Color(0xff006991),
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black26, offset: Offset(0, 2))
-                ]),
-            height: 60,
-            child: Row(
-              children: [
-                const SizedBox(width: 15),
-                SizedBox(
-                    width: 270,
-                    child: Text(
-                      scenName,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                IconButton(
-                    icon: const Icon(Icons.edit, color: Colors.white),
-                    tooltip: 'Edit',
-                    onPressed: () {
-                      int a = 0; // Direction : page EDIT scenario
-                    }),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.white),
-                  tooltip: 'Delete',
-                  onPressed: onDelete,
-                ),
-              ],
-            )),
-      ],
+          )
+        ],
+      ),
+      floatingActionButton: AddButton(
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BuildingsPage(),
+                ));
+          },
+          title: 'Ajouter un device'),
     );
   }
 }
