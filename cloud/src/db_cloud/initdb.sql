@@ -61,7 +61,7 @@ CREATE TABLE scenario (
 );
 
 CREATE TABLE scenario_device (
-  id              BIGINT UNSIGNED NOT NULL,
+  id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   scenario_id     BIGINT UNSIGNED NOT NULL,
   device_id       BIGINT UNSIGNED NOT NULL,
   enable_device   BOOLEAN NOT NULL DEFAULT 0,
@@ -72,11 +72,13 @@ CREATE TABLE scenario_device (
 
 
 CREATE TABLE timeseries (
-  device_id       BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  timeseries_id   BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   unit            VARCHAR(255) DEFAULT NULL,
   timestamp       BIGINT NOT NULL,
   value           FLOAT,
-  PRIMARY KEY (device_id)
+  device_id       BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (timeseries_id),
+  FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
 );
 
 INSERT INTO building(name) VALUES ("batiment num  1");
@@ -109,11 +111,44 @@ INSERT INTO room(name, floor_id) VALUES ("Salle de jeu",2);
 INSERT INTO room(name, floor_id) VALUES ("Toilettes", 2);
 INSERT INTO room(name, floor_id) VALUES ("Salle de bain", 3);
 
-INSERT INTO device(name, room_id) VALUES ("Capteur temperature", 1);
-INSERT INTO device(name, room_id) VALUES ("Interupteur", 1);
-INSERT INTO device(name, room_id) VALUES ("Interupteur lumiere", 2);
-INSERT INTO device(name, room_id) VALUES ("Capteur lumiere", 2);
-INSERT INTO device(name, room_id) VALUES ("Capteur temperature", 3);
+INSERT INTO device(name, room_id, type) VALUES ("Capteur temperature", 1, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Interupteur", 1, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Interupteur lumiere", 2, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Capteur lumiere", 2, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Capteur temperature", 3, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Lumière plafond", 3, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Lumière table", 3, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Capteur murale", 3, "actuator");
+
+INSERT INTO scenario(name) VALUES ("Eteindre toutes les lumières");
+INSERT INTO scenario(name) VALUES ("Allumer toutes les lumières");
+INSERT INTO scenario(name) VALUES ("Baisser les volets");
+
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (1, 6, false);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (1, 7, false);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (1, 8, false);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (2, 6, true);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (2, 7, true);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (2, 8, true);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (3, 6, true);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (3, 7, true);
+INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (3, 8, true);
+
+INSERT INTO user(name, forename, email, password, is_admin) VALUES ("HOUDU", "Valentin", "valentin.hpro1@gmail.com", "azertyuiop", true);
+INSERT INTO user(name, forename, email, password, is_admin) VALUES ("KARACHIRA", "Clara", "clazzzaa1@gmail.com", "azertyuiop", false);
+INSERT INTO user(name, forename, email, password, is_admin) VALUES ("CASTE", "Romain", "carabistouille@gmail.com", "azertyuiop", false);
+INSERT INTO user(name, forename, email, password, is_admin) VALUES ("LESPAGNOL", "Sylvain", "lespognol@gmail.com", "azertyuiop", false);
+INSERT INTO user(name, forename, email, password, is_admin) VALUES ("FAVETTO", "Ambre", "amber@gmail.com", "azertyuiop", true);
+
+INSERT INTO user_building(user_id, building_id) VALUES (1, 1);
+INSERT INTO user_building(user_id, building_id) VALUES (2, 1);
+INSERT INTO user_building(user_id, building_id) VALUES (3, 1);
+INSERT INTO user_building(user_id, building_id) VALUES (4, 2);
+INSERT INTO user_building(user_id, building_id) VALUES (5, 2);
+
+INSERT INTO timeseries(unit, timestamp, value, device_id) VALUES ("km/h", 20, 0, 1);
+INSERT INTO timeseries(unit, timestamp, value, device_id) VALUES ("km/h", 20, 2, 2);
+INSERT INTO timeseries(unit, timestamp, value, device_id) VALUES ("km/h", 20, 4, 3);
 
 DELIMITER //
 CREATE PROCEDURE create_building_and_return(IN name VARCHAR(255))
