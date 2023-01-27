@@ -4,8 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../buildings/buildings_page.dart';
-import '../models/devices/floor_data.dart';
-import '../models/devices/room_data.dart';
+import '../models/buildings/floors/floor_data.dart';
+import '../models/buildings/rooms/room_data.dart';
 var str;
 
 class SearchOnFloor extends StatelessWidget {

@@ -35,7 +35,7 @@ class FloorsPage extends StatelessWidget {
                             builder: (context) => const BuildingInfoPage(),
                           ));
                     },
-                    title: floor.name.toString(),
+                    title: floor.number.toString(),
                     id: floor.id?.toInt(),
                   );
                 },

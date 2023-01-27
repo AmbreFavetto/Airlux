@@ -23,6 +23,20 @@ class RoomData extends ChangeNotifier {
     }
   }
 
+  void getRoomsFromFloor(int? idFloor, int? idBuilding) async{
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/room/'));
+    if (response.statusCode == 200) {
+      str = json.decode(response.body);
+      final List<dynamic> results = str['data']['rooms'];
+      results.removeWhere((item) => item["building_id"]!=idBuilding);
+      results.removeWhere((item) => item["floor_id"]!=idFloor);
+      rooms = results.map((e) => Room.fromJson(e)).toList();
+      notifyListeners();
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
   void getRoomsByRoomId(int? id) async{
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/room'));
     if (response.statusCode == 200) {

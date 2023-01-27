@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../buildings/buildings_page.dart';
-import '../models/devices/room_data.dart';
+import '../models/buildings/rooms/room_data.dart';
 
 var str;
 
@@ -57,7 +57,21 @@ class RoomContainer extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            print("Container clicked");
+            Navigator.push(context, MaterialPageRoute(
+              builder: (context) {
+                print(roomId);
+                return ChangeNotifierProvider(
+                  create: (BuildContext context) => DeviceData(),
+                  child: MaterialApp(
+                    home: devices_page(
+                      idR: roomId,
+                        idF: floorId,
+                        idB: floorBuildingId
+                    ),
+                  ),
+                );
+              },
+            ));
           },
           child: Container(
               margin: const EdgeInsets.only(
