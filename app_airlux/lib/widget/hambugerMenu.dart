@@ -9,7 +9,6 @@ import '../main.dart';
 
 class HamburgerMenuWidget extends StatelessWidget {
   final padding = EdgeInsets.symmetric(horizontal: 20);
-  static int currentPage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +66,6 @@ class HamburgerMenuWidget extends StatelessWidget {
         Navigator.of(context).push(MaterialPageRoute(
           builder: (context) => MyApp(),
         ));
-        currentPage = 0;
         break;
       case 1:
         Navigator.push(context, MaterialPageRoute(
@@ -80,7 +78,6 @@ class HamburgerMenuWidget extends StatelessWidget {
             );
           },
         ));
-        currentPage = 1;
         break;
       case 2:
         Navigator.push(context, MaterialPageRoute(
@@ -93,7 +90,6 @@ class HamburgerMenuWidget extends StatelessWidget {
             );
           },
         ));
-        currentPage = 2;
         break;
     }
   }
