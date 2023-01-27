@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../constants.dart';
 import '../shared/formInputText.dart';
 import '../shared/formBottomButton.dart';
 import 'buildings_page.dart';
@@ -18,6 +19,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Ajouter un bâtiment'),
       ),
       body: Form(

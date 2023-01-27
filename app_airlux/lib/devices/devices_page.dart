@@ -5,6 +5,8 @@ import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../constants.dart';
+
 class DevicesPage extends StatelessWidget {
   const DevicesPage({super.key, required this.id, required this.name});
   final int? id;
@@ -13,6 +15,7 @@ class DevicesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Devices'),
       ),
       body: Column(

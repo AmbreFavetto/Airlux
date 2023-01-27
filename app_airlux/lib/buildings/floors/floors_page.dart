@@ -20,6 +20,7 @@ class FloorsPage extends StatelessWidget {
     return Scaffold(
       drawer: HamburgerMenuWidget(),
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Étages'),
       ),
       body: Column(

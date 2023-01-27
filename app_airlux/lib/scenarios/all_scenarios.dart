@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_airlux/models/scenarios/scenario_data.dart';
 import '../buildings/buildings_page.dart';
+import '../constants.dart';
 import '../shared/formBottomButton.dart';
 import '../widget/hambugerMenu.dart';
 var str;
@@ -13,6 +14,7 @@ class AllScenariosPage extends StatelessWidget {
     return Scaffold(
         drawer: HamburgerMenuWidget(),
         appBar: AppBar(
+          backgroundColor: kFonceyBlue,
           title: const Text('Mes Scenarios'),
         ),
         body: Column(

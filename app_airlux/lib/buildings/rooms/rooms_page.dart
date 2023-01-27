@@ -18,6 +18,7 @@ class RoomsPage extends StatelessWidget {
     return Scaffold(
       drawer: HamburgerMenuWidget(),
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Salles'),
       ),
       body: Column(

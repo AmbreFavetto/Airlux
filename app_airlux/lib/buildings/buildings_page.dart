@@ -7,6 +7,7 @@ import 'package:app_airlux/widget/hambugerMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../constants.dart';
 import '../models/buildings/floors/floor_data.dart';
 
 class BuildingsPage extends StatelessWidget {
@@ -16,6 +17,7 @@ class BuildingsPage extends StatelessWidget {
     return Scaffold(
       drawer: HamburgerMenuWidget(),
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Batiments'),
       ),
       body: Column(
