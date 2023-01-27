@@ -4,18 +4,21 @@ import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../constants.dart';
 import '../../models/buildings/floors/floor_data.dart';
+import '../../widget/hambugerMenu.dart';
 import 'addFloor_page.dart';
 import '../rooms/rooms_page.dart';
 
 class FloorsPage extends StatelessWidget {
-  const FloorsPage({super.key, required this.id, required this.buildingName});
-  final int? id;
+  const FloorsPage({super.key, required this.roomId, required this.buildingName});
+  final int? roomId;
   final String buildingName;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenuWidget(),
       appBar: AppBar(
         title: const Text('Étages'),
       ),
@@ -24,24 +27,26 @@ class FloorsPage extends StatelessWidget {
         children: [
           const SizedBox(height: 15),
           Text('Nom du bâtiment : $buildingName',
-              style: const TextStyle(color: Color(0xFF003b71))),
+              style: const TextStyle(color: kFonceyBlue)),
           const SizedBox(height: 15),
           Expanded(
             child: Consumer<FloorData>(
               builder: (context, floorData, child) => ListView.builder(
                 itemBuilder: (context, index) {
                   final floor = floorData.floors[index];
-                  floorData.getFloorsByBuildingId(id);
+                  floorData.getFloorsByBuildingId(roomId);
                   return ObjectContainer(
                     onDelete: () => floorData.deleteFloor(floor),
-                    onEdit: () => {},
+                    onEdit: () => {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFloorPage()))
+                    },
                     onSelect: () {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => RoomData(),
                             child: MaterialApp(
-                              home: RoomsPage(id: floor.id?.toInt(), floorNumber: floor.number?.toInt()),
+                              home: RoomsPage(floorId: floor.id?.toInt(), floorNumber: floor.number?.toInt()),
                             ),
                           );
                         },

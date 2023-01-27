@@ -4,16 +4,19 @@ import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../constants.dart';
 import '../../devices/devices_page.dart';
+import '../../widget/hambugerMenu.dart';
 import 'addRoom_page.dart';
 
 class RoomsPage extends StatelessWidget {
-  const RoomsPage({super.key, required this.id, required this.floorNumber});
-  final int? id;
+  const RoomsPage({super.key, required this.floorId, required this.floorNumber});
+  final int? floorId;
   final int? floorNumber;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenuWidget(),
       appBar: AppBar(
         title: const Text('Salles'),
       ),
@@ -22,17 +25,19 @@ class RoomsPage extends StatelessWidget {
         children: [
           const SizedBox(height: 15),
           Text('Numéro étage : $floorNumber',
-              style: const TextStyle(color: Color(0xFF003b71))),
+              style: const TextStyle(color: kFonceyBlue)),
           const SizedBox(height: 15),
           Expanded(
             child: Consumer<RoomData>(
               builder: (context, roomData, child) => ListView.builder(
                 itemBuilder: (context, index) {
                   final room = roomData.rooms[index];
-                  roomData.getRoomsByFloorId(id);
+                  roomData.getRoomsByFloorId(floorId);
                   return ObjectContainer(
                     onDelete: () => roomData.deleteRoom(room),
-                    onEdit: () => {},
+                    onEdit: () => {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRoomPage()))
+                    },
                     onSelect: () {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
