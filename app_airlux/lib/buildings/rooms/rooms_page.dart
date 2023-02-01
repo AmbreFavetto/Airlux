@@ -1,63 +1,61 @@
 import 'package:app_airlux/models/buildings/rooms/room_data.dart';
+import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../constants.dart';
-import '../../models/buildings/floors/floor_data.dart';
+import '../../devices/devices_page.dart';
 import '../../widget/hambugerMenu.dart';
-import 'addFloor_page.dart';
-import '../rooms/rooms_page.dart';
+import 'addRoom_page.dart';
 
-class FloorsPage extends StatelessWidget {
-  const FloorsPage({super.key, required this.roomId, required this.buildingName});
-  final int? roomId;
-  final String buildingName;
-
+class RoomsPage extends StatelessWidget {
+  const RoomsPage({super.key, required this.floorId, required this.floorNumber});
+  final int? floorId;
+  final int? floorNumber;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: HamburgerMenuWidget(),
       appBar: AppBar(
         backgroundColor: kFonceyBlue,
-        title: const Text('Étages'),
+        title: const Text('Salles'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 15),
-          Text('Nom du bâtiment : $buildingName',
+          Text('Numéro étage : $floorNumber',
               style: const TextStyle(color: kFonceyBlue)),
           const SizedBox(height: 15),
           Expanded(
-            child: Consumer<FloorData>(
-              builder: (context, floorData, child) => ListView.builder(
+            child: Consumer<RoomData>(
+              builder: (context, roomData, child) => ListView.builder(
                 itemBuilder: (context, index) {
-                  final floor = floorData.floors[index];
-                  floorData.getFloorsByBuildingId(roomId);
+                  final room = roomData.rooms[index];
+                  roomData.getRoomsByFloorId(floorId);
                   return ObjectContainer(
-                    onDelete: () => floorData.deleteFloor(floor),
+                    onDelete: () => roomData.deleteRoom(room),
                     onEdit: () => {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AddFloorPage()))
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRoomPage()))
                     },
                     onSelect: () {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return ChangeNotifierProvider(
-                            create: (BuildContext context) => RoomData(),
+                            create: (BuildContext context) => DeviceData(),
                             child: MaterialApp(
-                              home: RoomsPage(floorId: floor.id?.toInt(), floorNumber: floor.number?.toInt()),
+                              home: DevicesPage(id: room.id?.toInt(), name: room.name),
                             ),
                           );
                         },
                       ));
                     },
-                    title: floor.number.toString(),
-                    id: floor.id?.toInt(),
+                    title: room.name.toString(),
+                    id: room.id?.toInt(),
                   );
                 },
-                itemCount: floorData.floors.length,
+                itemCount: roomData.rooms.length,
               ),
             ),
           )
@@ -68,10 +66,10 @@ class FloorsPage extends StatelessWidget {
             Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AddFloorPage(),
+                  builder: (context) => const AddRoomPage(),
                 ));
           },
-          title: 'Ajouter un étage'),
+          title: 'Ajouter une salle'),
     );
   }
 }

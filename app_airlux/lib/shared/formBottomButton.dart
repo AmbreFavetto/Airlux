@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants.dart';
+
 class FormBottomButton extends StatelessWidget {
   const FormBottomButton({
     Key? key,
@@ -14,7 +16,7 @@ class FormBottomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: const Color(0xFF003b71),
+        backgroundColor: kFonceyBlue,
       ),
       onPressed: onTap,
       child: Text(title),

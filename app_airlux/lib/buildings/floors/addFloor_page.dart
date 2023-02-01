@@ -1,5 +1,6 @@
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:flutter/material.dart';
+import '../../constants.dart';
 import '../../shared/formBottomButton.dart';
 import '../../shared/formInputText.dart';
 import 'floors_page.dart';
@@ -19,6 +20,7 @@ class AddFloorPageState extends State<AddFloorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Ajouter un étage'),
       ),
       body: Form(

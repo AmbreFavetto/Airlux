@@ -6,7 +6,7 @@ class Device {
 
 
   Device.fromJson(Map<String, dynamic> json) {
-    id = json['room_id'];
+    id = json['id'];
     name = json['name'];
     room_id = json['room_id'];
   }

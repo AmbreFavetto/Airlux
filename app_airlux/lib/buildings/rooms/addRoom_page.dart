@@ -1,5 +1,6 @@
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:flutter/material.dart';
+import '../../constants.dart';
 import '../../shared/formBottomButton.dart';
 import '../../shared/formInputText.dart';
 
@@ -18,6 +19,7 @@ class AddRoomPageState extends State<AddRoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Ajouter une salle'),
       ),
       body: Form(

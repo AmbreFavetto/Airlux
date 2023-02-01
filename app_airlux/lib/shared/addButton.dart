@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants.dart';
+
 class AddButton extends StatelessWidget {
   const AddButton({
     Key? key,
@@ -15,7 +17,7 @@ class AddButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: onTap,
       tooltip: title,
-      backgroundColor: const Color(0xFF003b71),
+      backgroundColor: kFonceyBlue,
       child: const Icon(Icons.add),
     );
   }

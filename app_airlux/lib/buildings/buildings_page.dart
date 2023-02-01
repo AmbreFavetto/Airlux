@@ -3,9 +3,11 @@ import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
+import 'package:app_airlux/widget/hambugerMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../constants.dart';
 import '../models/buildings/floors/floor_data.dart';
 
 class BuildingsPage extends StatelessWidget {
@@ -13,7 +15,9 @@ class BuildingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: HamburgerMenuWidget(),
       appBar: AppBar(
+        backgroundColor: kFonceyBlue,
         title: const Text('Batiments'),
       ),
       body: Column(
@@ -27,14 +31,16 @@ class BuildingsPage extends StatelessWidget {
                   buildingData.getAllBuildings();
                   return ObjectContainer(
                     onDelete: () => buildingData.deleteBuilding(building),
-                    onEdit: () => {},
+                    onEdit: () => {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBuildingPage()))
+                    },
                     onSelect: () {
                       Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => FloorData(),
                             child: MaterialApp(
-                              home: FloorsPage(id: building.id?.toInt()),
+                              home: FloorsPage(roomId: building.id?.toInt(), buildingName: building.name.toString()),
                             ),
                           );
                         },

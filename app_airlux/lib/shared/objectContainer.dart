@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants.dart';
+
 class ObjectContainer extends StatelessWidget {
   ObjectContainer(
       {Key? key,
@@ -27,7 +29,7 @@ class ObjectContainer extends StatelessWidget {
                 left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-                color: const Color(0xff006991),
+                color: kContainerBlue,
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: const [
                   BoxShadow(color: Colors.black26, offset: Offset(0, 2))

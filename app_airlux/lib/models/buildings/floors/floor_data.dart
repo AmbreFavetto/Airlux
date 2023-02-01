@@ -22,19 +22,6 @@ class FloorData extends ChangeNotifier {
     }
   }
 
-  void getFloorsFromBuilding(int? id) async{
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/floor/'));
-    if (response.statusCode == 200) {
-      str = json.decode(response.body);
-      final List<dynamic> results = str['data']['floors'];
-      results.removeWhere((item) => item["building_id"]!=id);
-      floors = results.map((e) => Floor.fromJson(e)).toList();
-      notifyListeners();
-    } else {
-      throw Exception('Failed to load data');
-    }
-  }
-
   void getFloorsByBuildingId(int? id) async{
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/floor'));
     if (response.statusCode == 200) {
