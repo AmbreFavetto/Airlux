@@ -1,7 +1,6 @@
 import database from '../config/db.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js';
-import device from '../models/device.model.js';
 import {v4 as uuidv4} from 'uuid';
 import deviceCreateSchema, {deviceUpdateSchema} from '../models/device.model.js';
 
@@ -17,6 +16,7 @@ const HttpStatus = {
 function setData(req) {
   const data = {
     name: req.body.name,
+    type: req.body.type,
     room_id: req.body.room_id
   };
   return data;
@@ -109,6 +109,8 @@ export const updateDevice = async (req, res) => {
   } 
 };
 
+let hasError = false;
+
 export const deleteDevice = async (req, res) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting Device`);
   try{
@@ -117,16 +119,32 @@ export const deleteDevice = async (req, res) => {
       return res.status(HttpStatus.BAD_REQUEST.code)
         .send(new Response(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'device_id provided does not exist'));
     }
-    await database.del(`devices:${req.params.id}`)
-    if(res) {
-      return res.status(HttpStatus.OK.code)
-       .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`));
-    } else{
-      return {
-      statusCode: HttpStatus.OK.code,
-      message: `Device deleted`
-      };
-    }
+    let scenariosIds = await database.keys('scenarios:*');
+    await Promise.all(scenariosIds.map(async id => {
+      const scenarioData = await database.hgetall(id);
+      let scenarioDataUpdate = scenarioData.device_id.split(",");
+      if(scenarioDataUpdate.indexOf(req.params.id) != -1) {
+        scenarioDataUpdate.splice(scenarioDataUpdate.indexOf(req.params.id), 1);
+        id = id.split(":")[1];
+        const scenarioRes = await updateScenario({params: {id: id}, body: {device_id: scenarioDataUpdate}, method: "UPDATE", originalUrl: `/scenario/${id}`})
+        if (scenarioRes.statusCode !== HttpStatus.OK.code) {
+          hasError = true;
+          return;
+        }
+      }
+    }));   
+    if(!hasError){
+      await database.del(`devices:${req.params.id}`)
+      if(res) {
+        return res.status(HttpStatus.OK.code)
+        .send(new Response(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`));
+      } else{
+        return {
+        statusCode: HttpStatus.OK.code,
+        message: `Device deleted`
+        };
+      }
+    }  
   } catch(error) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new Response(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
