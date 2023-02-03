@@ -10,4 +10,6 @@ const redis = new Redis({
   password: process.env.DB_PASSWORD,
 });
 
+
+
 export default redis;

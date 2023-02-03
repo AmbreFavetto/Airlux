@@ -26,10 +26,11 @@ services:
       DB_USER: 'admin'
       DB_PASSWORD: 'abc123'
       DB_NAME: airlux_local_DB
-      DB_CONNECTION_LIMIT: 20
-      SERVICE_TAGS: prod
-      SERVICE_NAME: nodeappservice
-      SERVER_PORT: 3000
+      DB_CLOUD_HOST: db_cloud
+      DB_CLOUD_PORT: 3306
+      DB_CLOUD_USER: 'admin'
+      DB_CLOUD_PASSWORD: 'letmein'
+      DB_CLOUD_NAME: airlux_cloud_db
     depends_on:
       - db_local
    

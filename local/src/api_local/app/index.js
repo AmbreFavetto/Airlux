@@ -1,7 +1,9 @@
 import express from 'express';
-import ip from 'ip';
 import dotenv from 'dotenv';
+import ip from 'ip';
 import cors from 'cors';
+import socketIO from 'socket.io';
+
 import routesBuilding from './routes/building.routes.js';
 import routesDevice from './routes/device.routes.js';
 import routesFloor from './routes/floor.routes.js';
@@ -19,7 +21,7 @@ app.use(express.json());
 
 //Building
 app.use('/building', routesBuilding);
-//Device
+// Device
 app.use('/device', routesDevice);
 //Floor
 app.use('/floor', routesFloor);
@@ -30,4 +32,18 @@ app.use('/user', routesUser);
 //Scenario
 app.use('/scenario', routesScenario);
 
-app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));
+const server = app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));
+const io = socketIO(server);
+
+//Building
+io.use('/building', routesBuilding);
+// Device
+io.use('/device', routesDevice);
+//Floor
+io.use('/floor', routesFloor);
+//Room
+io.use('/room', routesRoom);
+//User
+io.use('/user', routesUser);
+//Scenario
+io.use('/scenario', routesScenario);
