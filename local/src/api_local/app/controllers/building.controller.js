@@ -1,5 +1,5 @@
-import dbLocal from '../config/db_local.config';
-import dbCloud from '../config/db_cloud.config';
+import dbLocal from '../config/db_local.config.js';
+import dbCloud from '../config/db_cloud.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js'; 
 import buildingCreateSchema, {buildingUpdateSchema} from '../models/building.model.js';

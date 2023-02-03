@@ -1,4 +1,4 @@
-import database from '../config/db.config.js';
+import database from '../config/db_local.config.js';
 import Response from '../domain/response.js';
 import logger from '../util/logger.js'; 
 import floorCreateSchema, {floorUpdateSchema} from '../models/floor.model.js';
