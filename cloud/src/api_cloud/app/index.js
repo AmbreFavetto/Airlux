@@ -11,9 +11,12 @@ import HttpStatusUser from './controllers/user.controller.js';
 import HttpStatusTimeseries from './controllers/timeseries.controller.js';
 import routesBuilding from './routes/building.routes.js';
 import routesDevice from './routes/device.routes.js';
+import routesScenarioDevice from './routes/scenario_device.routes.js';
+import routesScenario from './routes/scenario.routes.js';
 import routesFloor from './routes/floor.routes.js';
 import routesRoom from './routes/room.routes.js';
 import routesUser from './routes/user.routes.js';
+import routesUserBuilding from './routes/user_building.routes.js';
 import routesTimeseries from './routes/timeseries.routes.js';
 import logger from './util/logger.js';
 
@@ -32,6 +35,14 @@ app.get('/building', (req, res) => res.send(new Response(HttpStatusBuilding.OK.c
 app.use('/device/', routesDevice);
 app.get('/device', (req, res) => res.send(new Response(HttpStatusDevice.OK.code, HttpStatusDevice.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
 
+//ScenarioDevice
+app.use('/scenario_device/', routesScenarioDevice);
+app.get('/scenario_device', (req, res) => res.send(new Response(HttpStatusScenarioDevice.OK.code, HttpStatusScenarioDevice.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
+
+//Scenario
+app.use('/scenario/', routesScenario);
+app.get('/scenario', (req, res) => res.send(new Response(HttpStatusScenario.OK.code, HttpStatusScenario.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
+
 //Floor
 app.use('/floor/', routesFloor);
 app.get('/floor', (req, res) => res.send(new Response(HttpStatusFloor.OK.code, HttpStatusFloor.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
@@ -43,6 +54,10 @@ app.get('/room', (req, res) => res.send(new Response(HttpStatusRoom.OK.code, Htt
 //User
 app.use('/user/', routesUser);
 app.get('/user', (req, res) => res.send(new Response(HttpStatusUser.OK.code, HttpStatusUser.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
+
+//UserBuilding
+app.use('/user_building/', routesUserBuilding);
+app.get('/user_building', (req, res) => res.send(new Response(HttpStatusUserBuilding.OK.code, HttpStatusUserBuilding.OK.status, 'Airlux cloud DB API, v1.0.0 - All Systems Go')));
 
 //Timesries
 app.use('/timeseries/', routesTimeseries);
