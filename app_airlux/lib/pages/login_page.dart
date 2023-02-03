@@ -12,7 +12,7 @@ class LoginPage extends StatelessWidget {
         elevation: 0,
         backgroundColor: Colors.white.withOpacity(0),
         leading: IconButton(
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_back,
             color: Colors.black,
             size: 30,
@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
         child: Column(
           children: [
             Container(
-              margin: EdgeInsets.symmetric(
+              margin: const EdgeInsets.symmetric(
                 vertical: 40,
                 horizontal: 30,
               ),
@@ -34,17 +34,17 @@ class LoginPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
-                      tag: 'cottage',
-                      child: Container(
-                        height: 160,
-                        child: Icon(
-                          Icons.cottage,
-                          color: kFonceyBlue,
-                          size: 130.0,
-                        ),
+                    tag: 'cottage',
+                    child: Container(
+                      height: 160,
+                      child: const Icon(
+                        Icons.cottage,
+                        color: kFonceyBlue,
+                        size: 130.0,
                       ),
                     ),
-                  DelayedAnimation(
+                  ),
+                  const DelayedAnimation(
                     delay: 50,
                     child: Text(
                       "Connexion",
@@ -55,39 +55,35 @@ class LoginPage extends StatelessWidget {
               ),
             ),
             LoginForm(),
-            SizedBox(height: 45),
+            const SizedBox(height: 45),
             DelayedAnimation(
               delay: 50,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  shape: StadiumBorder(),
-                  padding: EdgeInsets.symmetric(
+                  shape: const StadiumBorder(),
+                  padding: const EdgeInsets.symmetric(
                     horizontal: 125,
                     vertical: 13,
                   ),
                   backgroundColor: kFonceyBlue,
                 ),
-                child: Text('CONNEXION'),
+                child: const Text('CONNEXION'),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => HomePage(),
-                    ),
-                  );
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/home', (Route<dynamic> route) => false);
                 },
               ),
             ),
-            SizedBox(height: 90),
+            const SizedBox(height: 90),
             Align(
               alignment: Alignment.centerRight,
               child: Padding(
-                padding: EdgeInsets.only(right: 35),
+                padding: const EdgeInsets.only(right: 35),
                 child: TextButton(
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: DelayedAnimation(
+                  child: const DelayedAnimation(
                     delay: 100,
                     child: Text("PAS DE COMPTE ? INSCRIPTION",
                         style: TextStyle(color: kFonceyBlue)),
@@ -112,7 +108,7 @@ class _LoginFormState extends State<LoginForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(
+      margin: const EdgeInsets.symmetric(
         horizontal: 30,
       ),
       child: Column(
@@ -128,7 +124,7 @@ class _LoginFormState extends State<LoginForm> {
               ),
             ),
           ),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           DelayedAnimation(
             delay: 100,
             child: TextField(
@@ -139,7 +135,7 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 labelText: 'Mot de passe',
                 suffixIcon: IconButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.visibility,
                     color: Colors.black,
                   ),
