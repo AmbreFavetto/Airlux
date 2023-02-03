@@ -49,8 +49,7 @@ class DevicesPage extends StatelessWidget {
       ),
       floatingActionButton: AddButton(
           onTap: () {
-            Navigator.push(
-                context,
+            Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const BuildingsPage(),
                 ));

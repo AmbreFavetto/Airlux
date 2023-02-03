@@ -1,3 +1,4 @@
+import 'package:app_airlux/widget/hambugerMenu.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../shared/formInputText.dart';
@@ -51,8 +52,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                     FormBottomButton(
                       title: 'Retour',
                       onTap: () {
-                        Navigator.push(
-                            context,
+                        Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const BuildingsPage(),
                             ));
@@ -63,8 +63,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                       title: 'Sauvegarder',
                       onTap: () {
                         if (title.text.isNotEmpty){
-                          Navigator.push(
-                            context,
+                          Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) => const BuildingsPage()),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(

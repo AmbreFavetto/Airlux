@@ -1,4 +1,5 @@
 import 'package:app_airlux/buildings/buildings_page.dart';
+import 'package:app_airlux/widget/hambugerMenu.dart';
 import 'package:flutter/material.dart';
 import '../../constants.dart';
 import '../../shared/formBottomButton.dart';
@@ -40,8 +41,7 @@ class AddFloorPageState extends State<AddFloorPage> {
                     FormBottomButton(
                       title: 'Retour',
                       onTap: () {
-                        Navigator.push(
-                            context,
+                        Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (context) => const BuildingsPage(),
                             ));
@@ -52,8 +52,7 @@ class AddFloorPageState extends State<AddFloorPage> {
                       title: 'Sauvegarder',
                       onTap: () {
                         if (title.text.isNotEmpty){
-                          Navigator.push(
-                            context,
+                          Navigator.of(context).push(
                             MaterialPageRoute(builder: (context) => const BuildingsPage()),
                           );
                           ScaffoldMessenger.of(context).showSnackBar(

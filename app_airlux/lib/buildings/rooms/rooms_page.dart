@@ -37,10 +37,10 @@ class RoomsPage extends StatelessWidget {
                   return ObjectContainer(
                     onDelete: () => roomData.deleteRoom(room),
                     onEdit: () => {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const AddRoomPage()))
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddRoomPage()))
                     },
                     onSelect: () {
-                      Navigator.push(context, MaterialPageRoute(
+                      Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => DeviceData(),
@@ -63,8 +63,7 @@ class RoomsPage extends StatelessWidget {
       ),
       floatingActionButton: AddButton(
           onTap: () {
-            Navigator.push(
-                context,
+            Navigator.of(context).push(
                 MaterialPageRoute(
                   builder: (context) => const AddRoomPage(),
                 ));
