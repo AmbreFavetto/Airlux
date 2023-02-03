@@ -18,6 +18,7 @@ CREATE TABLE user (
   PRIMARY KEY (user_id)
 );
 
+
 CREATE TABLE user_building (
   id              BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id         BIGINT UNSIGNED,
