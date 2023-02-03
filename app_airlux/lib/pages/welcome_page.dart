@@ -59,12 +59,7 @@ class WelcomePage extends StatelessWidget {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginPage(),
-                          ),
-                        );
+                        Navigator.of(context).pushNamed('/login');
                       },
                       style: ElevatedButton.styleFrom(
                         shape: StadiumBorder(),
