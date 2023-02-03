@@ -14,6 +14,13 @@ class _DelayedAnimationState extends State<DelayedAnimation>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Offset> _animOffset;
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
