@@ -21,6 +21,18 @@ class AddBuildingPageState extends State<AddBuildingPage> {
       appBar: AppBar(
         backgroundColor: kFonceyBlue,
         title: const Text('Ajouter un bâtiment'),
+        actions: [
+          Hero(
+            tag: 'cottage',
+            child: Container(
+              margin: EdgeInsets.only(right: 15.0),
+              child: Icon(
+                Icons.cottage,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Form(
           key: _formKey,

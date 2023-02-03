@@ -1,5 +1,6 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/constants.dart';
+import 'package:app_airlux/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 import '../widget/delayed_animation.dart';
@@ -12,33 +13,26 @@ class WelcomePage extends StatelessWidget {
         automaticallyImplyLeading: false,
         elevation: 0,
         backgroundColor: Colors.white.withOpacity(0),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            color: Colors.black,
-            size: 30,
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             DelayedAnimation(
-              delay: 1500,
-              child: Container(
-                height: 280,
-                child: Icon(
-                  Icons.cottage,
-                  color: kFonceyBlue,
-                  size: 170.0,
+              delay: 750,
+              child: Hero(
+                tag: 'cottage',
+                child: Container(
+                  height: 280,
+                  child: Icon(
+                    Icons.cottage,
+                    color: kFonceyBlue,
+                    size: 170.0,
+                  ),
                 ),
               ),
             ),
             DelayedAnimation(
-              delay: 2500,
+              delay: 1000,
               child: Container(
                 margin: const EdgeInsets.symmetric(
                   vertical: 70,
@@ -48,16 +42,14 @@ class WelcomePage extends StatelessWidget {
                   children: [
                     Text(
                       "Bienvenue dans Airlux",
-                      style : TextStyle(
-                        fontSize: 20.0
-                      ),
+                      style: TextStyle(fontSize: 35.0, fontFamily: 'Satisfy'),
                     ),
                   ],
                 ),
               ),
             ),
             DelayedAnimation(
-              delay: 3500,
+              delay: 1250,
               child: Container(
                 margin: EdgeInsets.symmetric(
                   vertical: 45,
@@ -70,7 +62,7 @@ class WelcomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddBuildingPage(),
+                            builder: (context) => LoginPage(),
                           ),
                         );
                       },
