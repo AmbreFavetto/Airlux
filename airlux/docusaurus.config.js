@@ -95,6 +95,18 @@ const config = {
                 label: 'Premiers pas',
                 to: '/docs/intro',
               },
+              {
+                label: 'Bases de données',
+                to: '/docs/bd_cloud',
+              },
+              {
+                label: 'API',
+                to: '/docs/api_cloud',
+              },
+              {
+                label: 'Application',
+                to: '/docs/flutter/architecture',
+              },
             ],
           },
           {
