@@ -29,7 +29,7 @@ class ObjectContainer extends StatelessWidget {
                 left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
             alignment: Alignment.center,
             decoration: BoxDecoration(
-                color: kContainerBlue,
+                color: kOrange,
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: const [
                   BoxShadow(color: Colors.black26, offset: Offset(0, 2))

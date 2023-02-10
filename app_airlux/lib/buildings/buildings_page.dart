@@ -1,24 +1,33 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
-import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
-import 'package:app_airlux/widget/hambugerMenu.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../constants.dart';
 import '../models/buildings/floors/floor_data.dart';
+import '../widget/bottomNavigation.dart';
 
 class BuildingsPage extends StatelessWidget {
   const BuildingsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: HamburgerMenuWidget(),
+      bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
-        backgroundColor: kFonceyBlue,
+        backgroundColor: kDarkPurple,
         title: const Text('Batiments'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const AddBuildingPage(),
+              ));
+            },
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -32,7 +41,8 @@ class BuildingsPage extends StatelessWidget {
                   return ObjectContainer(
                     onDelete: () => buildingData.deleteBuilding(building),
                     onEdit: () => {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddBuildingPage()))
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const AddBuildingPage()))
                     },
                     onSelect: () {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -40,7 +50,9 @@ class BuildingsPage extends StatelessWidget {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => FloorData(),
                             child: MaterialApp(
-                              home: FloorsPage(roomId: building.id?.toInt(), buildingName: building.name.toString()),
+                              home: FloorsPage(
+                                  roomId: building.id?.toInt(),
+                                  buildingName: building.name.toString()),
                             ),
                           );
                         },
@@ -56,14 +68,6 @@ class BuildingsPage extends StatelessWidget {
           )
         ],
       ),
-      floatingActionButton: AddButton(
-          onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AddBuildingPage(),
-                ));
-          },
-          title: 'Ajouter un batiment'),
     );
   }
 }

@@ -6,20 +6,16 @@ import 'package:http/http.dart' as http;
 import 'package:app_airlux/models/scenarios/scenario_data.dart';
 import '../buildings/buildings_page.dart';
 import '../constants.dart';
-import '../shared/formBottomButton.dart';
 import '../shared/objectContainer.dart';
-import '../widget/hambugerMenu.dart';
-import 'add_scenario.dart';
-
-var str;
+import '../widget/bottomNavigation.dart';
 
 class AllScenariosPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: HamburgerMenuWidget(),
+      bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
-        backgroundColor: kFonceyBlue,
+        backgroundColor: kDarkPurple,
         title: const Text('Mes Scenarios'),
       ),
       body: Column(
@@ -33,7 +29,7 @@ class AllScenariosPage extends StatelessWidget {
                         return ObjectContainer(
                           onDelete: () => scenarioData.deleteScenario(scenario),
                           onEdit: () => {
-                            Navigator.push(context, MaterialPageRoute(builder: (context) => const AddScenarioPage()))
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => const AddBuildingPage()))
                           },
                           onSelect: () {},
                           title: scenario.name.toString(),

@@ -1,6 +1,5 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/constants.dart';
-import 'package:app_airlux/pages/login_page.dart';
 import 'package:flutter/material.dart';
 
 import '../widget/delayed_animation.dart';
@@ -20,13 +19,11 @@ class WelcomePage extends StatelessWidget {
             DelayedAnimation(
               delay: 750,
               child: Hero(
-                tag: 'cottage',
+                tag: 'logo',
                 child: Container(
-                  height: 280,
-                  child: Icon(
-                    Icons.cottage,
-                    color: kFonceyBlue,
-                    size: 170.0,
+                  height: 250,
+                  child: Image(
+                    image: AssetImage('images/logo.png'),
                   ),
                 ),
               ),
@@ -64,7 +61,7 @@ class WelcomePage extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         shape: StadiumBorder(),
                         padding: EdgeInsets.all(13),
-                        backgroundColor: kFonceyBlue,
+                        backgroundColor: kDarkPurple,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -98,7 +95,7 @@ class WelcomePage extends StatelessWidget {
                           Text(
                             'INSCRIPTION',
                             style: TextStyle(
-                              color: kFonceyBlue,
+                              color: kDarkPurple,
                             ),
                           )
                         ],

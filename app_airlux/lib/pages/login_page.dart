@@ -33,16 +33,15 @@ class LoginPage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Hero(
-                    tag: 'cottage',
+                    tag: 'logo',
                     child: Container(
-                      height: 160,
-                      child: const Icon(
-                        Icons.cottage,
-                        color: kFonceyBlue,
-                        size: 130.0,
+                      height: 120,
+                      child: Image(
+                        image: AssetImage('images/logo.png'),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 25),
                   const DelayedAnimation(
                     delay: 50,
                     child: Text(
@@ -64,7 +63,7 @@ class LoginPage extends StatelessWidget {
                     horizontal: 125,
                     vertical: 13,
                   ),
-                  backgroundColor: kFonceyBlue,
+                  backgroundColor: kDarkPurple,
                 ),
                 child: const Text('CONNEXION'),
                 onPressed: () {
@@ -85,7 +84,7 @@ class LoginPage extends StatelessWidget {
                   child: const DelayedAnimation(
                     delay: 100,
                     child: Text("PAS DE COMPTE ? INSCRIPTION",
-                        style: TextStyle(color: kFonceyBlue)),
+                        style: TextStyle(color: kDarkPurple)),
                   ),
                 ),
               ),

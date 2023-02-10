@@ -17,7 +17,7 @@ class AddButton extends StatelessWidget {
     return FloatingActionButton(
       onPressed: onTap,
       tooltip: title,
-      backgroundColor: kFonceyBlue,
+      backgroundColor: kDarkPurple,
       child: const Icon(Icons.add),
     );
   }

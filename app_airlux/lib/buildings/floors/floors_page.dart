@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../constants.dart';
 import '../../models/buildings/floors/floor_data.dart';
-import '../../widget/hambugerMenu.dart';
+import '../../widget/bottomNavigation.dart';
 import 'addFloor_page.dart';
 import '../rooms/rooms_page.dart';
 
@@ -18,17 +18,27 @@ class FloorsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: HamburgerMenuWidget(),
+      bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
-        backgroundColor: kFonceyBlue,
+        backgroundColor: kDarkPurple,
         title: const Text('Étages'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const AddFloorPage(),
+              ));
+            },
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 15),
           Text('Nom du bâtiment : $buildingName',
-              style: const TextStyle(color: kFonceyBlue)),
+              style: const TextStyle(color: kDarkPurple)),
           const SizedBox(height: 15),
           Expanded(
             child: Consumer<FloorData>(
@@ -63,14 +73,6 @@ class FloorsPage extends StatelessWidget {
           )
         ],
       ),
-      floatingActionButton: AddButton(
-          onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AddFloorPage(),
-                ));
-          },
-          title: 'Ajouter un étage'),
     );
   }
 }

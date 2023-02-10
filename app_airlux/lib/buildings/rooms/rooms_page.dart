@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants.dart';
 import '../../devices/devices_page.dart';
-import '../../widget/hambugerMenu.dart';
+import '../../widget/bottomNavigation.dart';
 import 'addRoom_page.dart';
 
 class RoomsPage extends StatelessWidget {
@@ -16,17 +16,27 @@ class RoomsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: HamburgerMenuWidget(),
+      bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
-        backgroundColor: kFonceyBlue,
+        backgroundColor: kDarkPurple,
         title: const Text('Salles'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const AddRoomPage(),
+              ));
+            },
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const SizedBox(height: 15),
           Text('Numéro étage : $floorNumber',
-              style: const TextStyle(color: kFonceyBlue)),
+              style: const TextStyle(color: kDarkPurple)),
           const SizedBox(height: 15),
           Expanded(
             child: Consumer<RoomData>(
@@ -61,14 +71,6 @@ class RoomsPage extends StatelessWidget {
           )
         ],
       ),
-      floatingActionButton: AddButton(
-          onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AddRoomPage(),
-                ));
-          },
-          title: 'Ajouter une salle'),
     );
   }
 }

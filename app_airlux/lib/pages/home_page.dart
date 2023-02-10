@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
-
-import '../widget/hambugerMenu.dart';
+import '../widget/bottomNavigation.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -9,26 +8,29 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        drawer: HamburgerMenuWidget(),
-        appBar: AppBar(
-          backgroundColor: kFonceyBlue,
-          title: const Text('Accueil'),
-          actions: [
-            Hero(
-              tag: 'cottage',
-              child: Container(
-                margin: EdgeInsets.only(right: 15.0),
-                child: Icon(
-                  Icons.cottage,
-                  color: Colors.white,
-                ),
+      bottomNavigationBar: BottomNavigation(),
+      appBar: AppBar(
+        backgroundColor: kDarkPurple,
+        title: const Text('Accueil'),
+        actions: [
+          Hero(
+            tag: 'cottage',
+            child: Container(
+              margin: const EdgeInsets.only(right: 15.0),
+              child: const Icon(
+                Icons.cottage,
+                color: Colors.white,
               ),
             ),
-          ],
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text('Bienvenue user')],
-        ));
+          ),
+        ],
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Text('Bienvenue user'),
+        ],
+      ),
+    );
   }
 }
