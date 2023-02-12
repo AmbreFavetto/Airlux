@@ -7,28 +7,12 @@ import 'package:provider/provider.dart';
 
 import '../constants.dart';
 import '../models/buildings/floors/floor_data.dart';
-import '../widget/bottomNavigation.dart';
 
 class BuildingsPage extends StatelessWidget {
   const BuildingsPage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigation(),
-      appBar: AppBar(
-        backgroundColor: kDarkPurple,
-        title: const Text('Batiments'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const AddBuildingPage(),
-              ));
-            },
-          ),
-        ],
-      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

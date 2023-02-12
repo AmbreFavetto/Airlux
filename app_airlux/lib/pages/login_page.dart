@@ -68,7 +68,7 @@ class LoginPage extends StatelessWidget {
                 child: const Text('CONNEXION'),
                 onPressed: () {
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/home', (Route<dynamic> route) => false);
+                      '/mainPage', (Route<dynamic> route) => false);
                 },
               ),
             ),
