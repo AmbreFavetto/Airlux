@@ -22,8 +22,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
   late Widget actionWidget = Hero(
     tag: 'cottage',
     child: Container(
-      margin: EdgeInsets.only(right: 15.0),
-      child: Icon(
+      margin: const EdgeInsets.only(right: 15.0),
+      child: const Icon(
         Icons.cottage,
         color: Colors.white,
       ),
@@ -79,8 +79,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
                       : actionWidget = Hero(
                           tag: 'cottage',
                           child: Container(
-                            margin: EdgeInsets.only(right: 15.0),
-                            child: Icon(
+                            margin: const EdgeInsets.only(right: 15.0),
+                            child: const Icon(
                               Icons.cottage,
                               color: Colors.white,
                             ),
@@ -149,7 +149,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
         body: SafeArea(
           top: true,
           child: (currentIndex == 0) //Home
-              ? HomePage()
+              ? const HomePage()
               : (currentIndex == 1) //Bâtiments
                   ? ChangeNotifierProvider(
                       create: (BuildContext context) => BuildingData(),
@@ -160,13 +160,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   : (currentIndex == 2) //Scénarios
                       ? ChangeNotifierProvider(
                           create: (BuildContext context) => ScenarioData(),
-                          child: MaterialApp(
+                          child: const MaterialApp(
                             home: AllScenariosPage(),
                           ),
                         )
                       : (currentIndex == 3) //Profil
-                          ? AddBuildingPage()
-                          : HomePage(), //Else
+                          ? const AddBuildingPage()
+                          : const HomePage(), //Else
         ));
   }
 }

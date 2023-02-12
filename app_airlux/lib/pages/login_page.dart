@@ -4,6 +4,8 @@ import '../constants.dart';
 import '../widget/delayed_animation.dart';
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +38,7 @@ class LoginPage extends StatelessWidget {
                     tag: 'logo',
                     child: Container(
                       height: 120,
-                      child: Image(
+                      child: const Image(
                         image: AssetImage('images/logo.png'),
                       ),
                     ),

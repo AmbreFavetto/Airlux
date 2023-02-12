@@ -1,13 +1,12 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:http/http.dart' as http;
 import 'package:app_airlux/models/scenarios/scenario_data.dart';
-import '../buildings/buildings_page.dart';
-import '../constants.dart';
 import '../shared/objectContainer.dart';
 
 class AllScenariosPage extends StatelessWidget {
+  const AllScenariosPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

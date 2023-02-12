@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import '../widget/delayed_animation.dart';
 
 class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +38,7 @@ class WelcomePage extends StatelessWidget {
                   horizontal: 30,
                 ),
                 child: Column(
-                  children: [
+                  children: const [
                     Text(
                       "Bienvenue dans Airlux",
                       style: TextStyle(fontSize: 35.0, fontFamily: 'Satisfy'),
@@ -48,7 +50,7 @@ class WelcomePage extends StatelessWidget {
             DelayedAnimation(
               delay: 1250,
               child: Container(
-                margin: EdgeInsets.symmetric(
+                margin: const EdgeInsets.symmetric(
                   vertical: 45,
                   horizontal: 40,
                 ),
@@ -59,13 +61,13 @@ class WelcomePage extends StatelessWidget {
                         Navigator.of(context).pushNamed('/login');
                       },
                       style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                        padding: EdgeInsets.all(13),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(13),
                         backgroundColor: kDarkPurple,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           SizedBox(width: 10),
                           Text(
                             'CONNEXION',
@@ -73,24 +75,24 @@ class WelcomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddBuildingPage(),
+                            builder: (context) => const AddBuildingPage(),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                        padding: EdgeInsets.all(13),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(13),
                         backgroundColor: Colors.white24,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           SizedBox(width: 10),
                           Text(
                             'INSCRIPTION',
@@ -101,7 +103,7 @@ class WelcomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

@@ -25,8 +25,8 @@ class AddBuildingPageState extends State<AddBuildingPage> {
           Hero(
             tag: 'cottage',
             child: Container(
-              margin: EdgeInsets.only(right: 15.0),
-              child: Icon(
+              margin: const EdgeInsets.only(right: 15.0),
+              child: const Icon(
                 Icons.cottage,
                 color: Colors.white,
               ),

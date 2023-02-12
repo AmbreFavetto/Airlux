@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants.dart';
 import '../../devices/devices_page.dart';
-import '../../widget/bottomNavigation.dart';
 import 'addRoom_page.dart';
 
 class RoomsPage extends StatelessWidget {
@@ -15,7 +14,6 @@ class RoomsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigation(),
       appBar: AppBar(
         backgroundColor: kDarkPurple,
         title: const Text('Salles'),

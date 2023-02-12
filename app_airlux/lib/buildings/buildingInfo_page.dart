@@ -11,7 +11,7 @@ class BuildingInfoPage extends StatelessWidget {
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Text('Informations du bâtiment')],
+          children: const [Text('Informations du bâtiment')],
         ));
   }
 }

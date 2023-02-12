@@ -4,8 +4,6 @@ import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import '../constants.dart';
 import '../models/buildings/floors/floor_data.dart';
 
 class BuildingsPage extends StatelessWidget {
