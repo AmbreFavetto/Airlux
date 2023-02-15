@@ -1,18 +1,41 @@
 import 'package:app_airlux/models/buildings/rooms/room_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
+import 'package:app_airlux/shared/sockets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../constants.dart';
 import '../../models/buildings/floors/floor_data.dart';
 import 'addFloor_page.dart';
 import '../rooms/rooms_page.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class FloorsPage extends StatelessWidget {
+class FloorsPage extends StatefulWidget {
   const FloorsPage(
       {super.key, required this.roomId, required this.buildingName});
   final int? roomId;
   final String buildingName;
+
+  @override
+  State<FloorsPage> createState() => _FloorsPageState();
+}
+
+class _FloorsPageState extends State<FloorsPage> {
+
+  late IO.Socket socket;
+
+  void initState() {
+    super.initState();
+    socket = initSocket();
+    connectSocket(socket);
+    Provider.of<FloorData>(context, listen: false).getFloorsByBuildingId(widget.roomId);
+  }
+
+  @override
+  void dispose() {
+    socket.disconnect();
+    socket.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +79,7 @@ class FloorsPage extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 15),
-          Text('Nom du bâtiment : $buildingName',
+          Text('Nom du bâtiment : ${widget.buildingName}',
               style: const TextStyle(color: kDarkPurple)),
           const SizedBox(height: 15),
           Expanded(
@@ -64,7 +87,6 @@ class FloorsPage extends StatelessWidget {
               builder: (context, floorData, child) => ListView.builder(
                 itemBuilder: (context, index) {
                   final floor = floorData.floors[index];
-                  floorData.getFloorsByBuildingId(roomId);
                   return ObjectContainer(
                     onDelete: () => floorData.deleteFloor(floor),
                     onEdit: () => {

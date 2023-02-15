@@ -1,4 +1,6 @@
 import express from 'express';
+import { Server } from 'socket.io';
+import { createServer } from 'http';
 import ip from 'ip';
 import dotenv from 'dotenv';
 import cors from 'cors';
@@ -20,12 +22,22 @@ import routesUserBuilding from './routes/user_building.routes.js';
 import routesTimeseries from './routes/timeseries.routes.js';
 import logger from './util/logger.js';
 
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 dotenv.config();
 const PORT = 3000;
 const app = express();
+const server = createServer(app);
+const socketio = new Server(server);
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
 
 //Building
 app.use('/building/', routesBuilding);
@@ -66,5 +78,11 @@ app.get('/timeseries', (req, res) => res.send(new Response(HttpStatusTimeseries.
 app.all('*', (req, res) => res.status(HttpStatusUser.NOT_FOUND.code)
   .send(new Response(HttpStatusUser.NOT_FOUND.code, HttpStatusUser.NOT_FOUND.status, 'Route does not exist on the server')));
 
-
-app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));
+socketio.on('connection', (socket) => {
+  console.log('a user is connecting');
+  socket.on('msg', (data) => {
+    socket.emit('test', "en reponse, Coucou");
+    console.log(data);   
+  });
+});
+server.listen(PORT, () => console.log("Server is running on port " + server.address().address + " " + server.address().port))

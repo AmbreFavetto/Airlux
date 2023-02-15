@@ -2,12 +2,36 @@ import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
+import 'package:app_airlux/shared/sockets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/buildings/floors/floor_data.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-class BuildingsPage extends StatelessWidget {
+class BuildingsPage extends StatefulWidget {
   const BuildingsPage({super.key});
+
+  @override
+  State<BuildingsPage> createState() => _BuildingsPageState();
+}
+
+class _BuildingsPageState extends State<BuildingsPage> {
+  late IO.Socket socket;
+
+  void initState() {
+    super.initState();
+    socket = initSocket();
+    connectSocket(socket);
+    Provider.of<BuildingData>(context, listen: false).getAllBuildings();
+  }
+
+  @override
+  void dispose() {
+    socket.disconnect();
+    socket.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +43,6 @@ class BuildingsPage extends StatelessWidget {
               builder: (context, buildingData, child) => ListView.builder(
                 itemBuilder: (context, index) {
                   final building = buildingData.buildings[index];
-                  buildingData.getAllBuildings();
                   return ObjectContainer(
                     onDelete: () => buildingData.deleteBuilding(building),
                     onEdit: () => {
