@@ -16,6 +16,8 @@ class AllScenariosPage extends StatefulWidget {
 
 class AllScenariosPageState extends State<AllScenariosPage> {
   late IO.Socket socket;
+  bool socketState = false;
+
   @override
   void initState() {
     super.initState();
@@ -65,3 +67,5 @@ class AllScenariosPageState extends State<AllScenariosPage> {
     );
   }
 }
+
+
