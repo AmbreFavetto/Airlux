@@ -9,6 +9,7 @@ RUN npm install cors
 RUN npm install pino
 RUN npm install mysql
 RUN npm install pino-pretty
+RUN npm install socket.io
 RUN npm install ws
 #CMD tail -f /dev/null
 CMD ["npm", "run", "start:prod"]

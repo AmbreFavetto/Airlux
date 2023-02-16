@@ -5,7 +5,7 @@ class Scenario {
 
 
   Scenario.fromJson(Map<String, dynamic> json) {
-    id = json['building_id'];
+    id = json['scenario_id'];
     name = json['name'];
   }
 

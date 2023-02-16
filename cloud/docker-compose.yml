@@ -1,6 +1,6 @@
 services:
   db_cloud:
-    image: mysql:8.0 #mysql/mysql_server
+    image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - ./src/db_cloud/initdb:/var/lib/mysql

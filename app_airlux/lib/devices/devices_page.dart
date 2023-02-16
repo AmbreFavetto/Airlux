@@ -1,10 +1,8 @@
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
-import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../constants.dart';
 
 class DevicesPage extends StatelessWidget {
@@ -15,8 +13,18 @@ class DevicesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: kFonceyBlue,
+        backgroundColor: kDarkPurple,
         title: const Text('Devices'),
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const BuildingsPage(),
+              ));
+            },
+          ),
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -47,14 +55,6 @@ class DevicesPage extends StatelessWidget {
           )
         ],
       ),
-      floatingActionButton: AddButton(
-          onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const BuildingsPage(),
-                ));
-          },
-          title: 'Ajouter un device'),
     );
   }
 }

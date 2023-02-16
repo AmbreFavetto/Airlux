@@ -1,10 +1,7 @@
 import 'package:app_airlux/buildings/buildings_page.dart';
-import 'package:app_airlux/widget/hambugerMenu.dart';
 import 'package:flutter/material.dart';
-import '../../constants.dart';
 import '../../shared/formBottomButton.dart';
 import '../../shared/formInputText.dart';
-import 'floors_page.dart';
 
 class AddFloorPage extends StatefulWidget {
   const AddFloorPage({super.key});
@@ -20,10 +17,10 @@ class AddFloorPageState extends State<AddFloorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kFonceyBlue,
+      /*appBar: AppBar(
+        backgroundColor: kDarkPurple,
         title: const Text('Ajouter un étage'),
-      ),
+      ),*/
       body: Form(
           key: _formKey,
           child: Column(

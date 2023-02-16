@@ -1,11 +1,11 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/constants.dart';
-import 'package:app_airlux/pages/login_page.dart';
 import 'package:flutter/material.dart';
-
 import '../widget/delayed_animation.dart';
 
 class WelcomePage extends StatelessWidget {
+  const WelcomePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,13 +20,11 @@ class WelcomePage extends StatelessWidget {
             DelayedAnimation(
               delay: 750,
               child: Hero(
-                tag: 'cottage',
+                tag: 'logo',
                 child: Container(
-                  height: 280,
-                  child: Icon(
-                    Icons.cottage,
-                    color: kFonceyBlue,
-                    size: 170.0,
+                  height: 250,
+                  child: Image(
+                    image: AssetImage('images/logo.png'),
                   ),
                 ),
               ),
@@ -39,7 +37,7 @@ class WelcomePage extends StatelessWidget {
                   horizontal: 30,
                 ),
                 child: Column(
-                  children: [
+                  children: const [
                     Text(
                       "Bienvenue dans Airlux",
                       style: TextStyle(fontSize: 35.0, fontFamily: 'Satisfy'),
@@ -51,7 +49,7 @@ class WelcomePage extends StatelessWidget {
             DelayedAnimation(
               delay: 1250,
               child: Container(
-                margin: EdgeInsets.symmetric(
+                margin: const EdgeInsets.symmetric(
                   vertical: 45,
                   horizontal: 40,
                 ),
@@ -62,13 +60,13 @@ class WelcomePage extends StatelessWidget {
                         Navigator.of(context).pushNamed('/login');
                       },
                       style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                        padding: EdgeInsets.all(13),
-                        backgroundColor: kFonceyBlue,
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(13),
+                        backgroundColor: kDarkPurple,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           SizedBox(width: 10),
                           Text(
                             'CONNEXION',
@@ -76,35 +74,35 @@ class WelcomePage extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AddBuildingPage(),
+                            builder: (context) => const AddBuildingPage(),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        shape: StadiumBorder(),
-                        padding: EdgeInsets.all(13),
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(13),
                         backgroundColor: Colors.white24,
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           SizedBox(width: 10),
                           Text(
                             'INSCRIPTION',
                             style: TextStyle(
-                              color: kFonceyBlue,
+                              color: kDarkPurple,
                             ),
                           )
                         ],
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                   ],
                 ),
               ),

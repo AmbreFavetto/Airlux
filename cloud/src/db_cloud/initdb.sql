@@ -117,13 +117,16 @@ INSERT INTO device(name, room_id, type) VALUES ("Interupteur", 1, "actuator");
 INSERT INTO device(name, room_id, type) VALUES ("Interupteur lumiere", 2, "actuator");
 INSERT INTO device(name, room_id, type) VALUES ("Capteur lumiere", 2, "actuator");
 INSERT INTO device(name, room_id, type) VALUES ("Capteur temperature", 3, "actuator");
-INSERT INTO device(name, room_id, type) VALUES ("Lumière plafond", 3, "actuator");
-INSERT INTO device(name, room_id, type) VALUES ("Lumière table", 3, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Lumiere plafond", 3, "actuator");
+INSERT INTO device(name, room_id, type) VALUES ("Lumiere table", 3, "actuator");
 INSERT INTO device(name, room_id, type) VALUES ("Capteur murale", 3, "actuator");
 
-INSERT INTO scenario(name) VALUES ("Eteindre toutes les lumières");
-INSERT INTO scenario(name) VALUES ("Allumer toutes les lumières");
+INSERT INTO scenario(name) VALUES ("Eteindre lumieres salon");
+INSERT INTO scenario(name) VALUES ("Allumer toutes lumiere salon");
 INSERT INTO scenario(name) VALUES ("Baisser les volets");
+INSERT INTO scenario(name) VALUES ("Lever volets de la maison");
+INSERT INTO scenario(name) VALUES ("Eteindre etage");
+INSERT INTO scenario(name) VALUES ("Eteindre maison");
 
 INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (1, 6, false);
 INSERT INTO scenario_device(scenario_id, device_id, enable_device) VALUES (1, 7, false);

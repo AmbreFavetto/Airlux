@@ -1,19 +1,21 @@
 import 'dart:convert';
-
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:flutter/cupertino.dart';
 import 'scenario.dart';
 import 'package:http/http.dart' as http;
 
 class ScenarioData extends ChangeNotifier {
-  var str;
 
+  late IO.Socket _socket;
+
+  var str;
   List<Scenario> scenarios = [Scenario(name: 'firstScenario', id: 0)];
 
   void getAllScenarios() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/building'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:3000/scenario'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
-      final List<dynamic> results = str['data']['buildings'];
+      final List<dynamic> results = str['data']['scenarios'];
       scenarios = results.map((e) => Scenario.fromJson(e)).toList();
       notifyListeners();
     } else {
@@ -22,7 +24,7 @@ class ScenarioData extends ChangeNotifier {
   }
 
   void deleteScenario(Scenario scenario) async {
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3000/building/' + scenario.id.toString()));
+    final response = await http.delete(Uri.parse('http://10.0.2.2:3000/scenario/' + scenario.id.toString()));
     if (response.statusCode == 200) {
       getAllScenarios();
     } else {

@@ -1,4 +1,3 @@
-import 'package:app_airlux/widget/hambugerMenu.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../shared/formInputText.dart';
@@ -20,14 +19,14 @@ class AddBuildingPageState extends State<AddBuildingPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: kFonceyBlue,
+        backgroundColor: kDarkPurple,
         title: const Text('Ajouter un bâtiment'),
         actions: [
           Hero(
             tag: 'cottage',
             child: Container(
-              margin: EdgeInsets.only(right: 15.0),
-              child: Icon(
+              margin: const EdgeInsets.only(right: 15.0),
+              child: const Icon(
                 Icons.cottage,
                 color: Colors.white,
               ),
