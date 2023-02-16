@@ -4,5 +4,16 @@
 			"path": ".."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.formatOnPaste": true,
+		"editor.formatOnSave": true,
+		"prettier.tabWidth": 4,
+		"arduino.path": "C:\\Program Files (x86)\\Arduino",
+		"files.associations": {
+			"*.tcc": "cpp",
+			"type_traits": "cpp",
+			"ostream": "cpp",
+			"string": "cpp"
+		}
+	}
 }
