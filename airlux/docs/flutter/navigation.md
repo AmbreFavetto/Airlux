@@ -1,8 +1,7 @@
 ---
 title: Navigation
----
+--- 
 
-## Navigation dans l'application  
+Pour naviguer dans l'application nous utiliserons un widget de type bottom navigation bar avec un librairie appelée _Bubble bottom bar_.
 
-Pour naviguer dans l'application nous utiliserons ce qu'on appelle un hamburger menu construit avec un Drawer _(widget flutter)_.  
-La navigation se fait à travers des routes, toutes déclarées dans le fichier _main.dart_. 
+https://pub.dev/packages/bubble_bottom_bar

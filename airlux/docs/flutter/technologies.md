@@ -2,8 +2,6 @@
 title: Technologies
 ---
 
-## Technologies 
-
 Le développement est fait en premier temps seulement pour les périphériques android.  
 L'IDE utilisé sera Android Studio dolphin. Le framework utilisé est Flutter, développé par Google. Nous utiliserons également le SDK Flutter qui sera ajouté à Android Studio.  
 

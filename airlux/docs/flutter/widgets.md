@@ -1,8 +1,6 @@
 ---
 title: Les widgets 
 ---
-
-## Les widgets 
 ### Add button
 Nom widget : **AddButton**  
 Fichier : ./shared/addButton.dart  

@@ -1,8 +1,6 @@
 ---
 title: Arborescence
----
-
-## Arborescence du projet flutter  
+--- 
 
 L'application se trouve dans le dossier "app_airlux".  
 Toutes les différentes pages se trouvent dans le dossier "lib", situé à la racine.  

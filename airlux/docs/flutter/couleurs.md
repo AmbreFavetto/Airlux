@@ -2,15 +2,15 @@
 title: Les couleurs
 ---
 
-## Les couleurs de l'application  
-
 Vous trouverez ici les différentes couleurs utilisées dans l'application.  
+Toutes sont reprises du logo Airlux.  
 
 | Nom couleur  | Code HEX       |
 | -------------|:-------------: |
-| Bleu clair   | 0xFFe3ecf4     |
-| Bleu         | 0xFF9fc5e8     |
-| Bleu foncé   | 0XFF003b71     |
-| Bleu des container | 0xFF006991 |
+| Rose clair   | 0xFFFD919E     |
+| Rose         | 0xFFE8647C     |
+| Violet   | 0xFF4F4674     |
+| Bleu clair | 0xFFDFE6FE |
+| Orange | 0xFFF3C38C |
 
 Ces couleurs sont définies dans le fichier _constants.dart_, dans le dossier _lib_.  

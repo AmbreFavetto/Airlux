@@ -2,8 +2,6 @@
 title: Architecture
 ---
 
-## Architecture
-
 L'application mobile permet à son utilisateur de nombreuses actions telles que :
 - Création de compte
 - Connexion en bluetooth

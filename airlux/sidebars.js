@@ -43,6 +43,8 @@ const sidebars = {
 				"flutter/couleurs",
 				"flutter/navigation",
 				"flutter/widgets",
+				"flutter/connexion",
+				"flutter/http"
 			],
 		},
 		{
