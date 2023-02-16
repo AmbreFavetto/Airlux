@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app_airlux/models/scenarios/scenario_data.dart';
 import '../shared/objectContainer.dart';
-import 'add_scenario.dart';
+// import 'add_scenario.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:app_airlux/shared/sockets.dart';
 
@@ -45,10 +45,10 @@ class AllScenariosPageState extends State<AllScenariosPage> {
                     return ObjectContainer(
                       onDelete: () => scenarioData.deleteScenario(scenario),
                       onEdit: () => {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const AddScenarioPage()))
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) => const AddScenarioPage()))
                       },
                       onSelect: () {},
                       title: scenario.name.toString(),
