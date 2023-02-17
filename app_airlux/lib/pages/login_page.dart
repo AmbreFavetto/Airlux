@@ -47,7 +47,11 @@ class LoginPage extends StatelessWidget {
                     delay: 50,
                     child: Text(
                       "Connexion",
-                      style: TextStyle(fontSize: 35.0, fontFamily: 'Satisfy'),
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontFamily: 'Satisfy',
+                        color: kDarkPurple,
+                      ),
                     ),
                   )
                 ],

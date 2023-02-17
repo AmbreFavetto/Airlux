@@ -99,3 +99,6 @@ flutter:
     - family: Satisfy
       fonts:
         - asset: fonts/Satisfy-Regular.ttf
+    - family: Abel
+      fonts:
+        - asset: fonts/Abel-Regular.ttf

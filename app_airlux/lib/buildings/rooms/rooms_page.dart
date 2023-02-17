@@ -3,10 +3,14 @@ import 'package:app_airlux/models/buildings/rooms/room_data.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:app_airlux/shared/sockets.dart';
+import 'package:app_airlux/shared/titlePageStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../constants.dart';
 import '../../devices/devices_page.dart';
+import '../../shared/addButton.dart';
+import '../../shared/textInformationStyle.dart';
+import '../../shared/titleFormStyle.dart';
 import 'addRoom_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -40,27 +44,13 @@ class _RoomsPageState extends State<RoomsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: kDarkPurple,
-        title: const Text('Salles'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => const AddRoomPage(),
-              ));
-            },
-          ),
-        ],
-      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          const SizedBox(width: 10.0, height: 20.0),
+          const TitlePageStyle(text: "Salles"),
           const SizedBox(height: 15),
-          Text('Numéro étage : ${widget.floorNumber}',
-              style: const TextStyle(color: kDarkPurple)),
-          const SizedBox(height: 15),
+          TextInformationStyle(text: 'Numéro étage : ${widget.floorNumber}'),
           Expanded(
             child: Consumer<RoomData>(
               builder: (context, roomData, child) => ListView.builder(
@@ -93,6 +83,14 @@ class _RoomsPageState extends State<RoomsPage> {
           )
         ],
       ),
+      floatingActionButton: AddButton(
+          onTap: () {
+            Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AddRoomPage(),
+                ));
+          },
+          title: 'Ajouter une salle'),
     );
   }
 }

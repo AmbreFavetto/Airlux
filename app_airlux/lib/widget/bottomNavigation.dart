@@ -57,35 +57,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
                           : (index == 3) //Profil
                               ? currentTitle = 'Profil'
                               : currentTitle = 'Accueil';
-
-              (index == 1) //Bâtiments
-                  ? actionWidget = IconButton(
-                      icon: const Icon(Icons.add),
-                      onPressed: () {
-                        Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const AddBuildingPage(),
-                        ));
-                      },
-                    )
-                  : (index == 2) //Scénarios
-                      ? actionWidget = IconButton(
-                          icon: const Icon(Icons.add),
-                          onPressed: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (context) => const AddBuildingPage(),
-                            ));
-                          },
-                        )
-                      : actionWidget = Hero(
-                          tag: 'cottage',
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 15.0),
-                            child: const Icon(
-                              Icons.cottage,
-                              color: Colors.white,
-                            ),
-                          ),
-                        );
             });
           },
           items: const [
@@ -143,7 +114,17 @@ class _BottomNavigationState extends State<BottomNavigation> {
           backgroundColor: kDarkPurple,
           title: Text(currentTitle),
           actions: [
-            actionWidget,
+            Hero(
+              tag: 'cottage',
+              child: Container(
+                margin: const EdgeInsets.only(right: 15.0),
+                child: const Image(
+                  image: AssetImage('images/logo.png'),
+                  width: 35,
+                  //height: 20,
+                ),
+              ),
+            ),
           ],
         ),
         body: SafeArea(

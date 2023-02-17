@@ -23,7 +23,7 @@ class WelcomePage extends StatelessWidget {
                 tag: 'logo',
                 child: Container(
                   height: 250,
-                  child: Image(
+                  child: const Image(
                     image: AssetImage('images/logo.png'),
                   ),
                 ),
@@ -40,7 +40,11 @@ class WelcomePage extends StatelessWidget {
                   children: const [
                     Text(
                       "Bienvenue dans Airlux",
-                      style: TextStyle(fontSize: 35.0, fontFamily: 'Satisfy'),
+                      style: TextStyle(
+                        fontSize: 35.0,
+                        fontFamily: 'Satisfy',
+                        color: kDarkPurple,
+                      ),
                     ),
                   ],
                 ),

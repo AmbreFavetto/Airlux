@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import '../models/buildings/floors/floor_data.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
+import '../shared/addButton.dart';
+
 class BuildingsPage extends StatefulWidget {
   const BuildingsPage({super.key});
 
@@ -50,6 +52,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                           builder: (context) => const AddBuildingPage()))
                     },
                     onSelect: () {
+                      // print(ModalRoute.of(context)?.settings);
                       Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) {
                           return ChangeNotifierProvider(
@@ -73,6 +76,14 @@ class _BuildingsPageState extends State<BuildingsPage> {
           )
         ],
       ),
+      floatingActionButton: AddButton(
+          onTap: () {
+            Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AddBuildingPage(),
+                ));
+          },
+          title: 'Ajouter un batiment'),
     );
   }
 }
