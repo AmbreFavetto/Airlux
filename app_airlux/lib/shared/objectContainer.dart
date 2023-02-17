@@ -20,13 +20,16 @@ class ObjectContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       children: [
         InkWell(
           onTap: onSelect,
           child: Container(
             margin: const EdgeInsets.only(
                 left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
+            //padding: const EdgeInsets.all(15.0),
+            height: 150,
+            width: 150,
             alignment: Alignment.center,
             decoration: BoxDecoration(
                 color: kOrange,
@@ -34,31 +37,47 @@ class ObjectContainer extends StatelessWidget {
                 boxShadow: const [
                   BoxShadow(color: Colors.black26, offset: Offset(0, 2))
                 ]),
-            height: 60,
-            child: Row(
+            child: Column(
               children: [
-                const SizedBox(width: 15),
-                SizedBox(
-                    width: 250,
-                    child: Text(
-                      title,
-                      textAlign: TextAlign.left,
-                      style: const TextStyle(color: Colors.white),
-                    )),
-                IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.white),
-                  tooltip: 'Modifier',
-                  onPressed: onEdit,
+                const SizedBox(height: 7),
+                const Icon(
+                  Icons.business,
+                  color: Colors.black26,
+                  size: 50.0,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.white),
-                  tooltip: 'Supprimer',
-                  onPressed: onDelete,
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: 120,
+                  child: Text(
+                    title,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 17.0,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.edit, color: Colors.black26),
+                      tooltip: 'Modifier',
+                      onPressed: onEdit,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.delete_outline,
+                          color: Colors.black26),
+                      tooltip: 'Supprimer',
+                      onPressed: onDelete,
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-        ),
+        )
       ],
     );
   }
