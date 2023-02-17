@@ -18,16 +18,10 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> {
   int currentIndex = 0;
-  String currentTitle = 'Accueil';
-  late Widget actionWidget = Hero(
-    tag: 'cottage',
-    child: Container(
-      margin: const EdgeInsets.only(right: 15.0),
-      child: const Icon(
-        Icons.cottage,
-        color: Colors.white,
-      ),
-    ),
+  String currentTitle = '';
+  late Widget actionWidget = const Icon(
+    Icons.cottage,
+    color: kDarkPurple,
   );
 
   @override
@@ -49,14 +43,31 @@ class _BottomNavigationState extends State<BottomNavigation> {
             setState(() {
               currentIndex = index!;
               (index == 0) //Home
-                  ? currentTitle = 'Accueil'
+                  ? currentTitle = ''
                   : (index == 1) //Bâtiments
                       ? currentTitle = 'Bâtiments'
                       : (index == 2) //Scénarios
                           ? currentTitle = 'Scénarios'
                           : (index == 3) //Profil
                               ? currentTitle = 'Profil'
-                              : currentTitle = 'Accueil';
+                              : currentTitle = '';
+
+              (index == 0) //Home
+                  ? actionWidget = Icon(
+                      Icons.cottage,
+                      color: kDarkPurple,
+                    )
+                  : actionWidget = Hero(
+                      tag: 'logo',
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 15.0),
+                        child: const Image(
+                          image: AssetImage('images/logo.png'),
+                          width: 35,
+                          //height: 20,
+                        ),
+                      ),
+                    );
             });
           },
           items: const [
@@ -111,21 +122,10 @@ class _BottomNavigationState extends State<BottomNavigation> {
           ],
         ),
         appBar: AppBar(
+          elevation: 0,
           backgroundColor: kDarkPurple,
           title: Text(currentTitle),
-          actions: [
-            Hero(
-              tag: 'cottage',
-              child: Container(
-                margin: const EdgeInsets.only(right: 15.0),
-                child: const Image(
-                  image: AssetImage('images/logo.png'),
-                  width: 35,
-                  //height: 20,
-                ),
-              ),
-            ),
-          ],
+          actions: [actionWidget],
         ),
         body: SafeArea(
           top: true,
