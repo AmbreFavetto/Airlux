@@ -6,17 +6,17 @@ services:
       - ./src/db_cloud/initdb:/var/lib/mysql
       - ./src/db_cloud/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
     environment:
-      MYSQL_DATABASE: airlux_cloud_db #http://localhost:3000/airlux_cloud_db
+      MYSQL_DATABASE: airlux_cloud_db
       MYSQL_USER: admin
       MYSQL_PASSWORD: letmein
-      MYSQL_ROOT_PASSWORD: letmein #use : mysql -u root -p        password : letmein
+      MYSQL_ROOT_PASSWORD: letmein
       SERVICE_TAGS: prod
       SERVICE_NAME: db_cloud
     networks:
       - cloud_network
 
   api_cloud:
-    build: 
+    build:
       context: ./
       dockerfile: ./docker_files/api_cloud/Dockerfile
     volumes:
@@ -30,8 +30,6 @@ services:
       DB_PASSWORD: 'letmein'
       DB_NAME: airlux_cloud_db
       DB_CONNECTION_LIMIT: 20
-      SERVICE_TAGS: prod
-      SERVICE_NAME: nodeappservice
       SERVER_PORT: 3000
     depends_on:
       - db_cloud
@@ -40,4 +38,5 @@ services:
 
 networks:
   cloud_network:
+
 

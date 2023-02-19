@@ -2,35 +2,32 @@
   "name": "api-mysql",
   "version": "1.0.0",
   "description": "Node.js Restful CRUD API with Node.js, Express and MySQL",
-  "type": "module",
-  "main": "servers.js",
   "scripts": {
-    "airlux-cloud-db": "node ./app/index.js",
-    "start:prod": "NODE_ENV=prod node app/index.js & node app/server.cjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon ./app/index.ts"
   },
-  "keywords": [
-    "nodejs",
-    "express",
-    "mysql",
-    "restapi"
-  ],
-  "author": "Valentin",
-  "license": "ISC",
   "dependencies": {
+    "@types/uuid": "^9.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
-    "http": "^0.0.1-security",
     "ip": "^1.1.8",
-    "joi": "^17.7.0",
-    "mysql": "^2.18.1",
-    "mysql-server": "^0.0.5",
-    "pino": "^8.7.0",
-    "pino-pretty": "^9.1.1",
-    "socket.io": "^4.5.4",
-    "socketio": "^1.0.0",
-    "ws": "^8.11.0",
-    "uuid": "^9.0.0"
+    "joi": "^17.7.1",
+    "node": "^19.6.0",
+    "pino": "^8.10.0",
+    "pino-pretty": "^9.2.0",
+    "typescript": "^4.9.5",
+    "uuid": "^9.0.0",
+    "ws": "^8.12.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/ip": "^1.1.0",
+    "@types/mysql": "^2.15.21",
+    "@types/node": "^18.13.0",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.7.0",
+    "tsconfig-paths": "^4.1.2"
   }
 }
