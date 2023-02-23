@@ -21,6 +21,7 @@ services:
       dockerfile: ./docker_files/api_cloud/Dockerfile
     volumes:
       - ./src/api_cloud:/usr/app
+      - /usr/app/node_modules
     ports:
       - 3000:3000
     environment:
