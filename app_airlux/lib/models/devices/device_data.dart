@@ -21,7 +21,7 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  void getDevicesByRoomId(int? id) async{
+  void getDevicesByRoomId(String id) async{
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/device'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);

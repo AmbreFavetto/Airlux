@@ -17,23 +17,23 @@ class ScenariosPage extends StatefulWidget {
 }
 
 class ScenariosPageState extends State<ScenariosPage> {
-  late IO.Socket socket;
+  //late IO.Socket socket;
   bool socketState = false;
 
   @override
   void initState() {
     super.initState();
-    socket = initSocket();
-    connectSocket(socket);
+    //socket = initSocket();
+    //connectSocket(socket);
     Provider.of<ScenarioData>(context, listen: false).getAllScenarios();
   }
 
   @override
-  void dispose() {
-    socket.disconnect();
-    socket.dispose();
-    super.dispose();
-  }
+  //void dispose() {
+  //  socket.disconnect();
+  //  socket.dispose();
+  //  super.dispose();
+  //}
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class ScenariosPageState extends State<ScenariosPage> {
                       },
                       onSelect: () {},
                       title: scenario.name.toString(),
-                      id: scenario.id?.toInt(),
+                      id: scenario.id.toString(),
                     );
                   },
                   itemCount: scenarioData.scenarios.length,

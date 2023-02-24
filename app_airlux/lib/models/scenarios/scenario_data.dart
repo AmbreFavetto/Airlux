@@ -9,7 +9,7 @@ class ScenarioData extends ChangeNotifier {
   late IO.Socket _socket;
 
   var str;
-  List<Scenario> scenarios = [Scenario(name: 'firstScenario', id: 0)];
+  List<Scenario> scenarios = [Scenario(name: 'firstScenario', id: '0')];
 
   void getAllScenarios() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/scenario'));
@@ -21,6 +21,18 @@ class ScenarioData extends ChangeNotifier {
     } else {
       throw Exception('Failed to load data');
     }
+  }
+
+  Future<http.Response> addScenario(String name) {
+    return http.post(
+      Uri.parse('https://10.0.2.2:3000/scenario/'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': name
+      }),
+    );
   }
 
   void deleteScenario(Scenario scenario) async {

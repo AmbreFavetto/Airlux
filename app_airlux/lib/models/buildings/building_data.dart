@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 class BuildingData extends ChangeNotifier {
   var str;
 
-  List<Building> buildings = [Building(name: 'firstBuilding', id: 1), Building(name: 'secondBuilding', id: 2)];
-  Building building = Building(name: 'building', id: 1);
+  List<Building> buildings = [Building(name: 'firstBuilding', id: '1'), Building(name: 'secondBuilding', id: '2')];
+  Building building = Building(name: 'building', id: '1');
 
   void getAllBuildings() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/building'));

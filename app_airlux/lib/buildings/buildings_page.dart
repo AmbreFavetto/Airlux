@@ -18,21 +18,21 @@ class BuildingsPage extends StatefulWidget {
 }
 
 class _BuildingsPageState extends State<BuildingsPage> {
-  late IO.Socket socket;
+  //late IO.Socket socket;
 
   void initState() {
-    super.initState();
-    socket = initSocket();
-    connectSocket(socket);
+  //  super.initState();
+  //  socket = initSocket();
+  //  connectSocket(socket);
     Provider.of<BuildingData>(context, listen: false).getAllBuildings();
   }
 
-  @override
-  void dispose() {
-    socket.disconnect();
-    socket.dispose();
-    super.dispose();
-  }
+  //@override
+  //void dispose() {
+  //  socket.disconnect();
+  //  socket.dispose();
+  //  super.dispose();
+  //}
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                             create: (BuildContext context) => FloorData(),
                             child: MaterialApp(
                               home: FloorsPage(
-                                  roomId: building.id?.toInt(),
+                                  roomId: building.id.toString(),
                                   buildingName: building.name.toString()),
                             ),
                           );
@@ -67,7 +67,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                       ));
                     },
                     title: building.name.toString(),
-                    id: building.id?.toInt(),
+                    id: building.id.toString(),
                   );
                 },
                 itemCount: buildingData.buildings.length,

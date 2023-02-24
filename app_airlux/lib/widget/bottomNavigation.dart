@@ -1,7 +1,7 @@
 import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/pages/home_page.dart';
-import 'package:app_airlux/scenarios/all_scenarios.dart';
+import 'package:app_airlux/scenarios/scenarios_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:app_airlux/buildings/addBuilding_page.dart';
@@ -142,7 +142,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                       ? ChangeNotifierProvider(
                           create: (BuildContext context) => ScenarioData(),
                           child: const MaterialApp(
-                            home: AllScenariosPage(),
+                            home: ScenariosPage(),
                           ),
                         )
                       : (currentIndex == 3) //Profil

@@ -1,7 +1,7 @@
 class Scenario {
   Scenario({this.name,  this.id});
   String? name;
-  int? id = null;
+  String? id = null;
 
 
   Scenario.fromJson(Map<String, dynamic> json) {

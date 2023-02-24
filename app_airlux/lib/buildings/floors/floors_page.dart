@@ -16,7 +16,7 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class FloorsPage extends StatefulWidget {
   const FloorsPage(
       {super.key, required this.roomId, required this.buildingName});
-  final int? roomId;
+  final String roomId;
   final String buildingName;
 
   @override
@@ -69,15 +69,15 @@ class _FloorsPageState extends State<FloorsPage> {
                             create: (BuildContext context) => RoomData(),
                             child: MaterialApp(
                               home: RoomsPage(
-                                  floorId: floor.id?.toInt(),
-                                  floorNumber: floor.number?.toInt()),
+                                  floorId: floor.id.toString(),
+                                  floorNumber: floor.number.toString()),
                             ),
                           );
                         },
                       ));
                     },
                     title: floor.number.toString(),
-                    id: floor.id?.toInt(),
+                    id: floor.id.toString(),
                   );
                 },
                 itemCount: floorData.floors.length,

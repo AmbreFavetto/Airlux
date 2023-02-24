@@ -7,8 +7,8 @@ import '../constants.dart';
 
 class DevicesPage extends StatelessWidget {
   const DevicesPage({super.key, required this.id, required this.name});
-  final int? id;
-  final String? name;
+  final String id;
+  final String name;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,7 +46,7 @@ class DevicesPage extends StatelessWidget {
 
                     },
                     title: device.name.toString(),
-                    id: device.id?.toInt(),
+                    id: device.id.toString(),
                   );
                 },
                 itemCount: deviceData.devices.length,

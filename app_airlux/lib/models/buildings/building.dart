@@ -1,7 +1,7 @@
 class Building {
   Building({this.name,  this.id});
   String? name;
-  int? id = null;
+  String? id = null;
 
   Building.fromJson(Map<String, dynamic> json) {
     id = json['building_id'];

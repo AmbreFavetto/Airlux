@@ -23,7 +23,7 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  void getRoomsByFloorId(int? id) async{
+  void getRoomsByFloorId(String id) async{
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/room'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);

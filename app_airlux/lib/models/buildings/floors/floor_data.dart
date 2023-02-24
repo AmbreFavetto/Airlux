@@ -22,7 +22,7 @@ class FloorData extends ChangeNotifier {
     }
   }
 
-  void getFloorsByBuildingId(int? id) async{
+  void getFloorsByBuildingId(String id) async{
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/floor'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);

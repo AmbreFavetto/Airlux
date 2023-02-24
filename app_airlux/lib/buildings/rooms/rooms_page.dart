@@ -16,8 +16,8 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class RoomsPage extends StatefulWidget {
   const RoomsPage({super.key, required this.floorId, required this.floorNumber});
-  final int? floorId;
-  final int? floorNumber;
+  final String floorId;
+  final String floorNumber;
 
   @override
   State<RoomsPage> createState() => _RoomsPageState();
@@ -25,21 +25,21 @@ class RoomsPage extends StatefulWidget {
 
 class _RoomsPageState extends State<RoomsPage> {
 
-  late IO.Socket socket;
+  //late IO.Socket socket;
 
   void initState() {
-    super.initState();
-    socket = initSocket();
-    connectSocket(socket);
+    //super.initState();
+    //socket = initSocket();
+    //connectSocket(socket);
     Provider.of<RoomData>(context, listen: false).getRoomsByFloorId(widget.floorId);
   }
 
-  @override
-  void dispose() {
-    socket.disconnect();
-    socket.dispose();
-    super.dispose();
-  }
+  //@override
+  //void dispose() {
+  //  socket.disconnect();
+  //  socket.dispose();
+  //  super.dispose();
+  //}
 
   @override
   Widget build(BuildContext context) {
@@ -67,14 +67,14 @@ class _RoomsPageState extends State<RoomsPage> {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => DeviceData(),
                             child: MaterialApp(
-                              home: DevicesPage(id: room.id?.toInt(), name: room.name),
+                              home: DevicesPage(id: room.id.toString(), name: room.name.toString()),
                             ),
                           );
                         },
                       ));
                     },
                     title: room.name.toString(),
-                    id: room.id?.toInt(),
+                    id: room.id.toString(),
                   );
                 },
                 itemCount: roomData.rooms.length,

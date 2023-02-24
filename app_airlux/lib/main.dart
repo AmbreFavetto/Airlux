@@ -6,7 +6,7 @@ import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/pages/home_page.dart';
 import 'package:app_airlux/pages/login_page.dart';
 import 'package:app_airlux/pages/welcome_page.dart';
-import 'package:app_airlux/scenarios/all_scenarios.dart';
+import 'package:app_airlux/scenarios/scenarios_page.dart';
 import 'package:app_airlux/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
         '/scenarios': (BuildContext context) => ChangeNotifierProvider(
           create: (BuildContext context) => ScenarioData(),
           child: MaterialApp(
-            home: AllScenariosPage(),
+            home: ScenariosPage(),
           ),
         ),
       },
