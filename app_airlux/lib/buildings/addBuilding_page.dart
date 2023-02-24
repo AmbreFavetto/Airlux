@@ -38,16 +38,6 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         FormBottomButton(
-                          title: 'Retour',
-                          onTap: () {
-                            Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const BuildingsPage(),
-                                ));
-                          },
-                        ),
-                        const SizedBox(width: 10.0, height: 0.0),
-                        FormBottomButton(
                           title: 'Sauvegarder',
                           onTap: () {
                             if (title.text.isNotEmpty){

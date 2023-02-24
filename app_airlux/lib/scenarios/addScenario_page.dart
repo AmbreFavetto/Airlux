@@ -38,17 +38,7 @@ class AddScenarioPageState extends State<AddScenarioPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         FormBottomButton(
-                          title: 'Retour',
-                          onTap: () {
-                            Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => const ScenariosPage(),
-                                ));
-                          },
-                        ),
-                        const SizedBox(width: 10.0, height: 0.0),
-                        FormBottomButton(
-                          title: 'Suivant',
+                          title: 'Sauvegarder',
                           onTap: () async {
                             if (name.text.isNotEmpty){
                               //http.Response response = await addScenario("Bob", "engineer");
