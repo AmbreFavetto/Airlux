@@ -18,8 +18,8 @@ class ScenariosPage extends StatefulWidget {
 
 class ScenariosPageState extends State<ScenariosPage> {
   //late IO.Socket socket;
-  bool socketState = false;
-
+  //bool socketState = false;
+  late Future<bool> response;
   @override
   void initState() {
     super.initState();
@@ -47,7 +47,10 @@ class ScenariosPageState extends State<ScenariosPage> {
                   itemBuilder: (context, index) {
                     final scenario = scenarioData.scenarios[index];
                     return ObjectContainer(
-                      onDelete: () => scenarioData.deleteScenario(scenario),
+                      onDelete: () async => {
+                        response = scenarioData.deleteScenario(scenario),
+                        if (await response) setState(() {Provider.of<ScenarioData>(context, listen: false).getAllScenarios();})
+                      },
                       onEdit: () => {
                         //TODO
                       },
@@ -65,13 +68,11 @@ class ScenariosPageState extends State<ScenariosPage> {
       ),
       floatingActionButton: AddButton(
           onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AddScenarioPage(),
-                ));
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const AddScenarioPage(),
+            ));
           },
           title: 'Ajouter un batiment'),
     );
-
   }
 }

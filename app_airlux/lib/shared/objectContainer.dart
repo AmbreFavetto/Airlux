@@ -60,26 +60,28 @@ class ObjectContainer extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Expanded(child:
-                    Padding(
-                      padding: EdgeInsets.only(top: 2.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.black26),
-                            tooltip: 'Modifier',
-                            onPressed: onEdit,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete_outline,
-                                color: Colors.black26),
-                            tooltip: 'Supprimer',
-                            onPressed: onDelete,
-                          ),
-                        ],
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 2.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon:
+                                  const Icon(Icons.edit, color: Colors.black26),
+                              tooltip: 'Modifier',
+                              onPressed: onEdit,
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline,
+                                  color: Colors.black26),
+                              tooltip: 'Supprimer',
+                              onPressed: onDelete,
+                            ),
+                          ],
+                        ),
                       ),
-                    ),)
+                    )
                   ],
                 ),
               )),
