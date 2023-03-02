@@ -43,24 +43,32 @@ class ScenariosPageState extends State<ScenariosPage> {
           Expanded(
             child: Consumer<ScenarioData>(
               builder: (context, scenarioData, child) {
-                return ListView.builder(
-                  itemBuilder: (context, index) {
-                    final scenario = scenarioData.scenarios[index];
-                    return ObjectContainer(
-                      onDelete: () async => {
-                        response = scenarioData.deleteScenario(scenario),
-                        if (await response) setState(() {Provider.of<ScenarioData>(context, listen: false).getAllScenarios();})
-                      },
-                      onEdit: () => {
-                        //TODO
-                      },
-                      onSelect: () {},
-                      title: scenario.name.toString(),
-                      id: scenario.id.toString(),
-                    );
-                  },
-                  itemCount: scenarioData.scenarios.length,
-                );
+                return GridView.builder(
+                  shrinkWrap: true,
+                    padding: const EdgeInsets.all(20),
+                    itemCount: scenarioData.scenarios.length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                    ),
+                    itemBuilder: (context, index) {
+                      final scenario = scenarioData.scenarios[index];
+                      return ObjectContainer(
+                        onDelete: () async => {
+                          response = scenarioData.deleteScenario(scenario),
+                          if (await response)
+                            setState(() {
+                              Provider.of<ScenarioData>(context, listen: false)
+                                  .getAllScenarios();
+                            })
+                        },
+                        onEdit: () => {
+                          //TODO
+                        },
+                        onSelect: () {},
+                        title: scenario.name.toString(),
+                        id: scenario.id.toString(),
+                      );
+                    });
               },
             ),
           )
