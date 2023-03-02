@@ -53,6 +53,7 @@ class ScenariosPageState extends State<ScenariosPage> {
                     itemBuilder: (context, index) {
                       final scenario = scenarioData.scenarios[index];
                       return ObjectContainer(
+                        icon: Icons.movie,
                         onDelete: () async => {
                           response = scenarioData.deleteScenario(scenario),
                           if (await response)

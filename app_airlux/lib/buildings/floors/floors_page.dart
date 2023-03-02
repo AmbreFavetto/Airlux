@@ -4,11 +4,9 @@ import 'package:app_airlux/shared/sockets.dart';
 import 'package:app_airlux/shared/titlePageStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../constants.dart';
 import '../../models/buildings/floors/floor_data.dart';
 import '../../shared/addButton.dart';
 import '../../shared/textInformationStyle.dart';
-import '../../shared/titleFormStyle.dart';
 import 'addFloor_page.dart';
 import '../rooms/rooms_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -53,10 +51,17 @@ class _FloorsPageState extends State<FloorsPage> {
           TextInformationStyle(text: 'Nom du bâtiment : ${widget.buildingName}'),
           Expanded(
             child: Consumer<FloorData>(
-              builder: (context, floorData, child) => ListView.builder(
+              builder: (context, floorData, child) => GridView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(20),
+                itemCount: floorData.floors.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
                 itemBuilder: (context, index) {
                   final floor = floorData.floors[index];
                   return ObjectContainer(
+                    icon: Icons.stairs_outlined,
                     onDelete: () => floorData.deleteFloor(floor),
                     onEdit: () => {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -80,7 +85,6 @@ class _FloorsPageState extends State<FloorsPage> {
                     id: floor.id.toString(),
                   );
                 },
-                itemCount: floorData.floors.length,
               ),
             ),
           )

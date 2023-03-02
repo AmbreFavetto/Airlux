@@ -9,7 +9,7 @@ class ScenarioData extends ChangeNotifier {
   late IO.Socket _socket;
 
   var str;
-  List<Scenario> scenarios = [Scenario(name: 'firstScenario', id: '0')];
+  List<Scenario> scenarios = [Scenario(name: 'firstScenario', id: '0'), Scenario(name: 'secondScenario', id: '1'), Scenario(name: 'thirdScenario', id: '2')];
 
   void getAllScenarios() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/scenario'));

@@ -2,7 +2,6 @@ import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
-import 'package:app_airlux/shared/sockets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/buildings/floors/floor_data.dart';
@@ -42,10 +41,17 @@ class _BuildingsPageState extends State<BuildingsPage> {
         children: [
           Expanded(
             child: Consumer<BuildingData>(
-              builder: (context, buildingData, child) => ListView.builder(
+              builder: (context, buildingData, child) => GridView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(20),
+                itemCount: buildingData.buildings.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
                 itemBuilder: (context, index) {
                   final building = buildingData.buildings[index];
                   return ObjectContainer(
+                    icon: Icons.business,
                     onDelete: () => buildingData.deleteBuilding(building),
                     onEdit: () => {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -70,7 +76,6 @@ class _BuildingsPageState extends State<BuildingsPage> {
                     id: building.id.toString(),
                   );
                 },
-                itemCount: buildingData.buildings.length,
               ),
             ),
           )

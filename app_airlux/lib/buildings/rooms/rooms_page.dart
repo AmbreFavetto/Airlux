@@ -1,16 +1,12 @@
-import 'package:app_airlux/models/buildings/floors/floor_data.dart';
 import 'package:app_airlux/models/buildings/rooms/room_data.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
-import 'package:app_airlux/shared/sockets.dart';
 import 'package:app_airlux/shared/titlePageStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../constants.dart';
 import '../../devices/devices_page.dart';
 import '../../shared/addButton.dart';
 import '../../shared/textInformationStyle.dart';
-import '../../shared/titleFormStyle.dart';
 import 'addRoom_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
@@ -53,10 +49,17 @@ class _RoomsPageState extends State<RoomsPage> {
           TextInformationStyle(text: 'Numéro étage : ${widget.floorNumber}'),
           Expanded(
             child: Consumer<RoomData>(
-              builder: (context, roomData, child) => ListView.builder(
+              builder: (context, roomData, child) => GridView.builder(
+                shrinkWrap: true,
+                padding: const EdgeInsets.all(20),
+                itemCount: roomData.rooms.length,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
                 itemBuilder: (context, index) {
                   final room = roomData.rooms[index];
                   return ObjectContainer(
+                    icon: Icons.chair,
                     onDelete: () => roomData.deleteRoom(room),
                     onEdit: () => {
                       Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddRoomPage()))
@@ -77,7 +80,6 @@ class _RoomsPageState extends State<RoomsPage> {
                     id: room.id.toString(),
                   );
                 },
-                itemCount: roomData.rooms.length,
               ),
             ),
           )

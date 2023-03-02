@@ -9,7 +9,7 @@ class ObjectContainer extends StatelessWidget {
       required this.onEdit,
       required this.onSelect,
       required this.title,
-      required this.id})
+      required this.id, required this.icon})
       : super(key: key);
 
   final void Function() onDelete;
@@ -17,6 +17,7 @@ class ObjectContainer extends StatelessWidget {
   final void Function() onSelect;
   final String title;
   final String id;
+  final IconData icon;
 
   @override
   Widget build(BuildContext context) {
@@ -26,8 +27,8 @@ class ObjectContainer extends StatelessWidget {
           onTap: onSelect,
           child: Container(
               margin: const EdgeInsets.only(
-                  left: 10.0, right: 10.0, top: 5.0, bottom: 5.0),
-              //padding: const EdgeInsets.all(15.0),
+                  left: 15.0, right: 10.0, top: 5.0, bottom: 5.0),
+              padding: const EdgeInsets.all(10.0),
               height: 150,
               width: 150,
               alignment: Alignment.center,
@@ -41,12 +42,12 @@ class ObjectContainer extends StatelessWidget {
                 padding: EdgeInsets.only(bottom: 1),
                 child: Column(
                   children: [
-                    const Padding(
+                     Padding(
                       padding: EdgeInsets.only(top: 8),
                       child: Icon(
-                        Icons.business,
+                        icon,
                         color: Colors.black26,
-                        size: 50.0,
+                          size: 50.0,
                       ),
                     ),
                     Padding(
