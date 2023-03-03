@@ -30,7 +30,7 @@ app.use('/scenario-sous-scenario/', routesScenarioSousScenario);
 //Scenario
 app.use('/scenario/', routesScenario);
 //SousScenario
-app.use('/sousScenario/', routesSousScenario);
+app.use('/sous-scenario/', routesSousScenario);
 //Floor
 app.use('/floor/', routesFloor);
 //Room
