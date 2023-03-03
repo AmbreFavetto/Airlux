@@ -1,5 +1,4 @@
 import 'package:app_airlux/pages/login_page.dart';
-import 'package:app_airlux/shared/formInputText.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../widget/delayed_animation.dart';
@@ -39,13 +38,13 @@ class _SignupPageState extends State<SignupPage> {
                   Hero(
                     tag: 'logo',
                     child: Container(
-                      height: 80,
+                      height: 50,
                       child: const Image(
                         image: AssetImage('images/logo.png'),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 15),
                   const DelayedAnimation(
                     delay: 50,
                     child: Text(
@@ -57,7 +56,7 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 25),
+                  const SizedBox(height: 15),
                 ],
               ),
             ),
@@ -134,6 +133,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               controller: name,
               decoration: InputDecoration(
                 labelText: 'Nom',
@@ -147,6 +147,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               controller: forename,
               decoration: InputDecoration(
                 labelText: 'Prénom',
@@ -160,6 +161,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               controller: mail,
               decoration: InputDecoration(
                 labelText: 'Adresse mail',
@@ -173,6 +175,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               controller: password,
               obscureText: _obscureText,
               decoration: InputDecoration(
@@ -203,6 +206,7 @@ class _LoginFormState extends State<LoginForm> {
               //     return 'Les mots de passes ne correspondent pas.';
               //   }
               // },
+              cursorColor: kDarkPurple,
               controller: confirmPassword,
               obscureText: _obscureText,
               decoration: InputDecoration(

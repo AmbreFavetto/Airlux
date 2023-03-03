@@ -125,6 +125,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               decoration: InputDecoration(
                 labelText: 'Adresse mail',
                 labelStyle: TextStyle(
@@ -137,6 +138,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               obscureText: _obscureText,
               decoration: InputDecoration(
                 labelStyle: TextStyle(
