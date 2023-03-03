@@ -8,5 +8,29 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended"
-  ]
+  ],
+  "rules": {
+    "no-console": "warn",
+    "no-empty": [
+      "error",
+      {
+        "allowEmptyCatch": true
+      }
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none"
+      }
+    ],
+    "prefer-const": "error",
+    "no-shadow": [
+      "error",
+      {
+        "allow": [
+          "err"
+        ]
+      }
+    ]
+  }
 }

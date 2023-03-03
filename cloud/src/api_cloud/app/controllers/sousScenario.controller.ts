@@ -31,13 +31,13 @@ export const createSousScenario = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    var results: Array<any> = await processData(QUERY.SELECT_DEVICE, (req.body.device_id))
+    const results: Array<any> = await processData(QUERY.SELECT_DEVICE, (req.body.device_id))
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.body.device_id} was not found`));
     }
     const id = uuidv4();
-    var data = setData(req, id);
+    const data = setData(req, id);
     database.query(QUERY.CREATE_SOUS_SCENARIO, Object.values(data));
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `sousScenario created`));
@@ -50,7 +50,7 @@ export const createSousScenario = async (req: Request, res: Response) => {
 export const getSousScenarios = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching sousScenarios`);
   try {
-    var results: Array<any> = await processDatas(QUERY.SELECT_SOUS_SCENARIOS)
+    const results: Array<any> = await processDatas(QUERY.SELECT_SOUS_SCENARIOS)
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No sousScenarios found`));
@@ -67,7 +67,7 @@ export const getSousScenarios = async (req: Request, res: Response) => {
 export const getSousScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching sousScenario`);
   try {
-    var results: Array<any> = await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id);
+    const results: Array<any> = await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `sousScenario by id ${req.params.id} was not found`));
@@ -93,12 +93,12 @@ export const updateSousScenario = async (req: Request, res: Response) => {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `device_id by id ${req.body.device_id} was not found`));
     }
-    var results: Array<any> = await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id)
+    const results: Array<any> = await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id)
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `sousScenario by id ${req.params.id} was not found`));
     }
-    var data = setUpdateData(req, results);
+    const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating sousScenario`);
     database.query(QUERY.UPDATE_SOUS_SCENARIO, [...Object.values(data), req.params.id]);
     return res.status(HttpStatus.OK.code)
@@ -112,7 +112,7 @@ export const updateSousScenario = async (req: Request, res: Response) => {
 export const deleteSousScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting sousScenario`);
   try {
-    var results = await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id);
+    const results = await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `sousScenario by id ${req.params.id} was not found`));

@@ -32,19 +32,19 @@ export const createUserBuilding = async (req: Request, res: Response) => {
   }
   try {
     // check if user_id exists
-    var results: Array<any> = await processData(QUERY.SELECT_USER, req.body.user_id);
+    let results: Array<any> = await processData(QUERY.SELECT_USER, req.body.user_id);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `user by id ${req.body.user_id} was not found`));
     }
     // check if building_id exists
-    var results: Array<any> = await processData(QUERY.SELECT_BUILDING, req.body.building_id);
+    results = await processData(QUERY.SELECT_BUILDING, req.body.building_id);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `building by id ${req.body.building_id} was not found`));
     }
     const id = uuidv4();
-    var data = setData(req, id);
+    const data = setData(req, id);
     database.query(QUERY.CREATE_USER_BUILDING, Object.values(data));
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `userBuilding created`));
@@ -57,7 +57,7 @@ export const createUserBuilding = async (req: Request, res: Response) => {
 export const getUsersBuildings = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching usersBuildings`);
   try {
-    var results: Array<any> = await processDatas(QUERY.SELECT_USERS_BUILDINGS);
+    const results: Array<any> = await processDatas(QUERY.SELECT_USERS_BUILDINGS);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No usersBuildings found`));
@@ -74,7 +74,7 @@ export const getUsersBuildings = async (req: Request, res: Response) => {
 export const getUserBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching userBuilding`);
   try {
-    var results: Array<any> = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
+    const results: Array<any> = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `userBuilding by id ${req.params.id} was not found`));
@@ -104,17 +104,17 @@ export const updateUserBuilding = async (req: Request, res: Response) => {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building_id by id ${req.body.building_id} was not found`));
     }
-    var results: Array<any> = await processData(QUERY.SELECT_USER_BUILDING, req.params.id)
+    const results: Array<any> = await processData(QUERY.SELECT_USER_BUILDING, req.params.id)
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User_building by id ${req.params.id} was not found`));
     }
-    var data = setUpdateData(req, results);
+    const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating userBuilding`);
     database.query(QUERY.UPDATE_USER_BUILDING, [...Object.values(data), req.params.id]);
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding updated`, { id: req.params.id, ...req.body }));
-  } catch (error) {
+  } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -123,7 +123,7 @@ export const updateUserBuilding = async (req: Request, res: Response) => {
 export const deleteUserBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting userBuilding`);
   try {
-    var results = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
+    const results = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `userBuilding by id ${req.params.id} was not found`));

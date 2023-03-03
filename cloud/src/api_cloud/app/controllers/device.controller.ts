@@ -35,13 +35,13 @@ export const createDevice = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    var results: Array<any> = await processData(QUERY.SELECT_ROOM, (req.body.room_id))
+    const results: Array<any> = await processData(QUERY.SELECT_ROOM, (req.body.room_id))
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.body.room_id} was not found`));
     }
     const id = uuidv4();
-    var data = setData(req, id);
+    const data = setData(req, id);
     database.query(QUERY.CREATE_DEVICE, Object.values(data));
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`));
@@ -54,7 +54,7 @@ export const createDevice = async (req: Request, res: Response) => {
 export const getDevices = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching devices`);
   try {
-    var results: Array<any> = await processDatas(QUERY.SELECT_DEVICES)
+    const results: Array<any> = await processDatas(QUERY.SELECT_DEVICES)
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Devices found`));
@@ -71,7 +71,7 @@ export const getDevices = async (req: Request, res: Response) => {
 export const getDevice = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching device`);
   try {
-    var results: Array<any> = await processData(QUERY.SELECT_DEVICE, req.params.id);
+    const results: Array<any> = await processData(QUERY.SELECT_DEVICE, req.params.id);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
@@ -97,12 +97,12 @@ export const updateDevice = async (req: Request, res: Response) => {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room_id by id ${req.body.room_id} was not found`));
     }
-    var results: Array<any> = await processData(QUERY.SELECT_DEVICE, req.params.id)
+    const results: Array<any> = await processData(QUERY.SELECT_DEVICE, req.params.id)
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
     }
-    var data = setUpdateData(req, results);
+    const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating device`);
     database.query(QUERY.UPDATE_DEVICE, [...Object.values(data), req.params.id]);
     return res.status(HttpStatus.OK.code)
@@ -116,7 +116,7 @@ export const updateDevice = async (req: Request, res: Response) => {
 export const deleteDevice = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting Device`);
   try {
-    var results = await processData(QUERY.SELECT_DEVICE, req.params.id);
+    const results = await processData(QUERY.SELECT_DEVICE, req.params.id);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.params.id} was not found`));
