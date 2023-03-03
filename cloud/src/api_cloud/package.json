@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Node.js Restful CRUD API with Node.js, Express and MySQL",
   "scripts": {
-    "start": "nodemon ./app/index.ts"
+    "start": "nodemon ./app/index.ts",
+    "lint": "eslint .  --ext .ts"
   },
   "dependencies": {
     "@types/uuid": "^9.0.0",
@@ -12,13 +13,12 @@
     "express": "^4.18.2",
     "ip": "^1.1.8",
     "joi": "^17.7.1",
+    "mysql": "^2.18.1",
     "node": "^19.6.0",
     "pino": "^8.10.0",
     "pino-pretty": "^9.2.0",
-    "typescript": "^4.9.5",
     "uuid": "^9.0.0",
-    "ws": "^8.12.1",
-    "mysql": "^2.18.1"
+    "ws": "^8.12.1"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
@@ -26,8 +26,15 @@
     "@types/ip": "^1.1.0",
     "@types/mysql": "^2.15.21",
     "@types/node": "^18.13.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "eslint": "^8.35.0",
+    "eslint-config-standard-with-typescript": "^34.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1",
     "nodemon": "^2.0.20",
     "ts-node": "^10.7.0",
-    "tsconfig-paths": "^4.1.2"
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^4.9.5"
   }
 }
