@@ -1,0 +1,14 @@
+name: Main workflow
+
+on:
+  push:
+
+jobs:
+  linter:
+    name: Lint for ts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: cd ./cloud/src/api_cloud
+      - run: npm install
+      - run: npm run lint
