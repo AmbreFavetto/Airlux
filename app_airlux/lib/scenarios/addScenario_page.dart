@@ -35,7 +35,7 @@ class AddScenarioPageState extends State<AddScenarioPage> {
                   FormInputText(
                       name: name,
                       inputTitle: 'Nom du scénario',
-                      textType: TextInputType.text),
+                      textType: TextInputType.text,),
                   SizedBox(
                     height: 30,
                   ),

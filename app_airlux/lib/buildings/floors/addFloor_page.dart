@@ -18,7 +18,7 @@ class AddFloorPageState extends State<AddFloorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset : false,
+      resizeToAvoidBottomInset: false,
       body: Column(
         children: [
           const SizedBox(width: 10.0, height: 20.0),
@@ -29,7 +29,11 @@ class AddFloorPageState extends State<AddFloorPage> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const SizedBox(width: 10.0, height: 20.0),
-                  FormInputText(name: title, inputTitle: 'Nom étage', textType: TextInputType.text),
+                  FormInputText(
+                    name: title,
+                    inputTitle: 'Nom étage',
+                    textType: TextInputType.text,
+                  ),
                   Container(
                     alignment: Alignment.center,
                     padding: const EdgeInsets.all(8),
@@ -40,17 +44,18 @@ class AddFloorPageState extends State<AddFloorPage> {
                         FormBottomButton(
                           title: 'Sauvegarder',
                           onTap: () {
-                            if (title.text.isNotEmpty){
+                            if (title.text.isNotEmpty) {
                               Navigator.of(context).push(
-                                MaterialPageRoute(builder: (context) => const BuildingsPage()),
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const BuildingsPage()),
                               );
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Étage ajouté.'),
                                 ),
                               );
-                            }
-                            else {
+                            } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('Formulaire invalide.'),
