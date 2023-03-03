@@ -19,6 +19,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       body: Column(
         children: [
           const SizedBox(width: 10.0, height: 20.0),
@@ -32,7 +33,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                   FormInputText(name: title, inputTitle: 'Nom du bâtiment', textType: TextInputType.text),
                   Container(
                     alignment: Alignment.center,
-                    padding: const EdgeInsets.all(8),
+                    //padding: const EdgeInsets.all(8),
                     height: 100,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,

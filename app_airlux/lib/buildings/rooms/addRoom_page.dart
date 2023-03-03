@@ -19,6 +19,7 @@ class AddRoomPageState extends State<AddRoomPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset : false,
       body: Column(
         children: [
           const SizedBox(width: 10.0, height: 20.0),

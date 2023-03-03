@@ -1,3 +1,4 @@
+import 'package:app_airlux/constants.dart';
 import 'package:flutter/material.dart';
 
 class FormInputText extends StatelessWidget {
@@ -28,6 +29,7 @@ class FormInputText extends StatelessWidget {
               BoxShadow(color: Colors.black26, offset: Offset(0, 2))
             ]),
         child: TextField(
+          cursorColor: kDarkPurple,
             controller: name,
             keyboardType: textType,
             style: const TextStyle(color: Colors.black87),
