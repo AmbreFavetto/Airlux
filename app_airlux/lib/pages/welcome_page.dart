@@ -1,5 +1,5 @@
-import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/constants.dart';
+import 'package:app_airlux/pages/signup_page.dart';
 import 'package:flutter/material.dart';
 import '../widget/delayed_animation.dart';
 
@@ -84,7 +84,7 @@ class WelcomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const AddBuildingPage(),
+                            builder: (context) => const SignupPage(),
                           ),
                         );
                       },
