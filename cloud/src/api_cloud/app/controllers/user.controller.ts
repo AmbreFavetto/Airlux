@@ -6,9 +6,10 @@ import QUERY from '../query/user.query';
 import userCreateSchema, { userUpdateSchema } from '../models/user.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
+import User from '../interfaces/user.interface'
 
 function setData(req: Request, id: string) {
-  const data: Record<string, any> = {
+  const data: User = {
     name: req.body.name,
     forename: req.body.forename,
     email: req.body.email,
@@ -19,13 +20,13 @@ function setData(req: Request, id: string) {
   return data;
 }
 
-function setUpdateData(req: Request, previousValues: Array<any>) {
-  const data: Record<string, any> = {};
-  req.body.name ? data.name = req.body.name : data.name = previousValues[0].name
-  req.body.forename ? data.forename = req.body.forename : data.forename = previousValues[0].forename
-  req.body.email ? data.email = req.body.email : data.email = previousValues[0].email
-  req.body.password ? data.password = req.body.password : data.password = previousValues[0].password
-  req.body.is_admin ? data.is_admin = req.body.is_admin : data.is_admin = previousValues[0].is_admin
+function setUpdateData(req: Request, previousValues: User) {
+  const data: User = {};
+  req.body.name ? data.name = req.body.name : data.name = previousValues.name
+  req.body.forename ? data.forename = req.body.forename : data.forename = previousValues.forename
+  req.body.email ? data.email = req.body.email : data.email = previousValues.email
+  req.body.password ? data.password = req.body.password : data.password = previousValues.password
+  req.body.is_admin ? data.is_admin = req.body.is_admin : data.is_admin = previousValues.is_admin
   return data;
 }
 
@@ -51,7 +52,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const getUsers = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching users`);
   try {
-    const results: Array<any> = await processDatas(QUERY.SELECT_USERS);
+    const results: Array<User> = await processDatas(QUERY.SELECT_USERS);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No users found`));
@@ -68,8 +69,8 @@ export const getUsers = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching user`);
   try {
-    const results: Array<any> = await processData(QUERY.SELECT_USER, req.params.id);
-    if (results.length === 0) {
+    const results: User = await processData(QUERY.SELECT_USER, req.params.id);
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     } else {
@@ -90,8 +91,8 @@ export const updateUser = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    const results: Array<any> = await processData(QUERY.SELECT_USER, req.params.id);
-    if (results.length === 0) {
+    const results: User = await processData(QUERY.SELECT_USER, req.params.id);
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     }
@@ -108,14 +109,14 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting user`);
   try {
-    const results = await processData(QUERY.SELECT_USER, req.params.id);
-    if (results.length === 0) {
+    const results: User = await processData(QUERY.SELECT_USER, req.params.id);
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.params.id} was not found`));
     }
     database.query(QUERY.DELETE_USER, req.params.id);
     return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`, results[0]));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`, results));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));

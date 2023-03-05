@@ -48,7 +48,7 @@ CREATE TABLE device (
   name            VARCHAR(255) DEFAULT NULL,
   room_id         VARCHAR(255) NOT NULL,
   type            ENUM("actuator", "sensor") DEFAULT NULL,
-  category        ENUM("lampe", "lampe rgb", "volet", "radiateur", "climatisation") DEFAULT NULL,
+  category        ENUM("lamp", "lamp_rgb", "pane", "radiator", "air_conditioning", "humidity", "temperature", "pressure") DEFAULT NULL,
   PRIMARY KEY (device_id),
   FOREIGN KEY (room_id) REFERENCES room (room_id) ON DELETE CASCADE
 );
@@ -56,8 +56,8 @@ CREATE TABLE device (
 CREATE TABLE sousScenario(
   sous_scenario_id     VARCHAR(255) NOT NULL,
   device_id            VARCHAR(255) NOT NULL,
-  action  ENUM("allumer", "eteindre", "couleur", "intensite", 'temperature')
-  PRIMARY KEY (sous_scenario_id)
+  action  ENUM("on", "off", "color", "intensity", "open", "close", "temperature"),
+  PRIMARY KEY (sous_scenario_id),
   FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
 );
 

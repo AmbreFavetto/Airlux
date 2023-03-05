@@ -6,18 +6,19 @@ import QUERY from '../query/scenario.query';
 import scenarioCreateSchema, { scenarioUpdateSchema } from '../models/scenario.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
+import Scenario from '../interfaces/scenario.interface';
 
 function setData(req: Request, id: string) {
-  const data: Record<string, any> = {
+  const data: Scenario = {
     name: req.body.name,
     scenario_id: id,
   };
   return data;
 }
 
-function setUpdateData(req: Request, previousValues: Array<any>) {
-  const data: Record<string, any> = {};
-  req.body.name ? data.name = req.body.name : data.name = previousValues[0].name
+function setUpdateData(req: Request, previousValues: Scenario) {
+  const data: Scenario = {};
+  req.body.name ? data.name = req.body.name : data.name = previousValues.name
   return data;
 }
 
@@ -29,11 +30,6 @@ export const createScenario = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    const results: Array<any> = await processData(QUERY.SELECT_DEVICE, (req.body.device_id))
-    if (results.length === 0) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.body.device_id} was not found`));
-    }
     const id = uuidv4();
     const data = setData(req, id);
     database.query(QUERY.CREATE_SCENARIO, Object.values(data));
@@ -48,7 +44,7 @@ export const createScenario = async (req: Request, res: Response) => {
 export const getScenarios = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching scenarios`);
   try {
-    const results: Array<any> = await processDatas(QUERY.SELECT_SCENARIOS)
+    const results: Array<Scenario> = await processDatas(QUERY.SELECT_SCENARIOS)
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Scenarios found`));
@@ -65,13 +61,13 @@ export const getScenarios = async (req: Request, res: Response) => {
 export const getScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching scenario`);
   try {
-    const results: Array<any> = await processData(QUERY.SELECT_SCENARIO, req.params.id);
-    if (results.length === 0) {
+    const results: Scenario = await processData(QUERY.SELECT_SCENARIO, req.params.id);
+    if (!results) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
     } else {
       res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario retrieved`, results[0]));
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario retrieved`, results));
     }
   } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -87,12 +83,8 @@ export const updateScenario = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    if (req.body.device_id && (await processData(QUERY.SELECT_DEVICE, req.body.device_id)).length === 0) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device_id by id ${req.body.device_id} was not found`));
-    }
-    const results: Array<any> = await processData(QUERY.SELECT_SCENARIO, req.params.id)
-    if (results.length === 0) {
+    const results: Scenario = await processData(QUERY.SELECT_SCENARIO, req.params.id)
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
     }
@@ -110,14 +102,14 @@ export const updateScenario = async (req: Request, res: Response) => {
 export const deleteScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting Scenario`);
   try {
-    const results = await processData(QUERY.SELECT_SCENARIO, req.params.id);
-    if (results.length === 0) {
+    const results: Scenario = await processData(QUERY.SELECT_SCENARIO, req.params.id);
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
     }
     database.query(QUERY.DELETE_SCENARIO, req.params.id);
     return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario deleted`, results[0]));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario deleted`, results));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));

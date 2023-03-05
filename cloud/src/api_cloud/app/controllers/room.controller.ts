@@ -6,9 +6,11 @@ import QUERY from '../query/room.query';
 import roomCreateSchema, { roomUpdateSchema } from '../models/room.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
+import Room from '../interfaces/room.interface';
+import Floor from '../interfaces/floor.interface';
 
 function setData(req: Request, id: string) {
-  const data: Record<string, any> = {
+  const data: Room = {
     name: req.body.name,
     floor_id: req.body.floor_id,
     room_id: id
@@ -16,11 +18,11 @@ function setData(req: Request, id: string) {
   return data;
 }
 
-function setUpdateData(req: Request, previousValues: Array<any>) {
-  const data: Record<string, any> = {};
-  req.body.name ? data.name = req.body.name : data.name = previousValues[0].name
-  req.body.floor_id ? data.floor_id = req.body.floor_id : data.floor_id = previousValues[0].floor_id
-  req.body.room_id ? data.room_id = req.body.room_id : data.room_id = previousValues[0].room_id
+function setUpdateData(req: Request, previousValues: Room) {
+  const data: Room = {};
+  req.body.name ? data.name = req.body.name : data.name = previousValues.name
+  req.body.floor_id ? data.floor_id = req.body.floor_id : data.floor_id = previousValues.floor_id
+  req.body.room_id ? data.room_id = req.body.room_id : data.room_id = previousValues.room_id
   return data;
 }
 
@@ -33,8 +35,8 @@ export const createRoom = async (req: Request, res: Response) => {
   }
   try {
     // check if floor_id exists
-    const results: Array<any> = await processData(QUERY.SELECT_FLOOR, req.body.floor_id);
-    if (results.length === 0) {
+    const results: Floor = await processData(QUERY.SELECT_FLOOR, req.body.floor_id);
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.body.floor_id} was not found`));
     }
@@ -52,7 +54,7 @@ export const createRoom = async (req: Request, res: Response) => {
 export const getRooms = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching rooms`);
   try {
-    const results: Array<any> = await processDatas(QUERY.SELECT_ROOMS);
+    const results: Array<Room> = await processDatas(QUERY.SELECT_ROOMS);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Rooms found`));
@@ -69,13 +71,13 @@ export const getRooms = async (req: Request, res: Response) => {
 export const getRoom = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching room`);
   try {
-    const results: Array<any> = await processData(QUERY.SELECT_ROOM, req.params.id);
-    if (results.length === 0) {
+    const results: Room = await processData(QUERY.SELECT_ROOM, req.params.id);
+    if (!results) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.params.id} was not found`));
     } else {
       res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room retrieved`, results[0]));
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room retrieved`, results));
     }
   } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -91,12 +93,12 @@ export const updateRoom = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    if (req.body.floor_id && (await processData(QUERY.SELECT_FLOOR, req.body.floor_id)).length === 0) {
+    if (req.body.floor_id && !await processData(QUERY.SELECT_FLOOR, req.body.floor_id)) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor_id by id ${req.body.floor_id} was not found`));
     }
-    const results: Array<any> = await processData(QUERY.SELECT_ROOM, req.params.id)
-    if (results.length === 0) {
+    const results: Room = await processData(QUERY.SELECT_ROOM, req.params.id)
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.params.id} was not found`));
     }
@@ -114,14 +116,14 @@ export const updateRoom = async (req: Request, res: Response) => {
 export const deleteRoom = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting room`);
   try {
-    const results = await processData(QUERY.SELECT_ROOM, req.params.id);
-    if (results.length === 0) {
+    const results: Room = await processData(QUERY.SELECT_ROOM, req.params.id);
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.params.id} was not found`));
     }
     database.query(QUERY.DELETE_ROOM, req.params.id);
     return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room deleted`, results[0]));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room deleted`, results));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));

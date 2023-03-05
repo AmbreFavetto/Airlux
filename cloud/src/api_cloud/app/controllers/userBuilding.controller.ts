@@ -6,9 +6,12 @@ import QUERY from '../query/userBuilding.query';
 import userBuildingCreateSchema, { userBuildingUpdateSchema } from '../models/userBuilding.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
+import UserBuilding from '@/interfaces/userBuilding.interface';
+import User from '@/interfaces/user.interface';
+import Building from '@/interfaces/building.interface';
 
 function setData(req: Request, id: string) {
-  const data: Record<string, any> = {
+  const data: UserBuilding = {
     user_id: req.body.user_id,
     building_id: req.body.building_id,
     id: id
@@ -16,10 +19,10 @@ function setData(req: Request, id: string) {
   return data;
 }
 
-function setUpdateData(req: Request, previousValues: Array<any>) {
-  const data: Record<string, any> = {};
-  req.body.user_id ? data.user_id = req.body.user_id : data.user_id = previousValues[0].user_id
-  req.body.building_id ? data.building_id = req.body.building_id : data.building_id = previousValues[0].building_id
+function setUpdateData(req: Request, previousValues: UserBuilding) {
+  const data: UserBuilding = {};
+  req.body.user_id ? data.user_id = req.body.user_id : data.user_id = previousValues.user_id
+  req.body.building_id ? data.building_id = req.body.building_id : data.building_id = previousValues.building_id
   return data;
 }
 
@@ -32,14 +35,14 @@ export const createUserBuilding = async (req: Request, res: Response) => {
   }
   try {
     // check if user_id exists
-    let results: Array<any> = await processData(QUERY.SELECT_USER, req.body.user_id);
-    if (results.length === 0) {
+    const resultUser: User = await processData(QUERY.SELECT_USER, req.body.user_id);
+    if (!resultUser) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `user by id ${req.body.user_id} was not found`));
     }
     // check if building_id exists
-    results = await processData(QUERY.SELECT_BUILDING, req.body.building_id);
-    if (results.length === 0) {
+    const resultBuilding: Building = await processData(QUERY.SELECT_BUILDING, req.body.building_id);
+    if (!resultBuilding) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `building by id ${req.body.building_id} was not found`));
     }
@@ -57,7 +60,7 @@ export const createUserBuilding = async (req: Request, res: Response) => {
 export const getUsersBuildings = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching usersBuildings`);
   try {
-    const results: Array<any> = await processDatas(QUERY.SELECT_USERS_BUILDINGS);
+    const results: Array<UserBuilding> = await processDatas(QUERY.SELECT_USERS_BUILDINGS);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No usersBuildings found`));
@@ -74,13 +77,13 @@ export const getUsersBuildings = async (req: Request, res: Response) => {
 export const getUserBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching userBuilding`);
   try {
-    const results: Array<any> = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
-    if (results.length === 0) {
+    const results: UserBuilding = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
+    if (!results) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `userBuilding by id ${req.params.id} was not found`));
     } else {
       res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding retrieved`, results[0]));
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding retrieved`, results));
     }
   } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -96,16 +99,16 @@ export const updateUserBuilding = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    if (req.body.scenario_id && (await processData(QUERY.SELECT_USER, req.body.scenario_id)).length === 0) {
+    if (req.body.scenario_id && !await processData(QUERY.SELECT_USER, req.body.scenario_id)) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User_id by id ${req.body.user_id} was not found`));
     }
-    if (req.body.device_id && (await processData(QUERY.SELECT_BUILDING, req.body.device_id)).length === 0) {
+    if (req.body.device_id && !await processData(QUERY.SELECT_BUILDING, req.body.device_id)) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building_id by id ${req.body.building_id} was not found`));
     }
-    const results: Array<any> = await processData(QUERY.SELECT_USER_BUILDING, req.params.id)
-    if (results.length === 0) {
+    const results: UserBuilding = await processData(QUERY.SELECT_USER_BUILDING, req.params.id)
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User_building by id ${req.params.id} was not found`));
     }
@@ -123,14 +126,14 @@ export const updateUserBuilding = async (req: Request, res: Response) => {
 export const deleteUserBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting userBuilding`);
   try {
-    const results = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
-    if (results.length === 0) {
+    const results: UserBuilding = await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
+    if (!results) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `userBuilding by id ${req.params.id} was not found`));
     }
     database.query(QUERY.DELETE_USER_BUILDING, req.params.id);
     return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding deleted`, results[0]));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding deleted`, results));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
