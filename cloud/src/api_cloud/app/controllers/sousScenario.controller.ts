@@ -50,11 +50,12 @@ export const createSousScenario = async (req: Request, res: Response) => {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.body.device_id} was not found`));
     }
-    // TODO results.category : remove ? in interfaces
-    // if (!verifyAction(results.category, req.body.action)) {
-    //   return res.status(HttpStatus.BAD_REQUEST.code)
-    //     .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, `Action ${req.body.action} for device category ${results[0].category} is not available`));
-    // }
+    if (results.category) {
+      if (!verifyAction(results.category, req.body.action)) {
+        return res.status(HttpStatus.BAD_REQUEST.code)
+          .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, `Action ${req.body.action} for device category ${results.category} is not available`));
+      }
+    }
     const id = uuidv4();
     const data = setData(req, id);
     database.query(QUERY.CREATE_SOUS_SCENARIO, Object.values(data));
