@@ -44,3 +44,5 @@ app.use('/timeseries/', routesTimeseries);
 
 
 app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));
+
+export default app;
