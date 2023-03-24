@@ -1,6 +1,4 @@
 import express from 'express';
-import ip from 'ip';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import routesBuilding from './routes/building.routes';
 import routesDevice from './routes/device.routes';
@@ -12,11 +10,7 @@ import routesRoom from './routes/room.routes';
 import routesUser from './routes/user.routes';
 import routesUserBuilding from './routes/userBuilding.routes';
 import routesTimeseries from './routes/timeseries.routes';
-import logger from './util/logger';
 
-
-dotenv.config();
-const PORT = 3000;
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
@@ -41,8 +35,5 @@ app.use('/user/', routesUser);
 app.use('/user-building/', routesUserBuilding);
 //Timesries
 app.use('/timeseries/', routesTimeseries);
-
-
-app.listen(PORT, () => logger.info(`Server running on: ${ip.address()}:${PORT}`));
 
 export default app;

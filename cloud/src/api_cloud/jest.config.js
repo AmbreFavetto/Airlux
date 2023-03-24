@@ -1,6 +1,9 @@
 module.exports = {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-    modulePathIgnorePatterns: ['<rootDir>/dist/'],
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  transform: {
+    '^.+\\.tsx?$': 'ts-jest',
+  },
+  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  extensionsToTreatAsEsm: ['.ts'],
 };

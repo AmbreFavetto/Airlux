@@ -54,7 +54,7 @@ export const createRoom = async (req: Request, res: Response) => {
 export const getRooms = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching rooms`);
   try {
-    const results: Array<Room> = await processDatas(QUERY.SELECT_ROOMS);
+    const results: Array<Room> = await processDatas(QUERY.SELECT_ROOMS, database);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Rooms found`));

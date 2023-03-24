@@ -44,7 +44,7 @@ export const createScenario = async (req: Request, res: Response) => {
 export const getScenarios = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching scenarios`);
   try {
-    const results: Array<Scenario> = await processDatas(QUERY.SELECT_SCENARIOS)
+    const results: Array<Scenario> = await processDatas(QUERY.SELECT_SCENARIOS, database)
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Scenarios found`));

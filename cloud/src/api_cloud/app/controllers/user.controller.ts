@@ -52,7 +52,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const getUsers = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching users`);
   try {
-    const results: Array<User> = await processDatas(QUERY.SELECT_USERS);
+    const results: Array<User> = await processDatas(QUERY.SELECT_USERS, database);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No users found`));

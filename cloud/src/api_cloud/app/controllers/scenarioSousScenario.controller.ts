@@ -61,7 +61,7 @@ export const createScenarioSousScenario = async (req: Request, res: Response) =>
 export const getScenariosSousScenarios = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching scenariosSousScenario`);
   try {
-    const results: Array<ScenarioSousScenario> = await processDatas(QUERY.SELECT_SCENARIOS_SOUS_SCENARIOS);
+    const results: Array<ScenarioSousScenario> = await processDatas(QUERY.SELECT_SCENARIOS_SOUS_SCENARIOS, database);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No scenarioSousScenario found`));

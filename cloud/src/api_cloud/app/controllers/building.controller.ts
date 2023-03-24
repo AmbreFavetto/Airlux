@@ -22,7 +22,7 @@ function setUpdateData(req: Request, previousValues: Building) {
   return data;
 }
 
-export const createBuilding = (req: Request, res: Response) => {
+export const createBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, creating building`);
   // Validate body with model
   const { error } = buildingCreateSchema.validate(req.body);
@@ -34,9 +34,10 @@ export const createBuilding = (req: Request, res: Response) => {
   try {
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_BUILDING, Object.values(data));
-    return res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
+    database.query(QUERY.CREATE_BUILDING, Object.values(data), (err: Error | null, results: any) => {
+      return res.status(HttpStatus.CREATED.code)
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
+    });
   } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -46,17 +47,17 @@ export const createBuilding = (req: Request, res: Response) => {
 export const getBuildings = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching buildings`);
   try {
-    const results: Array<Building> = await processDatas(QUERY.SELECT_BUILDINGS);
-    if (results.length === 0) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No buildings found`));
-    } else {
-      return res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: results }));
-    }
+    const results: Array<Building> = await processDatas(QUERY.SELECT_BUILDINGS, database);
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: results }));
   } catch (err) {
+    logger.error(err);
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
+    }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred ${err}`));
   }
 };
 
@@ -64,14 +65,14 @@ export const getBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching building`);
   try {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
-    if (!results) {
+    logger.info(results)
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: results }));
+  } catch (err: unknown) {
+    if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
-    } else {
-      return res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: results }));
     }
-  } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`))
   }
@@ -86,15 +87,15 @@ export const updateBuilding = async (req: Request, res: Response) => {
   }
   try {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
-    if (!results) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
-    }
     const data = setUpdateData(req, results)
     database.query(QUERY.UPDATE_BUILDING, [...Object.values(data), req.params.id]);
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor updated`, { id: req.params.id, ...req.body }));
   } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
+    }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -104,14 +105,14 @@ export const deleteBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting building`);
   try {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
-    if (!results) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
-    }
     database.query(QUERY.DELETE_BUILDING, req.params.id);
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`, results));
   } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
+    }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }

@@ -53,7 +53,7 @@ export const createFloor = async (req: Request, res: Response) => {
 export const getFloors = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching floors`);
   try {
-    const results: Array<Floor> = await processDatas(QUERY.SELECT_FLOORS);
+    const results: Array<Floor> = await processDatas(QUERY.SELECT_FLOORS, database);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Floors found`));

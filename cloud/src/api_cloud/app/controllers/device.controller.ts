@@ -65,7 +65,7 @@ export const createDevice = async (req: Request, res: Response) => {
 export const getDevices = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching devices`);
   try {
-    const results: Array<Device> = await processDatas(QUERY.SELECT_DEVICES)
+    const results: Array<Device> = await processDatas(QUERY.SELECT_DEVICES, database)
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Devices found`));

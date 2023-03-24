@@ -51,7 +51,7 @@ export const createTimeseries = (req: Request, res: Response) => {
 export const getTimeseriess = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching timeseriess`);
   try {
-    const results: Array<Timeseries> = await processDatas(QUERY.SELECT_TIMESERIESS);
+    const results: Array<Timeseries> = await processDatas(QUERY.SELECT_TIMESERIESS, database);
     if (results.length === 0) {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No timeseriess found`));

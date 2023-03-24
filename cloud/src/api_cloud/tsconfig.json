@@ -5,7 +5,7 @@
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "esModuleInterop": true,
-    "target": "ES6",
+    "target": "ESNext",
     "moduleResolution": "node",
     "outDir": "./dist",
     "baseUrl": "./",

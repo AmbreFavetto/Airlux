@@ -60,7 +60,7 @@ export const createUserBuilding = async (req: Request, res: Response) => {
 export const getUsersBuildings = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching usersBuildings`);
   try {
-    const results: Array<UserBuilding> = await processDatas(QUERY.SELECT_USERS_BUILDINGS);
+    const results: Array<UserBuilding> = await processDatas(QUERY.SELECT_USERS_BUILDINGS, database);
     if (results.length === 0) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No usersBuildings found`));
