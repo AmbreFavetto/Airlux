@@ -2,7 +2,6 @@ import HttpStatus from '../app/util/devTools';
 import app from '../app/index';
 import supertest from 'supertest';
 import pool from '../app/config/db.config';
-import logger from '../app/util/logger';
 
 const request = supertest(app);
 
@@ -19,20 +18,21 @@ function insertTestData() {
 }
 
 describe('Building controller', () => {
-    afterEach(async () => {
-        // Réinitialiser la base de données avant chaque test
-        await pool.query('DELETE FROM building')
+    beforeEach(async () => {
+        await pool.query('DELETE FROM building');
     });
+
     afterAll(async () => {
         await pool.end();
     });
 
     describe('createBuilding', () => {
         test('should create a new building', async () => {
-            const response = await request.post('/building')
+            const response = await request
+                .post('/building')
                 .expect('Content-Type', /json/)
                 .send({
-                    name: 'Test building'
+                    name: 'Test building',
                 });
 
             expect(response.statusCode).toBe(HttpStatus.CREATED.code);
@@ -40,10 +40,11 @@ describe('Building controller', () => {
         });
 
         test('should return an error when the body field is invalid', async () => {
-            const response = await request.post('/building')
-                .expect("Content-Type", /json/)
+            const response = await request
+                .post('/building')
+                .expect('Content-Type', /json/)
                 .send({
-                    invalidField: 'Test'
+                    invalidField: 'Test',
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -51,10 +52,11 @@ describe('Building controller', () => {
         });
 
         test('should return an error when the body field type is invalid', async () => {
-            const response = await request.post('/building')
-                .expect("Content-Type", /json/)
+            const response = await request
+                .post('/building')
+                .expect('Content-Type', /json/)
                 .send({
-                    name: 1
+                    name: 1,
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -64,12 +66,11 @@ describe('Building controller', () => {
 
     describe('getBuilding/:id', () => {
         test('should get a building with an id', async () => {
-            await insertTestData()
+            await insertTestData();
             const response = await request.get('/building/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.buildings).toBeDefined();
-
         });
 
         test('should return an error when getAll with invalid id', async () => {
@@ -82,48 +83,41 @@ describe('Building controller', () => {
 
     describe('getBuildings', () => {
         test('should return a list of buildings', async () => {
-            await insertTestData()
-            // Effectuer la requête et vérifier la réponse
+            await insertTestData();
             const response = await request.get('/building');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.buildings).toBeDefined();
         });
+    });
 
-        test('should return an error when no buildings are found', async () => {
-            const response2 = await request.get('/building');
+    describe('deleteBuilding/:id', () => {
+        test('should delete the building', async () => {
+            await insertTestData()
+            const response = await request.delete('/building/123');
+            expect(response.statusCode).toBe(HttpStatus.OK.code);
+            expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
+        });
+
+        test('should return an error when delete with invalid id ', async () => {
+            const response2 = await request.delete('/building/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    // describe('deleteBuilding/:id', () => {
-    //     test('should delete the building', async () => {
-    //         await insertTestData()
-    //         const response = await request.delete('/building/123');
-    //         expect(response.statusCode).toBe(HttpStatus.OK.code);
-    //         expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-    //     });
+    describe('updateBuilding/:id', () => {
+        test('should update the building', async () => {
+            await insertTestData()
+            const response = await request.delete('/building/123');
+            expect(response.statusCode).toBe(HttpStatus.OK.code);
+            expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
+        });
 
-    //     test('should return an error when delete with invalid id ', async () => {
-    //         const response2 = await request.delete('/building/321');
-    //         expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
-    //         expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
-    //     });
-    // });
-
-    // describe('updateBuilding/:id', () => {
-    //     test('should update the building', async () => {
-    //         await insertTestData()
-    //         const response = await request.delete('/building/123');
-    //         expect(response.statusCode).toBe(HttpStatus.OK.code);
-    //         expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-    //     });
-
-    //     test('should return an error when update with invalid id ', async () => {
-    //         const response2 = await request.delete('/building/321');
-    //         expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
-    //         expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
-    //     });
-    // });
+        test('should return an error when update with invalid id ', async () => {
+            const response2 = await request.delete('/building/321');
+            expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
+            expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
+        });
+    });
 });
