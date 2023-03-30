@@ -1,3 +1,4 @@
+import 'package:app_airlux/shared/addButton.dart';
 import 'package:app_airlux/shared/formBottomButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
@@ -52,5 +53,24 @@ void main() {
     final textFinder = find.text('Object container');
 
     expect(textFinder, findsOneWidget);
+  });
+
+  testWidgets('Add button test.', (tester) async {
+    await tester.pumpWidget(
+      Material(
+        child: MediaQuery(
+          data: const MediaQueryData(),
+          child: MaterialApp(
+              home: AddButton(
+                title: 'Add button',
+                onTap: () {
+                  print("Add button");
+                },
+              )),
+        ),
+      ),
+    );
+
+    expect(find.byType(FloatingActionButton), findsOneWidget);
   });
 }
