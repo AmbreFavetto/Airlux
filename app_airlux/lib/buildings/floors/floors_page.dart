@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../models/buildings/floors/floor_data.dart';
 import '../../shared/addButton.dart';
 import '../../shared/textInformationStyle.dart';
+import '../buildings_page.dart';
 import 'addFloor_page.dart';
 import '../rooms/rooms_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
@@ -22,14 +23,14 @@ class FloorsPage extends StatefulWidget {
 }
 
 class _FloorsPageState extends State<FloorsPage> {
-
   late IO.Socket socket;
 
   void initState() {
     super.initState();
     socket = initSocket();
     connectSocket(socket);
-    Provider.of<FloorData>(context, listen: false).getFloorsByBuildingId(widget.roomId);
+    Provider.of<FloorData>(context, listen: false)
+        .getFloorsByBuildingId(widget.roomId);
   }
 
   @override
@@ -45,10 +46,29 @@ class _FloorsPageState extends State<FloorsPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          IconButton(
+            onPressed: () => {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ChangeNotifierProvider(
+                      create: (BuildContext context) => RoomData(),
+                      child: const MaterialApp(
+                        home: BuildingsPage(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
           const SizedBox(width: 10.0, height: 20.0),
           const TitlePageStyle(text: "Étage"),
           const SizedBox(height: 15),
-          TextInformationStyle(text: 'Nom du bâtiment : ${widget.buildingName}'),
+          TextInformationStyle(
+              text: 'Nom du bâtiment : ${widget.buildingName}'),
           Expanded(
             child: Consumer<FloorData>(
               builder: (context, floorData, child) => GridView.builder(
@@ -92,10 +112,9 @@ class _FloorsPageState extends State<FloorsPage> {
       ),
       floatingActionButton: AddButton(
           onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AddFloorPage(),
-                ));
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const AddFloorPage(),
+            ));
           },
           title: 'Ajouter un étage'),
     );

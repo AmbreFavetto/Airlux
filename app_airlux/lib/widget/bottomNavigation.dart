@@ -8,6 +8,7 @@ import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:provider/provider.dart';
 import '../models/buildings/building_data.dart';
 import '../models/scenarios/scenario_data.dart';
+import '../pages/profile_page.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -146,7 +147,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                           ),
                         )
                       : (currentIndex == 3) //Profil
-                          ? const AddBuildingPage()
+                          ? const ProfilePage()
                           : const HomePage(), //Else
         ));
   }
