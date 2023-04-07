@@ -8,3 +8,4 @@ npm-debug.log
 cloud/src/api_cloud/node_modules
 cloud/src/db_cloud/initdb
 cloud/src/api_cloud/package-lock.json
+cloud/src/api_cloud/dist/

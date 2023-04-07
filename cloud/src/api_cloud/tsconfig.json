@@ -1,11 +1,11 @@
 {
   "compilerOptions": {
     "strict": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "noImplicitAny": true,
     "preserveConstEnums": true,
     "esModuleInterop": true,
-    "target": "es6",
+    "target": "ESNext",
     "moduleResolution": "node",
     "outDir": "./dist",
     "baseUrl": "./",
