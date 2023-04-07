@@ -6,22 +6,29 @@ import Query, { processData } from './testTools'
 
 const request = supertest(app);
 
-describe('Building controller', () => {
+describe('UserBuilding controller', () => {
+    beforeAll(async () => {
+        await processData(Query.CREATE_BUILDING)
+        await processData(Query.CREATE_USER)
+    });
     afterEach(async () => {
-        await processData(Query.DELETE_BUILDINGS)
+        await processData(Query.DELETE_USER_BUILDINGS)
     });
 
     afterAll(async () => {
+        await processData(Query.DELETE_BUILDINGS)
+        await processData(Query.DELETE_USERS)
         await pool.end();
     });
 
-    describe('createBuilding', () => {
-        test('should create a new building', async () => {
+    describe('createUserBuilding', () => {
+        test('should create a new userBuilding', async () => {
             const response = await request
-                .post('/building')
+                .post('/user-building')
                 .expect('Content-Type', /json/)
                 .send({
-                    name: 'Test building',
+                    user_id: '123',
+                    building_id: '123',
                 });
 
             expect(response.statusCode).toBe(HttpStatus.CREATED.code);
@@ -30,10 +37,11 @@ describe('Building controller', () => {
 
         test('should return an error when the body field is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/user-building')
                 .expect('Content-Type', /json/)
                 .send({
-                    invalidField: 'Test',
+                    invalidField: '123',
+                    building_id: '123',
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -42,10 +50,11 @@ describe('Building controller', () => {
 
         test('should return an error when the body field type is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/user-building')
                 .expect('Content-Type', /json/)
                 .send({
-                    name: 1,
+                    user_id: 1,
+                    building_id: '123',
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -53,60 +62,60 @@ describe('Building controller', () => {
         });
     });
 
-    describe('getBuilding/:id', () => {
-        test('should get a building with an id', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building/123');
+    describe('getUserBuilding/:id', () => {
+        test('should get a userBuilding with an id', async () => {
+            await processData(Query.CREATE_USER_BUILDING);
+            const response = await request.get('/user-building/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.usersBuildings).toBeDefined();
         });
 
         test('should return an error when getAll with invalid id', async () => {
-            const response2 = await request.get('/building/321');
-
+            const response2 = await request.get('/user-building/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('getBuildings', () => {
-        test('should return a list of buildings', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building');
+    describe('getUsersBuildings', () => {
+        test('should return a list of usersBuildings', async () => {
+            await processData(Query.CREATE_USER_BUILDING);
+            const response = await request.get('/user-building');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.usersBuildings).toBeDefined();
         });
     });
 
-    describe('deleteBuilding/:id', () => {
-        test('should delete the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.delete('/building/123');
+    describe('deleteUserBuilding/:id', () => {
+        test('should delete the userBuilding', async () => {
+            await processData(Query.CREATE_USER_BUILDING);
+            const response = await request.delete('/user-building/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when delete with invalid id ', async () => {
-            const response2 = await request.delete('/building/321');
+            const response2 = await request.delete('/user-building/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('updateBuilding/:id', () => {
-        test('should update the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.put('/building/123').send({
-                name: "TestUpdate"
+    describe('updateUserBuilding/:id', () => {
+        test('should update the userBuilding', async () => {
+            await processData(Query.CREATE_USER_BUILDING);
+            await processData(Query.CREATE_OTHER_BUILDING);
+            const response = await request.put('/user-building/123').send({
+                building_id: "234"
             });
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/building/321');
+            const response2 = await request.put('/user-building/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });

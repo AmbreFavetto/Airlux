@@ -34,17 +34,18 @@ export const createFloor = async (req: Request, res: Response) => {
   }
   try {
     // check if building_id exists
-    const results: Floor = await processData(QUERY.SELECT_BUILDING, req.body.building_id);
-    if (!results) {
+    await processData(QUERY.SELECT_BUILDING, req.body.building_id);
+    const id = uuidv4();
+    const data = setData(req, id);
+    database.query(QUERY.CREATE_FLOOR, Object.values(data), (err: Error | null, results: any) => {
+      return res.status(HttpStatus.CREATED.code)
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor created`));
+    });
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.body.building_id} was not found`));
     }
-    const id = uuidv4();
-    const data = setData(req, id);
-    database.query(QUERY.CREATE_FLOOR, Object.values(data));
-    res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor created`));
-  } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -54,14 +55,13 @@ export const getFloors = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching floors`);
   try {
     const results: Array<Floor> = await processDatas(QUERY.SELECT_FLOORS, database);
-    if (results.length === 0) {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Floors found`));
-    } else {
-      res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floors retrieved`, { floors: results }));
-    }
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floors retrieved`, { floors: results }));
   } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Floors found`));
+    }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -71,14 +71,13 @@ export const getFloor = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching floor`);
   try {
     const results: Floor = await processData(QUERY.SELECT_FLOOR, req.params.id);
-    if (!results) {
-      res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
-    } else {
-      res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor retrieved`, results));
-    }
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor retrieved`, { floors: results }));
   } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
+    }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -92,22 +91,22 @@ export const updateFloor = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    if (req.body.building_id && !await processData(QUERY.SELECT_BUILDING, req.body.building_id)) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building_id by id ${req.body.building_id} was not found`));
+    if (req.body.building_id) {
+      await processData(QUERY.SELECT_BUILDING, req.body.building_id)
     }
     const results: Floor = await processData(QUERY.SELECT_FLOOR, req.params.id)
-    if (!results) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
-    }
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating floor`);
-    database.query(QUERY.UPDATE_FLOOR, [...Object.values(data), req.params.id]);
-    return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor updated`, { id: req.params.id, ...req.body }));
+    database.query(QUERY.UPDATE_FLOOR, [...Object.values(data), req.params.id], (err: Error | null, results: any) => {
+      return res.status(HttpStatus.OK.code)
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor updated`, { id: req.params.id, ...req.body }));
+    });
+
   } catch (err) {
-    logger.info(err)
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} or Building by id ${req.body.building_id} was not found`));
+    }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -116,15 +115,16 @@ export const updateFloor = async (req: Request, res: Response) => {
 export const deleteFloor = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting floor`);
   try {
-    const results: Floor = await processData(QUERY.SELECT_FLOOR, req.params.id);
-    if (!results) {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
-    }
-    database.query(QUERY.DELETE_FLOOR, req.params.id);
-    return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`, results));
+    await processData(QUERY.SELECT_FLOOR, req.params.id);
+    database.query(QUERY.DELETE_FLOOR, req.params.id, (err: Error | null, results: any) => {
+      return res.status(HttpStatus.OK.code)
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
+    });
   } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} or Building by id ${req.body.building_id} was not found`));
+    }
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }

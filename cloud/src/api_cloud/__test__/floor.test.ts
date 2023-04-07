@@ -6,22 +6,28 @@ import Query, { processData } from './testTools'
 
 const request = supertest(app);
 
-describe('Building controller', () => {
+describe('Floor controller', () => {
+    beforeAll(async () => {
+        await processData(Query.CREATE_BUILDING)
+    });
+
     afterEach(async () => {
-        await processData(Query.DELETE_BUILDINGS)
+        await processData(Query.DELETE_FLOORS)
     });
 
     afterAll(async () => {
-        await pool.end();
+        await processData(Query.DELETE_BUILDINGS)
+        await pool.end()
     });
 
-    describe('createBuilding', () => {
-        test('should create a new building', async () => {
+    describe('createFloor', () => {
+        test('should create a new floor', async () => {
             const response = await request
-                .post('/building')
+                .post('/floor')
                 .expect('Content-Type', /json/)
                 .send({
-                    name: 'Test building',
+                    name: 'Test floor',
+                    building_id: '123'
                 });
 
             expect(response.statusCode).toBe(HttpStatus.CREATED.code);
@@ -30,7 +36,7 @@ describe('Building controller', () => {
 
         test('should return an error when the body field is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/floor')
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test',
@@ -42,10 +48,11 @@ describe('Building controller', () => {
 
         test('should return an error when the body field type is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/floor')
                 .expect('Content-Type', /json/)
                 .send({
                     name: 1,
+                    building_id: '123'
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -53,52 +60,52 @@ describe('Building controller', () => {
         });
     });
 
-    describe('getBuilding/:id', () => {
-        test('should get a building with an id', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building/123');
+    describe('getFloor/:id', () => {
+        test('should get a floor with an id', async () => {
+            await processData(Query.CREATE_FLOOR)
+            const response = await request.get('/floor/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.floors).toBeDefined();
         });
 
         test('should return an error when getAll with invalid id', async () => {
-            const response2 = await request.get('/building/321');
+            const response2 = await request.get('/floor/321');
 
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('getBuildings', () => {
-        test('should return a list of buildings', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building');
+    describe('getFloors', () => {
+        test('should return a list of floors', async () => {
+            await processData(Query.CREATE_FLOOR)
+            const response = await request.get('/floor');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.floors).toBeDefined();
         });
     });
 
-    describe('deleteBuilding/:id', () => {
-        test('should delete the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.delete('/building/123');
+    describe('deleteFloor/:id', () => {
+        test('should delete the floor', async () => {
+            await processData(Query.CREATE_FLOOR)
+            const response = await request.delete('/floor/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when delete with invalid id ', async () => {
-            const response2 = await request.delete('/building/321');
+            const response2 = await request.delete('/floor/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('updateBuilding/:id', () => {
-        test('should update the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.put('/building/123').send({
+    describe('updateFloor/:id', () => {
+        test('should update the floor', async () => {
+            await processData(Query.CREATE_FLOOR)
+            const response = await request.put('/floor/123').send({
                 name: "TestUpdate"
             });
             expect(response.statusCode).toBe(HttpStatus.OK.code);
@@ -106,9 +113,10 @@ describe('Building controller', () => {
         });
 
         test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/building/321');
+            const response2 = await request.put('/floor/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
+
 });

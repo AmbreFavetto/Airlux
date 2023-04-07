@@ -65,7 +65,6 @@ export const getBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching building`);
   try {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
-    logger.info(results)
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: results }));
   } catch (err: unknown) {
@@ -104,10 +103,11 @@ export const updateBuilding = async (req: Request, res: Response) => {
 export const deleteBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting building`);
   try {
-    const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
-    database.query(QUERY.DELETE_BUILDING, req.params.id);
-    return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`, results));
+    await processData(QUERY.SELECT_BUILDING, req.params.id);
+    database.query(QUERY.DELETE_BUILDING, req.params.id, (err: Error | null, results: any) => {
+      return res.status(HttpStatus.OK.code)
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
+    });
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)

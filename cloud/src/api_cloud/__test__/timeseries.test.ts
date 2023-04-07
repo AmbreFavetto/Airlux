@@ -6,22 +6,32 @@ import Query, { processData } from './testTools'
 
 const request = supertest(app);
 
-describe('Building controller', () => {
+describe('Timeseries controller', () => {
+    beforeAll(async () => {
+        await processData(Query.CREATE_BUILDING)
+        await processData(Query.CREATE_FLOOR)
+        await processData(Query.CREATE_ROOM)
+        await processData(Query.CREATE_DEVICE)
+    })
     afterEach(async () => {
-        await processData(Query.DELETE_BUILDINGS)
+        await processData(Query.DELETE_TIMESERIESS)
     });
 
     afterAll(async () => {
-        await pool.end();
+        await processData(Query.DELETE_BUILDINGS)
+        await pool.end()
     });
 
-    describe('createBuilding', () => {
-        test('should create a new building', async () => {
+    describe('createTimeseries', () => {
+        test('should create a new timeseries', async () => {
             const response = await request
-                .post('/building')
+                .post('/timeseries')
                 .expect('Content-Type', /json/)
                 .send({
-                    name: 'Test building',
+                    unit: 'test unit',
+                    timestamp: 1,
+                    value: 0.5,
+                    device_id: "123"
                 });
 
             expect(response.statusCode).toBe(HttpStatus.CREATED.code);
@@ -30,10 +40,13 @@ describe('Building controller', () => {
 
         test('should return an error when the body field is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/timeseries')
                 .expect('Content-Type', /json/)
                 .send({
-                    invalidField: 'Test',
+                    invalidField: 'Test timeseries',
+                    timeseries: 1,
+                    value: 0.5,
+                    device_id: "123"
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -42,10 +55,13 @@ describe('Building controller', () => {
 
         test('should return an error when the body field type is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/timeseries')
                 .expect('Content-Type', /json/)
                 .send({
-                    name: 1,
+                    unit: 1,
+                    timeseries: 1,
+                    value: 0.5,
+                    device_id: "123"
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -53,62 +69,63 @@ describe('Building controller', () => {
         });
     });
 
-    describe('getBuilding/:id', () => {
-        test('should get a building with an id', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building/123');
+    describe('getTimeseries/:id', () => {
+        test('should get a timeseries with an id', async () => {
+            await processData(Query.CREATE_TIMESERIES)
+            const response = await request.get('/timeseries/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.timeseriess).toBeDefined();
         });
 
         test('should return an error when getAll with invalid id', async () => {
-            const response2 = await request.get('/building/321');
+            const response2 = await request.get('/timeseries/321');
 
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('getBuildings', () => {
-        test('should return a list of buildings', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building');
+    describe('getTimeseries', () => {
+        test('should return a list of timeseries', async () => {
+            await processData(Query.CREATE_TIMESERIES)
+            const response = await request.get('/timeseries');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.timeseriess).toBeDefined();
         });
     });
 
-    describe('deleteBuilding/:id', () => {
-        test('should delete the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.delete('/building/123');
+    describe('deleteTimeseries/:id', () => {
+        test('should delete the timeseries', async () => {
+            await processData(Query.CREATE_TIMESERIES)
+            const response = await request.delete('/timeseries/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when delete with invalid id ', async () => {
-            const response2 = await request.delete('/building/321');
+            const response2 = await request.delete('/timeseries/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('updateBuilding/:id', () => {
-        test('should update the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.put('/building/123').send({
-                name: "TestUpdate"
+    describe('updateTimeseries/:id', () => {
+        test('should update the timeseries', async () => {
+            await processData(Query.CREATE_TIMESERIES)
+            const response = await request.put('/timeseries/123').send({
+                unit: 'test update'
             });
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/building/321');
+            const response2 = await request.put('/timeseries/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
+
 });

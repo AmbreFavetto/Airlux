@@ -30,7 +30,6 @@ function setUpdateData(req: Request, previousValues: Timeseries) {
 
 export const createTimeseries = (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, creating timeseries`);
-  // Validate body with model
   const { error } = timeseriesCreateSchema.validate(req.body);
   if (error) {
     return res.status(HttpStatus.BAD_REQUEST.code)
@@ -39,9 +38,10 @@ export const createTimeseries = (req: Request, res: Response) => {
   try {
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_TIMESERIES, Object.values(data));
-    return res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Timeseries created`));
+    database.query(QUERY.CREATE_TIMESERIES, Object.values(data), (err: Error | null, results: any) => {
+      return res.status(HttpStatus.CREATED.code)
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Timeseries created`));
+    });
   } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -52,14 +52,13 @@ export const getTimeseriess = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching timeseriess`);
   try {
     const results: Array<Timeseries> = await processDatas(QUERY.SELECT_TIMESERIESS, database);
-    if (results.length === 0) {
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timerseriess retrieved`, { timeseriess: results }));
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No timeseriess found`));
-    } else {
-      return res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timerseriess retrieved`, { timeseriess: results }));
     }
-  } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -69,14 +68,13 @@ export const getTimeseries = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching timeseries`);
   try {
     const results: Timeseries = await processData(QUERY.SELECT_TIMESERIES, req.params.id);
-    if (!results) {
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries retrieved`, { timeseriess: results }));
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Timeseries by id ${req.params.id} was not found`));
-    } else {
-      return res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries retrieved`, { timeseries: results }));
     }
-  } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`))
   }
@@ -91,15 +89,16 @@ export const updateTimeseries = async (req: Request, res: Response) => {
   }
   try {
     const results: Timeseries = await processData(QUERY.SELECT_TIMESERIES, req.params.id);
-    if (!results) {
+    const data = setUpdateData(req, results)
+    database.query(QUERY.UPDATE_TIMESERIES, [...Object.values(data), req.params.id], (err: Error | null, results: any) => {
+      return res.status(HttpStatus.OK.code)
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries updated`, { id: req.params.id, ...req.body }));
+    });
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Timeseries by id ${req.params.id} was not found`));
     }
-    const data = setUpdateData(req, results)
-    database.query(QUERY.UPDATE_TIMESERIES, [...Object.values(data), req.params.id]);
-    return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries updated`, { id: req.params.id, ...req.body }));
-  } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
@@ -108,15 +107,16 @@ export const updateTimeseries = async (req: Request, res: Response) => {
 export const deleteTimeseries = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting timeseries`);
   try {
-    const results: Timeseries = await processData(QUERY.SELECT_TIMESERIES, req.params.id);
-    if (!results) {
+    await processData(QUERY.SELECT_TIMESERIES, req.params.id);
+    database.query(QUERY.DELETE_TIMESERIES, req.params.id, (err: Error | null, results: any) => {
+      return res.status(HttpStatus.OK.code)
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries deleted`));
+    });
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Timeseries by id ${req.params.id} was not found`));
     }
-    database.query(QUERY.DELETE_TIMESERIES, req.params.id);
-    return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries deleted`, results));
-  } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }

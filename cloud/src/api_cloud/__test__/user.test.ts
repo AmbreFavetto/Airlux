@@ -6,22 +6,26 @@ import Query, { processData } from './testTools'
 
 const request = supertest(app);
 
-describe('Building controller', () => {
+describe('User controller', () => {
     afterEach(async () => {
-        await processData(Query.DELETE_BUILDINGS)
+        await processData(Query.DELETE_USERS)
     });
 
     afterAll(async () => {
         await pool.end();
     });
 
-    describe('createBuilding', () => {
-        test('should create a new building', async () => {
+    describe('createUser', () => {
+        test('should create a new user', async () => {
             const response = await request
-                .post('/building')
+                .post('/user')
                 .expect('Content-Type', /json/)
                 .send({
-                    name: 'Test building',
+                    name: 'Test user',
+                    forename: 'Test user',
+                    email: 'test@test.com',
+                    password: 'test',
+                    is_admin: true,
                 });
 
             expect(response.statusCode).toBe(HttpStatus.CREATED.code);
@@ -30,10 +34,14 @@ describe('Building controller', () => {
 
         test('should return an error when the body field is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/user')
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test',
+                    forename: 'Test user',
+                    email: 'test@test',
+                    password: 'test',
+                    is_admin: true
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -42,10 +50,14 @@ describe('Building controller', () => {
 
         test('should return an error when the body field type is invalid', async () => {
             const response = await request
-                .post('/building')
+                .post('/user')
                 .expect('Content-Type', /json/)
                 .send({
                     name: 1,
+                    forename: 'Test user',
+                    email: 'test@test',
+                    password: 'test',
+                    is_admin: true,
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -53,52 +65,52 @@ describe('Building controller', () => {
         });
     });
 
-    describe('getBuilding/:id', () => {
-        test('should get a building with an id', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building/123');
+    describe('getUser/:id', () => {
+        test('should get a user with an id', async () => {
+            await processData(Query.CREATE_USER);
+            const response = await request.get('/user/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.users).toBeDefined();
         });
 
         test('should return an error when getAll with invalid id', async () => {
-            const response2 = await request.get('/building/321');
+            const response2 = await request.get('/user/321');
 
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('getBuildings', () => {
-        test('should return a list of buildings', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.get('/building');
+    describe('getUsers', () => {
+        test('should return a list of users', async () => {
+            await processData(Query.CREATE_USER);
+            const response = await request.get('/user');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-            expect(response.body.data.buildings).toBeDefined();
+            expect(response.body.data.users).toBeDefined();
         });
     });
 
-    describe('deleteBuilding/:id', () => {
-        test('should delete the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.delete('/building/123');
+    describe('deleteUser/:id', () => {
+        test('should delete the user', async () => {
+            await processData(Query.CREATE_USER);
+            const response = await request.delete('/user/123');
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when delete with invalid id ', async () => {
-            const response2 = await request.delete('/building/321');
+            const response2 = await request.delete('/user/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
     });
 
-    describe('updateBuilding/:id', () => {
-        test('should update the building', async () => {
-            await processData(Query.CREATE_BUILDING);
-            const response = await request.put('/building/123').send({
+    describe('updateUser/:id', () => {
+        test('should update the user', async () => {
+            await processData(Query.CREATE_USER);
+            const response = await request.put('/user/123').send({
                 name: "TestUpdate"
             });
             expect(response.statusCode).toBe(HttpStatus.OK.code);
@@ -106,7 +118,7 @@ describe('Building controller', () => {
         });
 
         test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/building/321');
+            const response2 = await request.put('/user/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
