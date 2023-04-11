@@ -40,7 +40,7 @@ export const createUser = async (req: Request, res: Response) => {
   try {
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_USER, Object.values(data), (err: Error | null, results: any) => {
+    database.query(QUERY.CREATE_USER, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User created`));
     });
@@ -92,7 +92,7 @@ export const updateUser = async (req: Request, res: Response) => {
   try {
     const results: User = await processData(QUERY.SELECT_USER, req.params.id);
     const data = setUpdateData(req, results)
-    database.query(QUERY.UPDATE_USER, [...Object.values(data), req.params.id], (err: Error | null, results: any) => {
+    database.query(QUERY.UPDATE_USER, [...Object.values(data), req.params.id], () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User updated`, { id: req.params.id, ...req.body }));
     });
@@ -110,7 +110,7 @@ export const deleteUser = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting user`);
   try {
     await processData(QUERY.SELECT_USER, req.params.id);
-    database.query(QUERY.DELETE_USER, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_USER, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));
     });

@@ -37,7 +37,7 @@ export const createFloor = async (req: Request, res: Response) => {
     await processData(QUERY.SELECT_BUILDING, req.body.building_id);
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_FLOOR, Object.values(data), (err: Error | null, results: any) => {
+    database.query(QUERY.CREATE_FLOOR, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor created`));
     });
@@ -97,7 +97,7 @@ export const updateFloor = async (req: Request, res: Response) => {
     const results: Floor = await processData(QUERY.SELECT_FLOOR, req.params.id)
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating floor`);
-    database.query(QUERY.UPDATE_FLOOR, [...Object.values(data), req.params.id], (err: Error | null, results: any) => {
+    database.query(QUERY.UPDATE_FLOOR, [...Object.values(data), req.params.id], () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor updated`, { id: req.params.id, ...req.body }));
     });
@@ -116,7 +116,7 @@ export const deleteFloor = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting floor`);
   try {
     await processData(QUERY.SELECT_FLOOR, req.params.id);
-    database.query(QUERY.DELETE_FLOOR, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_FLOOR, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
     });

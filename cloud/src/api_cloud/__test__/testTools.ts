@@ -27,7 +27,7 @@ const QUERY = {
 
 function processData(query: string) {
     return new Promise((resolve, reject) => {
-        pool.query(query, (err: Error, result: any) => {
+        pool.query(query, (err: Error, result: unknown) => {
             if (err) {
                 reject(err);
             } else {

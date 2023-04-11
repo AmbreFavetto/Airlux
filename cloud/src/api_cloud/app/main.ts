@@ -5,11 +5,10 @@ import logger from './util/logger';
 
 dotenv.config();
 
-const start = (port: Number) => {
+const start = (port: number) => {
     try {
         app.listen(port, () => logger.info(`Server running on: ${ip.address()}:${port}`));
     } catch (err) {
-        console.error(err);
         process.exit();
     }
 };

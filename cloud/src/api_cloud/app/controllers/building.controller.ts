@@ -34,7 +34,7 @@ export const createBuilding = async (req: Request, res: Response) => {
   try {
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_BUILDING, Object.values(data), (err: Error | null, results: any) => {
+    database.query(QUERY.CREATE_BUILDING, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
     });
@@ -104,7 +104,7 @@ export const deleteBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting building`);
   try {
     await processData(QUERY.SELECT_BUILDING, req.params.id);
-    database.query(QUERY.DELETE_BUILDING, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_BUILDING, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
     });

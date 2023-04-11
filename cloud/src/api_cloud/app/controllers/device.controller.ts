@@ -7,10 +7,8 @@ import deviceCreateSchema, { deviceUpdateSchema } from '../models/device.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Device from '../interfaces/device.interface';
-import Room from '../interfaces/room.interface';
 
 const listActuator = ["lamp", "lamp_rgb", "pane", "radiator", "air_conditioning"]
-//const listCaptor = ["humidity", "temperature", "pressure"]
 
 function setData(req: Request, id: string) {
   const data: Device = {
@@ -48,7 +46,7 @@ export const createDevice = async (req: Request, res: Response) => {
       req.body.type = "sensor"
     }
     const data = setData(req, id);
-    database.query(QUERY.CREATE_DEVICE, Object.values(data), (err: Error | null, results: any) => {
+    database.query(QUERY.CREATE_DEVICE, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`));
     });
@@ -115,7 +113,7 @@ export const updateDevice = async (req: Request, res: Response) => {
     }
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating device`);
-    database.query(QUERY.UPDATE_DEVICE, [...Object.values(data), req.params.id], (err: Error | null, results: any) => {
+    database.query(QUERY.UPDATE_DEVICE, [...Object.values(data), req.params.id], () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device updated`, { id: req.params.id, ...req.body }));
     });
@@ -133,7 +131,7 @@ export const deleteDevice = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting Device`);
   try {
     await processData(QUERY.SELECT_DEVICE, req.params.id);
-    database.query(QUERY.DELETE_DEVICE, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_DEVICE, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`));
     });

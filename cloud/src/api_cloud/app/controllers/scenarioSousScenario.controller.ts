@@ -7,8 +7,6 @@ import scenarioSousScenarioCreateSchema, { scenarioSousScenarioUpdateSchema } fr
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import ScenarioSousScenario from '../interfaces/scenarioSousScenario.interface';
-import Scenario from '../interfaces/scenario.interface';
-import SousScenario from '@/interfaces/sousScenario.interface';
 
 function setData(req: Request, id: string) {
   const data: ScenarioSousScenario = {
@@ -38,7 +36,7 @@ export const createScenarioSousScenario = async (req: Request, res: Response) =>
     await processData(QUERY.SELECT_SOUS_SCENARIO, req.body.sous_scenario_id);
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_SCENARIO_SOUS_SCENARIO, Object.values(data), (err: Error | null, results: any) => {
+    database.query(QUERY.CREATE_SCENARIO_SOUS_SCENARIO, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `scenarioSousScenario created`));
     });
@@ -120,7 +118,7 @@ export const deleteScenarioSousScenario = async (req: Request, res: Response) =>
   logger.info(`${req.method} ${req.originalUrl}, deleting scenarioSousScenario`);
   try {
     await processData(QUERY.SELECT_SCENARIO_SOUS_SCENARIO, req.params.id);
-    database.query(QUERY.DELETE_SCENARIO_SOUS_SCENARIO, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_SCENARIO_SOUS_SCENARIO, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `scenarioSousScenario deleted`));
     });

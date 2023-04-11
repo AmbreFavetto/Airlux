@@ -113,7 +113,7 @@ export const deleteRoom = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting room`);
   try {
     await processData(QUERY.SELECT_ROOM, req.params.id);
-    database.query(QUERY.DELETE_ROOM, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_ROOM, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room deleted`));
     });

@@ -54,7 +54,7 @@ export const createSousScenario = async (req: Request, res: Response) => {
     }
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_SOUS_SCENARIO, Object.values(data), (err: Error | null, results: any) => {
+    database.query(QUERY.CREATE_SOUS_SCENARIO, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `sousScenario created`));
     });
@@ -131,7 +131,7 @@ export const deleteSousScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting sousScenario`);
   try {
     await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id);
-    database.query(QUERY.DELETE_SOUS_SCENARIO, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_SOUS_SCENARIO, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `sousScenario deleted`));
     });

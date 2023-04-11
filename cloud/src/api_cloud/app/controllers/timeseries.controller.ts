@@ -38,7 +38,7 @@ export const createTimeseries = (req: Request, res: Response) => {
   try {
     const id = uuidv4();
     const data = setData(req, id);
-    database.query(QUERY.CREATE_TIMESERIES, Object.values(data), (err: Error | null, results: any) => {
+    database.query(QUERY.CREATE_TIMESERIES, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Timeseries created`));
     });
@@ -90,7 +90,7 @@ export const updateTimeseries = async (req: Request, res: Response) => {
   try {
     const results: Timeseries = await processData(QUERY.SELECT_TIMESERIES, req.params.id);
     const data = setUpdateData(req, results)
-    database.query(QUERY.UPDATE_TIMESERIES, [...Object.values(data), req.params.id], (err: Error | null, results: any) => {
+    database.query(QUERY.UPDATE_TIMESERIES, [...Object.values(data), req.params.id], () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries updated`, { id: req.params.id, ...req.body }));
     });
@@ -108,7 +108,7 @@ export const deleteTimeseries = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting timeseries`);
   try {
     await processData(QUERY.SELECT_TIMESERIES, req.params.id);
-    database.query(QUERY.DELETE_TIMESERIES, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_TIMESERIES, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries deleted`));
     });

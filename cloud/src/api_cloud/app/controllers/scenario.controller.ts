@@ -101,7 +101,7 @@ export const deleteScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting Scenario`);
   try {
     await processData(QUERY.SELECT_SCENARIO, req.params.id);
-    database.query(QUERY.DELETE_SCENARIO, req.params.id, (err: Error | null, results: any) => {
+    database.query(QUERY.DELETE_SCENARIO, req.params.id, () => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario deleted`));
     });

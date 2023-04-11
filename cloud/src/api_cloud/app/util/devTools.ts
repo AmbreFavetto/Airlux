@@ -1,5 +1,4 @@
 import database from '../config/db.config'
-import logger from '../util/logger';
 import { Pool } from 'mysql';
 
 const HttpStatus = {
