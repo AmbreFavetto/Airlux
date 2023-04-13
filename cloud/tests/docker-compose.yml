@@ -5,7 +5,7 @@ services:
     volumes:
       - ../src/db_cloud/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
     ports:
-      - 3306:8306
+      - 8306:3306
     environment:
       MYSQL_DATABASE: airlux_cloud_db
       MYSQL_USER: admin
