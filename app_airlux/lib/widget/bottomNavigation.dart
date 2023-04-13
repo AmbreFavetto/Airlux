@@ -4,11 +4,10 @@ import 'package:app_airlux/pages/home_page.dart';
 import 'package:app_airlux/scenarios/scenarios_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
-import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:provider/provider.dart';
 import '../models/buildings/building_data.dart';
 import '../models/scenarios/scenario_data.dart';
-import '../pages/profile_page.dart';
+import '../pages/setting_page.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -50,7 +49,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                       : (index == 2) //Scénarios
                           ? currentTitle = 'Scénarios'
                           : (index == 3) //Profil
-                              ? currentTitle = 'Profil'
+                              ? currentTitle = 'Paramètres'
                               : currentTitle = '';
 
               (index == 0) //Home
@@ -111,14 +110,14 @@ class _BottomNavigationState extends State<BottomNavigation> {
             BubbleBottomBarItem(
               backgroundColor: kDarkPurple,
               icon: Icon(
-                Icons.person,
+                Icons.settings,
                 color: Colors.black,
               ),
               activeIcon: Icon(
-                Icons.person,
+                Icons.settings,
                 color: kDarkPurple,
               ),
-              title: Text('Profil'),
+              title: Text('Paramètres'),
             ),
           ],
         ),
@@ -147,7 +146,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                           ),
                         )
                       : (currentIndex == 3) //Profil
-                          ? const ProfilePage()
+                          ? const SettingPage()
                           : const HomePage(), //Else
         ));
   }

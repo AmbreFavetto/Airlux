@@ -17,6 +17,7 @@ class WelcomePage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
+            const SizedBox(height: 30),
             DelayedAnimation(
               delay: 750,
               child: Hero(
@@ -54,39 +55,34 @@ class WelcomePage extends StatelessWidget {
               delay: 1250,
               child: Container(
                 margin: const EdgeInsets.symmetric(
-                  vertical: 45,
                   horizontal: 40,
                 ),
                 child: Column(
                   children: [
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     Navigator.of(context).pushNamed('/login');
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //     shape: const StadiumBorder(),
+                    //     padding: const EdgeInsets.all(13),
+                    //     backgroundColor: kDarkPurple,
+                    //   ),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: const [
+                    //       SizedBox(width: 10),
+                    //       Text(
+                    //         'CONNEXION',
+                    //       )
+                    //     ],
+                    //   ),
+                    // ),
+                    // const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamed('/login');
-                      },
-                      style: ElevatedButton.styleFrom(
-                        shape: const StadiumBorder(),
-                        padding: const EdgeInsets.all(13),
-                        backgroundColor: kDarkPurple,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          SizedBox(width: 10),
-                          Text(
-                            'CONNEXION',
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignupPage(),
-                          ),
-                        );
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/mainPage', (Route<dynamic> route) => false);
                       },
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
@@ -98,7 +94,7 @@ class WelcomePage extends StatelessWidget {
                         children: const [
                           SizedBox(width: 10),
                           Text(
-                            'INSCRIPTION',
+                            'COMMENCER',
                             style: TextStyle(
                               color: kDarkPurple,
                             ),
