@@ -1,5 +1,5 @@
 import 'package:app_airlux/models/devices/device_data.dart';
-import 'package:app_airlux/shared/objectContainer.dart';
+import 'package:app_airlux/shared/deviceContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../shared/textInformationStyle.dart';
@@ -31,13 +31,10 @@ class DevicesPage extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final device = deviceData.devices[index];
                   deviceData.getDevicesByRoomId(id);
-                  return ObjectContainer(
+                  return DeviceContainer(
                     icon: Icons.tungsten,
                     onDelete: () => deviceData.deleteDevice(device),
                     onEdit: () => {},
-                    onSelect: () {
-
-                    },
                     title: device.name.toString(),
                     id: device.id.toString(),
                   );
