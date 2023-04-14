@@ -7,13 +7,26 @@ class CguPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.white.withOpacity(0),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+            size: 30,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(12.0),
           child: Column(children: const [
-            SizedBox(height: 20),
             Text(
-              'Conditions Générales d’Utilisation de l\'application mobile Airlux',
+              'Conditions Générales d\’Utilisation de l\'application mobile Airlux',
               style: TextStyle(
                 fontWeight: FontWeight.w700,
                 fontSize: 25.0,
@@ -24,17 +37,17 @@ class CguPage extends StatelessWidget {
             SizedBox(height: 40),
             ArticleStyle(
                 title:
-                'ARTICLE 1 – OBJET DES CONDITIONS GÉNÉRALES D’UTILISATION',
+                'ARTICLE 1 – OBJET DES CONDITIONS GÉNÉRALES D\’UTILISATION',
                 text: kArticle1),
             ArticleStyle(
-                title: 'ARTICLE 2 – OBJET ET FONCTIONNALITÉS DE L’APPLICATION',
+                title: 'ARTICLE 2 – OBJET ET FONCTIONNALITÉS DE L\’APPLICATION',
                 text: kArticle2),
             ArticleStyle(
-              title: 'ARTICLE 3 - ACCÈS À L’APPLICATION',
+              title: 'ARTICLE 3 - ACCÈS À L\’APPLICATION',
               text: kArticle3,
             ),
             ArticleStyle(
-              title: 'ARTICLE 4 – LICENCE D’UTILISATION',
+              title: 'ARTICLE 4 – LICENCE D\’UTILISATION',
               text: kArticle4,
             ),
           ]),
