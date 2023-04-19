@@ -1,43 +1,42 @@
 services:
   db_local:
-    build:
-      context: ./
-      dockerfile: ./docker_files/db_local/Dockerfile
+    image: redis:bullseye
+    ports:
+      - 8306:6379
     restart: always
     hostname: db_local
     environment:
       ME_CONFIG_REDIS_ADMINUSERNAME: admin
-      ME_CONFIG_REDIS_ADMINPASSWORD: pass
-      ME_CONFIG_REDIS_URL: redis://admin:pass@redislocal:6379/
+      ME_CONFIG_REDIS_ADMINPASSWORD: letmein
+      ME_CONFIG_REDIS_URL: redis://admin:letmein@redislocal:6379/
     volumes:
       - ./src/db_local:/var/db_local
 
   api_local:
-    build: 
+    build:
       context: ./
-      dockerfile: ./docker_files/api_local/Dockerfile
+      dockerfile: ./Dockerfile
     volumes:
       - ./src/api_local:/usr/app
     ports:
-      - 3000:3000
+      - 3030:3030
     environment:
       DB_HOST: db_local
       DB_PORT: 6379
       DB_USER: 'admin'
-      DB_PASSWORD: 'abc123'
+      DB_PASSWORD: 'letmein'
       DB_NAME: airlux_local_DB
       DB_CLOUD_HOST: db_cloud
       DB_CLOUD_PORT: 3306
       DB_CLOUD_USER: 'admin'
       DB_CLOUD_PASSWORD: 'letmein'
       DB_CLOUD_NAME: airlux_cloud_db
+      SERVER_PORT: 3030
     depends_on:
       - db_local
-   
+
   mqtt:
-    build:
-      context: ./
-      dockerfile: ./docker_files/mosquitto/Dockerfile
+    image: eclipse-mosquitto
     restart: unless-stopped
     volumes:
       - ./src/mosquitto/config/mosquitto.conf:/mosquitto/config/mosquitto.conf
