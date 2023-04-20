@@ -8,7 +8,7 @@ import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Device from '../interfaces/device.interface';
 
-const listActuator = ["lamp", "lamp_rgb", "pane", "radiator", "air_conditioning"]
+const listActuator = ["lamp", "lamp_rgb", "blind", "radiator", "air_conditioning"]
 
 function setData(req: Request, id: string) {
   const data: Device = {

@@ -36,6 +36,7 @@ export const createTimeseries = (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
+    // Add device_id verif
     const id = uuidv4();
     req.body.time = Date.now()
     const data = setData(req, id);

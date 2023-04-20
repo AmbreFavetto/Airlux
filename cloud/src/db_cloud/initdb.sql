@@ -48,7 +48,7 @@ CREATE TABLE device (
   name            VARCHAR(255) DEFAULT NULL,
   room_id         VARCHAR(255) NOT NULL,
   type            ENUM("actuator", "sensor") DEFAULT NULL,
-  category        ENUM("lamp", "lamp_rgb", "pane", "radiator", "air_conditioning", "humidity", "temperature", "pressure") DEFAULT NULL,
+  category        ENUM("lamp", "lamp_rgb", "blind", "radiator", "air_conditioning", "humidity", "temperature", "pressure") DEFAULT NULL,
   value           FLOAT NOT NULL,
   PRIMARY KEY (device_id),
   FOREIGN KEY (room_id) REFERENCES room (room_id) ON DELETE CASCADE
