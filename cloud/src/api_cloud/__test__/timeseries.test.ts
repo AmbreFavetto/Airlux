@@ -111,21 +111,4 @@ describe('Timeseries controller', () => {
         });
     });
 
-    describe('updateTimeseries/:id', () => {
-        test('should update the timeseries', async () => {
-            await processData(Query.CREATE_TIMESERIES)
-            const response = await request.put('/timeseries/123').send({
-                unit: 'test update'
-            });
-            expect(response.statusCode).toBe(HttpStatus.OK.code);
-            expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-        });
-
-        test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/timeseries/321');
-            expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
-            expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
-        });
-    });
-
 });

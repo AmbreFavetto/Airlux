@@ -19,16 +19,7 @@ function setData(req: Request, id: string) {
   return data;
 }
 
-function setUpdateData(req: Request, previousValues: Timeseries) {
-  const data: Timeseries = {};
-  req.body.unit ? data.unit = req.body.unit : data.unit = previousValues.unit
-  req.body.time ? data.time = req.body.time : data.time = previousValues.time
-  req.body.value ? data.value = req.body.value : data.value = previousValues.value
-  req.body.device_id ? data.device_id = req.body.device_id : data.device_id = previousValues.device_id
-  return data;
-}
-
-export const createTimeseries = (req: Request, res: Response) => {
+export const createTimeseries = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, creating timeseries`);
   const { error } = timeseriesCreateSchema.validate(req.body);
   if (error) {
@@ -36,7 +27,7 @@ export const createTimeseries = (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    // Add device_id verif
+    await processData(QUERY.SELECT_DEVICE, (req.body.device_id))
     const id = uuidv4();
     req.body.time = Date.now()
     const data = setData(req, id);
@@ -55,7 +46,7 @@ export const getTimeseriess = async (req: Request, res: Response) => {
   try {
     const results: Array<Timeseries> = await processDatas(QUERY.SELECT_TIMESERIESS, database);
     return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timerseriess retrieved`, { timeseriess: results }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseriess retrieved`, { timeseriess: results }));
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
@@ -79,30 +70,6 @@ export const getTimeseries = async (req: Request, res: Response) => {
     }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`))
-  }
-};
-
-export const updateTimeseries = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching timeseries`);
-  const { error } = timeseriesUpdateSchema.validate(req.body);
-  if (error) {
-    return res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
-  }
-  try {
-    const results: Timeseries = await processData(QUERY.SELECT_TIMESERIES, req.params.id);
-    const data = setUpdateData(req, results)
-    database.query(QUERY.UPDATE_TIMESERIES, [...Object.values(data), req.params.id], () => {
-      return res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Timeseries updated`, { id: req.params.id, ...req.body }));
-    });
-  } catch (err) {
-    if ((err as Error).message === "not_found") {
-      return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Timeseries by id ${req.params.id} was not found`));
-    }
-    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
