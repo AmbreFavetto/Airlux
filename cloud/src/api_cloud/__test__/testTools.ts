@@ -21,7 +21,7 @@ const QUERY = {
     DELETE_USERS: 'DELETE FROM user',
     CREATE_USER_BUILDING: 'INSERT INTO userBuilding(user_id, building_id, id) VALUES ("123", "123", "123")',
     DELETE_USER_BUILDINGS: 'DELETE FROM userBuilding',
-    CREATE_TIMESERIES: 'INSERT INTO timeseries(unit, timestamp, value, device_id, timeseries_id) VALUES ("unit", 1, 0.5, "123", "123")',
+    CREATE_TIMESERIES: 'INSERT INTO timeseries(unit, time, value, device_id, timeseries_id) VALUES ("unit", 1, 0.5, "123", "123")',
     DELETE_TIMESERIESS: 'DELETE FROM timeseries',
 };
 
