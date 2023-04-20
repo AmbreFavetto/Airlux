@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class DeviceData extends ChangeNotifier {
   var str;
 
-  List<Device> devices = [Device(name: 'firstDevice', id: 1, room_id: 1), Device(name: 'secondDevice', id: 2, room_id: 2)];
+  List<Device> devices = [Device(name: 'firstDevice', id: 1, room_id: 1, category:'lamp'), Device(name: 'secondDevice', id: 2, room_id: 2, category:'lamp_rgb'), Device(name: 'trois', id: 3, room_id: 2, category:'blind'), Device(name: 'quatre', id: 4, room_id: 2, category:'radiator'), Device(name: 'cinq', id: 5, room_id: 2, category:'air_conditioning')];
 
   void getAllDevices() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3000/device'));

@@ -32,11 +32,11 @@ class DevicesPage extends StatelessWidget {
                   final device = deviceData.devices[index];
                   deviceData.getDevicesByRoomId(id);
                   return DeviceContainer(
-                    icon: Icons.tungsten,
                     onDelete: () => deviceData.deleteDevice(device),
                     onEdit: () => {},
                     title: device.name.toString(),
                     id: device.id.toString(),
+                    category: device.category.toString(),
                   );
                 },
               ),
