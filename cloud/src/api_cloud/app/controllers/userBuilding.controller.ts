@@ -32,7 +32,7 @@ export const createUserBuilding = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    processData(QUERY.SELECT_USER, req.body.user_id);
+    await processData(QUERY.SELECT_USER, req.body.user_id);
     await processData(QUERY.SELECT_BUILDING, req.body.building_id);
     const id = uuidv4();
     const data = setData(req, id);
