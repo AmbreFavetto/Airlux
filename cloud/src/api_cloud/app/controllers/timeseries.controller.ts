@@ -37,6 +37,7 @@ export const createTimeseries = (req: Request, res: Response) => {
   }
   try {
     const id = uuidv4();
+    req.body.time = Date.now()
     const data = setData(req, id);
     database.query(QUERY.CREATE_TIMESERIES, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)

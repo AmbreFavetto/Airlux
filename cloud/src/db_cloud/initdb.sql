@@ -79,7 +79,7 @@ CREATE TABLE scenarioSousScenario (
 CREATE TABLE timeseries (
   timeseries_id   VARCHAR(255) NOT NULL,
   unit            VARCHAR(255) DEFAULT NULL,
-  time            TIMESTAMP NOT NULL,
+  time            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   value           FLOAT,
   device_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (timeseries_id),
