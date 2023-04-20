@@ -3,8 +3,8 @@ services:
     image: mysql:8.0
     command: --default-authentication-plugin=mysql_native_password
     volumes:
-      - ./src/db_cloud/initdb:/var/lib/mysql
-      - ./src/db_cloud/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
+      - ../db_cloud/initdb:/var/lib/mysql
+      - ../db_cloud/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
     environment:
       MYSQL_DATABASE: airlux_cloud_db
       MYSQL_USER: admin
@@ -20,8 +20,7 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     volumes:
-      - ./src/api_cloud:/usr/app
-      - /usr/app/node_modules
+      - ./app:/usr/app/app
     ports:
       - 3010:3010
     environment:

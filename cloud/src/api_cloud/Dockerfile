@@ -1,9 +1,9 @@
 FROM node:alpine as builder
 
 WORKDIR /usr/app
-COPY package.json ./
-COPY package-lock.json ./
+COPY ./package*.json ./
 RUN npm ci
+
 COPY . .
 RUN npm run build
 RUN rm -rf ./node_modules
@@ -17,3 +17,4 @@ COPY --from=builder /usr/app/package.json /usr/app/package.json
 COPY --from=builder /usr/app/node_modules /usr/app/node_modules
 
 CMD ["npm", "start"]
+# ENTRYPOINT ["tail", "-f", "/dev/null"]
