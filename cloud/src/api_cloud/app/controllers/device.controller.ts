@@ -16,6 +16,7 @@ function setData(req: Request, id: string) {
     room_id: req.body.room_id,
     type: req.body.type,
     category: req.body.category,
+    value: 0,
     device_id: id
   };
   return data;
@@ -27,6 +28,7 @@ function setUpdateData(req: Request, previousValues: Device) {
   req.body.room_id ? data.room_id = req.body.room_id : data.room_id = previousValues.room_id
   req.body.type ? data.type = req.body.type : data.type = previousValues.type
   req.body.category ? data.category = req.body.category : data.category = previousValues.category
+  req.body.value ? data.value = req.body.value : data.value = previousValues.value
   return data;
 }
 
@@ -109,6 +111,8 @@ export const updateDevice = async (req: Request, res: Response) => {
         req.body.type = "actuator"
       } else {
         req.body.type = "sensor"
+        // récupérer value envoyée par esp32 (mqtt)
+        req.body.value = 8 // valeur temporaire le temps de faire la connexion mqtt
       }
     }
     const data = setUpdateData(req, results);

@@ -49,6 +49,7 @@ CREATE TABLE device (
   room_id         VARCHAR(255) NOT NULL,
   type            ENUM("actuator", "sensor") DEFAULT NULL,
   category        ENUM("lamp", "lamp_rgb", "pane", "radiator", "air_conditioning", "humidity", "temperature", "pressure") DEFAULT NULL,
+  value           FLOAT NOT NULL,
   PRIMARY KEY (device_id),
   FOREIGN KEY (room_id) REFERENCES room (room_id) ON DELETE CASCADE
 );
@@ -80,7 +81,7 @@ CREATE TABLE timeseries (
   timeseries_id   VARCHAR(255) NOT NULL,
   unit            VARCHAR(255) DEFAULT NULL,
   time            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  value           FLOAT,
+  value           FLOAT NOT NULL,
   device_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (timeseries_id),
   FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
