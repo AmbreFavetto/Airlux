@@ -1,6 +1,6 @@
 interface Timeseries {
     unit?: string
-    timestamp?: string
+    time?: string
     value?: string
     device_id?: string
     timeseries_id?: string

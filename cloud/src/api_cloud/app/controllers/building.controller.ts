@@ -54,7 +54,7 @@ export const getBuildings = async (req: Request, res: Response) => {
     logger.error(err);
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No buildings found`));
     }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred ${err}`));

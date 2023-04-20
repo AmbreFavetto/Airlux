@@ -56,7 +56,7 @@ CREATE TABLE device (
 CREATE TABLE sousScenario(
   sous_scenario_id     VARCHAR(255) NOT NULL,
   device_id            VARCHAR(255) NOT NULL,
-  action  ENUM("on", "off", "color", "intensity", "open", "close", "temperature"),
+  action               ENUM("on", "off", "color", "intensity", "open", "close", "temperature"),
   PRIMARY KEY (sous_scenario_id),
   FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
 );
@@ -68,8 +68,8 @@ CREATE TABLE scenario (
 );
 
 CREATE TABLE scenarioSousScenario (
-  id              VARCHAR(255) NOT NULL,
-  scenario_id     VARCHAR(255) NOT NULL,
+  id                     VARCHAR(255) NOT NULL,
+  scenario_id            VARCHAR(255) NOT NULL,
   sous_scenario_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (scenario_id) REFERENCES scenario (scenario_id) ON DELETE CASCADE,
@@ -79,7 +79,7 @@ CREATE TABLE scenarioSousScenario (
 CREATE TABLE timeseries (
   timeseries_id   VARCHAR(255) NOT NULL,
   unit            VARCHAR(255) DEFAULT NULL,
-  timestamp       BIGINT NOT NULL,
+  time            TIMESTAMP NOT NULL,
   value           FLOAT,
   device_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (timeseries_id),

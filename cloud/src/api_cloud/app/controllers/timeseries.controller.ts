@@ -11,7 +11,7 @@ import Timeseries from '../interfaces/timeseries.interface';
 function setData(req: Request, id: string) {
   const data: Timeseries = {
     unit: req.body.unit,
-    timestamp: req.body.timestamp,
+    time: req.body.time,
     value: req.body.value,
     device_id: req.body.device_id,
     timeseries_id: id
@@ -22,7 +22,7 @@ function setData(req: Request, id: string) {
 function setUpdateData(req: Request, previousValues: Timeseries) {
   const data: Timeseries = {};
   req.body.unit ? data.unit = req.body.unit : data.unit = previousValues.unit
-  req.body.timestamp ? data.timestamp = req.body.timestamp : data.timestamp = previousValues.timestamp
+  req.body.time ? data.time = req.body.time : data.time = previousValues.time
   req.body.value ? data.value = req.body.value : data.value = previousValues.value
   req.body.device_id ? data.device_id = req.body.device_id : data.device_id = previousValues.device_id
   return data;
