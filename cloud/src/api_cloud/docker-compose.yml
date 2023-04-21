@@ -36,6 +36,14 @@ services:
     networks:
       - cloud_network
 
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - cloud_network
+
 networks:
   cloud_network:
 
