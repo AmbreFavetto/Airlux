@@ -3,7 +3,7 @@ import ResponseFormat from '../domain/responseFormat';
 import { Request, Response } from 'express';
 import logger from '../util/logger';
 import QUERY from '../query/timeseries.query';
-import timeseriesCreateSchema, { timeseriesUpdateSchema } from '../models/timeseries.model';
+import timeseriesCreateSchema from '../models/timeseries.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Timeseries from '../interfaces/timeseries.interface';
@@ -11,7 +11,6 @@ import Timeseries from '../interfaces/timeseries.interface';
 function setData(req: Request, id: string) {
   const data: Timeseries = {
     unit: req.body.unit,
-    time: req.body.time,
     value: req.body.value,
     device_id: req.body.device_id,
     timeseries_id: id
@@ -29,13 +28,16 @@ export const createTimeseries = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_DEVICE, (req.body.device_id))
     const id = uuidv4();
-    req.body.time = Date.now()
     const data = setData(req, id);
     database.query(QUERY.CREATE_TIMESERIES, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Timeseries created`));
     });
   } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.body.device_id} was not found`));
+    }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
