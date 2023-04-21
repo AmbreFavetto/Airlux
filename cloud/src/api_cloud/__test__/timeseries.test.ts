@@ -29,8 +29,7 @@ describe('Timeseries controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     unit: 'test unit',
-                    time: Date.now(),
-                    value: 0.5,
+                    value: 1,
                     device_id: "123"
                 });
 
@@ -44,8 +43,7 @@ describe('Timeseries controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test timeseries',
-                    time: Date.now(),
-                    value: 0.5,
+                    value: 1,
                     device_id: "123"
                 });
 
@@ -59,8 +57,7 @@ describe('Timeseries controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     unit: 1,
-                    time: Date.now(),
-                    value: 0.5,
+                    value: 1,
                     device_id: "123"
                 });
 

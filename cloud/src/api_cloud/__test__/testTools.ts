@@ -8,7 +8,7 @@ const QUERY = {
     DELETE_FLOORS: 'DELETE FROM floor',
     CREATE_ROOM: 'INSERT INTO room(name, floor_id, room_id) VALUES ("testRoom", "123", "123")',
     DELETE_ROOMS: 'DELETE FROM room',
-    CREATE_DEVICE: 'INSERT INTO device(name, room_id, device_id, type, category) VALUES ("testDevice", "123", "123", "actuator", "lamp")',
+    CREATE_DEVICE: 'INSERT INTO device(name, room_id, device_id, category, value) VALUES ("testDevice", "123", "123", "lamp", 0.5)',
     DELETE_DEVICES: 'DELETE FROM device',
     CREATE_SCENARIO: 'INSERT INTO scenario(name, scenario_id) VALUES ("testScenario", "123")',
     CREATE_OTHER_SCENARIO: 'INSERT INTO scenario(name, scenario_id) VALUES ("testScenario", "234")',
@@ -21,7 +21,7 @@ const QUERY = {
     DELETE_USERS: 'DELETE FROM user',
     CREATE_USER_BUILDING: 'INSERT INTO userBuilding(user_id, building_id, id) VALUES ("123", "123", "123")',
     DELETE_USER_BUILDINGS: 'DELETE FROM userBuilding',
-    CREATE_TIMESERIES: 'INSERT INTO timeseries(unit, time, value, device_id, timeseries_id) VALUES ("unit", 1, 0.5, "123", "123")',
+    CREATE_TIMESERIES: 'INSERT INTO timeseries(unit, time, value, device_id, timeseries_id) VALUES ("unit", "2023-04-21 12:00:00", 0.5, "123", "123")',
     DELETE_TIMESERIESS: 'DELETE FROM timeseries',
 };
 
