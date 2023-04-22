@@ -1,5 +1,5 @@
 import express from 'express';
-import { getScenarios, createScenario, getScenario, deleteScenario, updateScenario } from '../controllers/scenario.controller.js';
+import { getScenarios, createScenario, getScenario, deleteScenario, updateScenario } from '../controllers/scenario.controller';
 
 const scenarioRoutes = express.Router();
 
