@@ -39,6 +39,12 @@ services:
   grafana:
     image: grafana/grafana
     restart: always
+    environment:
+      GF_LOG_MODE: console file
+      GF_LOG_FILE_PATH: /var/log/grafana/grafana.log
+      GF_LOG_LEVEL: debug
+    volumes:
+      - ../grafana:/var/log/grafana
     ports:
       - 3000:3000
     networks:
