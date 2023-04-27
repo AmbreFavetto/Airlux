@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:syncfusion_flutter_sliders/sliders.dart';
 
 import '../constants.dart';
 
@@ -34,8 +35,12 @@ class _DeviceContainerState extends State<DeviceContainer> {
 
   var _lampIntensity = 50.0;
   Color _lampRgbPickerColor = const Color(0xffffffff);
+  double _currentSliderValue = 20;
+
   @override
   Widget build(BuildContext context) {
+    double mWidth = MediaQuery.of(context).size.width;
+
     return Row(
       children: [
         InkWell(
@@ -57,7 +62,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            const Text('Lampe'),
+                            const TitleModalBottom(text: 'Lampe'),
                             const Text('On/Off'),
                             Switch(
                               value: _isActive,
@@ -82,28 +87,58 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                 ),
                               ],
                             ),
-                            SliderTheme(
-                              data: SliderTheme.of(context).copyWith(
-                                inactiveTrackColor: const Color(0xFF8D8E98),
-                                activeTrackColor: Colors.white,
-                                thumbColor: kLightRed,
-                                overlayColor: kDarkRed,
-                                thumbShape: const RoundSliderThumbShape(
-                                    enabledThumbRadius: 15.0),
-                                overlayShape: const RoundSliderOverlayShape(
-                                    overlayRadius: 30.0),
-                              ),
-                              child: Slider(
-                                value: _lampIntensity,
-                                min: 0.0,
-                                max: 100.0,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _lampIntensity = value;
-                                  });
-                                },
-                              ),
+                            Slider(
+                              value: _currentSliderValue,
+                              max: 100,
+                              divisions: 5,
+                              label: _currentSliderValue.round().toString(),
+                              onChanged: (double value) {
+                                setState(() {
+                                  _currentSliderValue = value;
+                                });
+                              },
                             ),
+                            SfSlider(
+                              min: 0.0,
+                              max: 100.0,
+                              value: _currentSliderValue,
+                              interval: 20,
+                              showTicks: true,
+                              showLabels: true,
+                              enableTooltip: true,
+                              minorTicksPerInterval: 1,
+                              onChanged: (dynamic value){
+                                setState(() {
+                                  _currentSliderValue = value;
+                                });
+                              },
+                            ),
+                            // GestureDetector(
+                            //   child: Container(
+                            //     child: SliderTheme(
+                            //       data: SliderTheme.of(context).copyWith(
+                            //         inactiveTrackColor: const Color(0xFF8D8E98),
+                            //         activeTrackColor: const Color(0xFF8D8E98),
+                            //         thumbColor: kLightRed,
+                            //         overlayColor: kDarkRed,
+                            //         thumbShape: const RoundSliderThumbShape(
+                            //             enabledThumbRadius: 15.0),
+                            //         overlayShape: const RoundSliderOverlayShape(
+                            //             overlayRadius: 30.0),
+                            //       ),
+                            //       child: Slider(
+                            //         value: _lampIntensity,
+                            //         min: 0.0,
+                            //         max: 100.0,
+                            //         onChanged: (value) {
+                            //           setState(() {
+                            //             _lampIntensity = value;
+                            //           });
+                            //         },
+                            //       ),
+                            //     ),
+                            //   )
+                            // ),
                             IconButton(
                               icon: const Icon(Icons.expand_more,
                                   color: Colors.black26),
@@ -134,7 +169,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            const Text('Lampe RGB'),
+                            const TitleModalBottom(text: 'Lampe RGB'),
+                            const Text('On/Off'),
                             Switch(
                               value: _isActive,
                               activeColor: kOrange,
@@ -184,7 +220,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            const Text('Volets'),
+                            const TitleModalBottom(text: 'Volets'),
+                            const Text('On/Off'),
                             Switch(
                               value: _isActive,
                               activeColor: kOrange,
@@ -224,7 +261,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            const Text('Radiateur'),
+                            const TitleModalBottom(text: 'Radiateur'),
+                            const Text('On/Off'),
                             Switch(
                               value: _isActive,
                               activeColor: kOrange,
@@ -264,7 +302,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            const Text('Climatiseur'),
+                            const TitleModalBottom(text: 'Climatiseur'),
+                            const Text('On/Off'),
                             Switch(
                               value: _isActive,
                               activeColor: kOrange,
@@ -298,8 +337,12 @@ class _DeviceContainerState extends State<DeviceContainer> {
             });
           },
           child: Container(
-            margin: const EdgeInsets.only(
-                left: 15.0, right: 10.0, top: 5.0, bottom: 5.0),
+            margin: EdgeInsets.only(
+              left: (mWidth * 0.02),
+              right: (mWidth * 0.01),
+              top: 5.0,
+              bottom: 5.0,
+            ),
             padding: const EdgeInsets.all(10.0),
             height: 150,
             width: 150,
@@ -353,7 +396,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                           ),
                   ),
                   Padding(
-                    padding: EdgeInsets.only(top: 3),
+                    padding: const EdgeInsets.only(top: 3),
                     child: Text(
                       widget.title,
                       textAlign: TextAlign.center,
@@ -365,7 +408,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: EdgeInsets.only(top: 2.0),
+                      padding: const EdgeInsets.only(top: 2.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -393,3 +436,23 @@ class _DeviceContainerState extends State<DeviceContainer> {
     );
   }
 }
+
+class TitleModalBottom extends StatelessWidget {
+  const TitleModalBottom({
+    Key? key, required this.text,
+  }) : super(key: key);
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(15.0),
+      child: Text(
+        text,
+        style: const TextStyle(color: kDarkPurple, fontSize: 25.0),
+      ),
+    );
+  }
+}
+

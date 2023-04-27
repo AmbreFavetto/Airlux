@@ -9,6 +9,7 @@ class DevicesPage extends StatelessWidget {
   const DevicesPage({super.key, required this.id, required this.name});
   final String id;
   final String name;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
