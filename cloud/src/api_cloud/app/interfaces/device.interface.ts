@@ -3,6 +3,7 @@ interface Device {
     room_id?: string
     type?: string
     category?: string
+    value?: number
     device_id?: string
 }
 

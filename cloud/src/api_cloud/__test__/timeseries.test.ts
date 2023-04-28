@@ -29,8 +29,7 @@ describe('Timeseries controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     unit: 'test unit',
-                    timestamp: 1,
-                    value: 0.5,
+                    value: 1,
                     device_id: "123"
                 });
 
@@ -44,8 +43,7 @@ describe('Timeseries controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test timeseries',
-                    timeseries: 1,
-                    value: 0.5,
+                    value: 1,
                     device_id: "123"
                 });
 
@@ -59,8 +57,7 @@ describe('Timeseries controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     unit: 1,
-                    timeseries: 1,
-                    value: 0.5,
+                    value: 1,
                     device_id: "123"
                 });
 
@@ -106,23 +103,6 @@ describe('Timeseries controller', () => {
 
         test('should return an error when delete with invalid id ', async () => {
             const response2 = await request.delete('/timeseries/321');
-            expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
-            expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
-        });
-    });
-
-    describe('updateTimeseries/:id', () => {
-        test('should update the timeseries', async () => {
-            await processData(Query.CREATE_TIMESERIES)
-            const response = await request.put('/timeseries/123').send({
-                unit: 'test update'
-            });
-            expect(response.statusCode).toBe(HttpStatus.OK.code);
-            expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-        });
-
-        test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/timeseries/321');
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });

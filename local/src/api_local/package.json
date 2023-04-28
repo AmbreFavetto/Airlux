@@ -2,20 +2,12 @@
   "name": "api-redis",
   "version": "1.0.0",
   "description": "Node.js Restful CRUD API with Node.js, Express and Redis",
-  "type": "module",
-  "main": "servers.js",
   "scripts": {
-    "airlux-local-db": "node ./app/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "lint": "eslint .  --ext .ts",
+    "test": "NODE_ENV=test jest -i --colors --verbose"
   },
-  "keywords": [
-    "nodejs",
-    "express",
-    "redis",
-    "restapi"
-  ],
-  "author": "Ambre",
-  "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
@@ -23,10 +15,31 @@
     "ioredis": "^5.2.4",
     "ip": "^1.1.8",
     "joi": "^17.7.0",
+    "node": "^19.6.0",
     "pino": "^8.7.0",
     "pino-pretty": "^9.1.1",
+    "supertest": "^6.3.3",
+    "ts-node": "^10.9.1",
     "typescript": "^4.6.3",
-    "uuid": "^9.0.0",
-    "socket.io": "^4.5.4"
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.13",
+    "@types/express": "^4.17.17",
+    "@types/ip": "^1.1.0",
+    "@types/jest": "^29.4.2",
+    "@types/node": "^18.13.0",
+    "@types/supertest": "^2.0.12",
+    "@types/uuid": "^9.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.54.0",
+    "eslint": "^8.35.0",
+    "eslint-config-standard-with-typescript": "^34.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.6.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "jest": "^29.5.0",
+    "ts-jest": "^29.0.5",
+    "tsconfig-paths": "^4.1.2",
+    "typescript": "^4.9.5"
   }
 }

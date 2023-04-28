@@ -48,7 +48,8 @@ CREATE TABLE device (
   name            VARCHAR(255) DEFAULT NULL,
   room_id         VARCHAR(255) NOT NULL,
   type            ENUM("actuator", "sensor") DEFAULT NULL,
-  category        ENUM("lamp", "lamp_rgb", "pane", "radiator", "air_conditioning", "humidity", "temperature", "pressure") DEFAULT NULL,
+  category        ENUM("lamp", "lamp_rgb", "blind", "radiator", "air_conditioning", "humidity", "temperature", "pressure") DEFAULT NULL,
+  value           FLOAT NOT NULL,
   PRIMARY KEY (device_id),
   FOREIGN KEY (room_id) REFERENCES room (room_id) ON DELETE CASCADE
 );
@@ -56,7 +57,7 @@ CREATE TABLE device (
 CREATE TABLE sousScenario(
   sous_scenario_id     VARCHAR(255) NOT NULL,
   device_id            VARCHAR(255) NOT NULL,
-  action  ENUM("on", "off", "color", "intensity", "open", "close", "temperature"),
+  action               ENUM("on", "off", "color", "intensity", "open", "close", "temperature"),
   PRIMARY KEY (sous_scenario_id),
   FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
 );
@@ -68,8 +69,8 @@ CREATE TABLE scenario (
 );
 
 CREATE TABLE scenarioSousScenario (
-  id              VARCHAR(255) NOT NULL,
-  scenario_id     VARCHAR(255) NOT NULL,
+  id                     VARCHAR(255) NOT NULL,
+  scenario_id            VARCHAR(255) NOT NULL,
   sous_scenario_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (scenario_id) REFERENCES scenario (scenario_id) ON DELETE CASCADE,
@@ -79,8 +80,8 @@ CREATE TABLE scenarioSousScenario (
 CREATE TABLE timeseries (
   timeseries_id   VARCHAR(255) NOT NULL,
   unit            VARCHAR(255) DEFAULT NULL,
-  timestamp       BIGINT NOT NULL,
-  value           FLOAT,
+  time            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  value           FLOAT NOT NULL DEFAULT 0,
   device_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (timeseries_id),
   FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE

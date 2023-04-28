@@ -9,6 +9,7 @@ const deviceCreateSchema = Joi.object().keys({
 const deviceUpdateSchema = Joi.object().keys({
   name: Joi.string().optional(),
   category: Joi.string().optional().valid("lamp", "lamp rgb", "pane", "radiator", "air_conditioning"),
+  value: Joi.number().optional(),
   room_id: Joi.string().optional()
 });
 

@@ -1,0 +1,15 @@
+name: "linter"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  check-links:
+    runs-on: ${{ fromJSON('["ubuntu-latest", "self-hosted"]')[github.repository == 'github/Airlux'] }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
