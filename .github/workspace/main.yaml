@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [setupPipelines]
+    paths-ignore:
+      - "**/README.md" # ignore README changes
+  pull_request:
+    paths-ignore:
+      - "**/README.md" # ignore README changes
+
+env:
+  API_CLOUD_DIR: cloud/src/api_cloud
+  API_LOCAL_DIR: local/src/api_local
+  APPLICATION_DIR: app_airlux/test
+  DOCUMENTATION_DIR: airlux
+  ESP32_DIR: Arduino
+
+jobs:
+  lint_and_test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.x"
+
+      - name: Determine which directories were changed
+        id: changed_files
+        uses: leandrocarneiro/git-diff-paths@v1.0.1
+        with:
+          base: ${{ github.event.pull_request.base.sha }}
+
+      - name: Lint and test API Cloud
+        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.API_CLOUD_DIR) }}
+        run: |
+          cd ${{ env.API_CLOUD_DIR }}
+          npm ci
+          npm run lint
+          npm run test
+
+      - name: Lint and test API Local
+        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.API_LOCAL_DIR) }}
+        # run: |
+        #   cd ${{ env.API_LOCAL_DIR }}
+        #   npm ci
+        #   npm run lint
+        #   npm run test
+
+      - name: Lint and test Application
+        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.APPLICATION_DIR) }}
+        # run: |
+        #   cd ${{ env.APPLICATION_DIR }}
+        #   flutter pub get
+        #   flutter analyze
+        #   flutter test
+
+      - name: Lint and test Documentation
+        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.DOCUMENTATION_DIR) }}
+        # run: |
+        #   cd ${{ env.DOCUMENTATION_DIR }}
+        #   npm ci
+        #   npm run build
+
+      - name: Lint and test ESP32
+        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.ESP32_DIR) }}
+        # run: |
+        #   cd ${{ env.ESP32_DIR }}
+        #   make`
