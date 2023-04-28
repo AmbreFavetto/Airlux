@@ -12,7 +12,7 @@ on:
       - "**/README.md" # ignore README changes
 
 env:
-  API_CLOUD_DIR: cloud/src/api_cloud/__test__
+  API_CLOUD_DIR: cloud/src/api_cloud/__test__/testTools.ts
   API_LOCAL_DIR: local/src/api_local
   APPLICATION_DIR: app_airlux/test
   DOCUMENTATION_DIR: airlux
