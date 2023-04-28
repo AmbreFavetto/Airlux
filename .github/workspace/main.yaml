@@ -43,32 +43,3 @@ jobs:
           npm ci
           npm run lint
           npm run test
-
-      - name: Lint and test API Local
-        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.API_LOCAL_DIR) }}
-        # run: |
-        #   cd ${{ env.API_LOCAL_DIR }}
-        #   npm ci
-        #   npm run lint
-        #   npm run test
-
-      - name: Lint and test Application
-        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.APPLICATION_DIR) }}
-        # run: |
-        #   cd ${{ env.APPLICATION_DIR }}
-        #   flutter pub get
-        #   flutter analyze
-        #   flutter test
-
-      - name: Lint and test Documentation
-        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.DOCUMENTATION_DIR) }}
-        # run: |
-        #   cd ${{ env.DOCUMENTATION_DIR }}
-        #   npm ci
-        #   npm run build
-
-      - name: Lint and test ESP32
-        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.ESP32_DIR) }}
-        # run: |
-        #   cd ${{ env.ESP32_DIR }}
-        #   make`
