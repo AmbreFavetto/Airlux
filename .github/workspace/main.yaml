@@ -2,7 +2,8 @@ name: CI
 
 on:
   push:
-    branches: [setupPipelines]
+    branches:
+      - "setupPipelines"
     paths-ignore:
       - "**/README.md" # ignore README changes
   pull_request:
