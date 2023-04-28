@@ -35,7 +35,7 @@ jobs:
         id: changed_files
         run: |
           changed_files="$(git diff --name-only "setupPipelines")"
-          echo "::set-output name=files::$changed_files"
+          echo "OK"
 
       - name: Lint and test API Cloud
         if: ${{ contains(steps.changed_files.outputs.files, env.API_CLOUD_DIR) }}
