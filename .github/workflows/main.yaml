@@ -34,6 +34,7 @@ jobs:
       - name: Determine which directories were changed
         id: changed_files
         run: |
+          echo "$(git fetch)"
           echo "$(git log)"
           export CHANGED_FILES="$(git diff --name-only HEAD^ HEAD)"
           echo "Changed files: $CHANGED_FILES"
