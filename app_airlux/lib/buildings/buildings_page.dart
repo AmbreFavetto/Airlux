@@ -20,9 +20,9 @@ class _BuildingsPageState extends State<BuildingsPage> {
   //late IO.Socket socket;
 
   void initState() {
-  //  super.initState();
-  //  socket = initSocket();
-  //  connectSocket(socket);
+    //  super.initState();
+    //  socket = initSocket();
+    //  connectSocket(socket);
     Provider.of<BuildingData>(context, listen: false).getAllBuildings();
   }
 
@@ -52,7 +52,14 @@ class _BuildingsPageState extends State<BuildingsPage> {
                   final building = buildingData.buildings[index];
                   return ObjectContainer(
                     icon: Icons.business,
-                    onDelete: () => buildingData.deleteBuilding(building),
+                    onDelete: () => {
+                      buildingData.deleteBuilding(building),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Le bâtiment a été supprimé.'),
+                        ),
+                      )
+                    },
                     onEdit: () => {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const AddBuildingPage()))
@@ -83,10 +90,9 @@ class _BuildingsPageState extends State<BuildingsPage> {
       ),
       floatingActionButton: AddButton(
           onTap: () {
-            Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AddBuildingPage(),
-                ));
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const AddBuildingPage(),
+            ));
           },
           title: 'Ajouter un batiment'),
     );
