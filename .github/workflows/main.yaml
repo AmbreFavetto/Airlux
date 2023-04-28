@@ -37,8 +37,8 @@ jobs:
         id: changed_files
         run: |
           export CHANGED_FILES="$(git diff --name-only HEAD^ HEAD)"
-          echo "Changed files: $(CHANGED_FILES)"
-          echo "Cloud dir: $(env.API_CLOUD_DIR)"
+          echo "Changed files: ${{CHANGED_FILES}}"
+          echo "Cloud dir: ${{env.API_CLOUD_DIR}}"
           echo "${{ contains(env.CHANGED_FILES, env.API_CLOUD_DIR) }}"
 
       - name: Lint and test API Cloud
