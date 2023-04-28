@@ -38,8 +38,8 @@ jobs:
         run: |
           export CHANGED_FILES="$(git diff --name-only HEAD^ HEAD)"
           echo $CHANGED_FILES
-          echo $API_CLOUD_DIR
-          echo "${{ contains(env.CHANGED_FILES, API_CLOUD_DIR) }}"
+          echo $(env.API_CLOUD_DIR)
+          echo "${{ contains(env.CHANGED_FILES, env.API_CLOUD_DIR) }}"
 
       - name: Lint and test API Cloud
         if: ${{ contains(env.CHANGED_FILES, env.API_CLOUD_DIR) }}
