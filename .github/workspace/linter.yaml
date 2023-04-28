@@ -1,5 +1,5 @@
 name: "linter"
-# test2
+# test
 on:
   workflow_dispatch:
   push:
