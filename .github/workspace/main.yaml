@@ -3,7 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - "setupPipelines"
+      - main
     paths-ignore:
       - "**/README.md" # ignore README changes
   pull_request:
