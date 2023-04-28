@@ -12,7 +12,7 @@ class RoomData extends ChangeNotifier {
   Room room = Room(name: 'room', id: 1);
 
   void getAllRooms() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/room'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:3010/room'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['rooms'];
@@ -24,7 +24,7 @@ class RoomData extends ChangeNotifier {
   }
 
   void getRoomsByFloorId(String id) async{
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/room'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:3010/room'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['rooms'];
@@ -37,7 +37,7 @@ class RoomData extends ChangeNotifier {
   }
 
   void getRoomById(int id) async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/room', id));
+    final response = await http.get(Uri.parse('http://10.0.2.2:3010/room', id));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final dynamic result = str['data']['rooms'];
@@ -49,7 +49,7 @@ class RoomData extends ChangeNotifier {
   }
 
   void deleteRoom(Room room) async {
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3000/room/' + room.id.toString()));
+    final response = await http.delete(Uri.parse('http://10.0.2.2:3010/room/' + room.id.toString()));
     if (response.statusCode == 200) {
       getAllRooms();
     } else {
