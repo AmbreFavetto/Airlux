@@ -56,7 +56,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                       buildingData.deleteBuilding(building),
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Le bâtiment a été supprimé.'),
+                          content: Text('Bâtiment supprimé.'),
                         ),
                       )
                     },

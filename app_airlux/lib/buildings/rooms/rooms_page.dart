@@ -11,7 +11,8 @@ import 'addRoom_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class RoomsPage extends StatefulWidget {
-  const RoomsPage({super.key, required this.floorId, required this.floorNumber});
+  const RoomsPage(
+      {super.key, required this.floorId, required this.floorNumber});
   final String floorId;
   final String floorNumber;
 
@@ -20,14 +21,14 @@ class RoomsPage extends StatefulWidget {
 }
 
 class _RoomsPageState extends State<RoomsPage> {
-
   //late IO.Socket socket;
 
   void initState() {
     //super.initState();
     //socket = initSocket();
     //connectSocket(socket);
-    Provider.of<RoomData>(context, listen: false).getRoomsByFloorId(widget.floorId);
+    Provider.of<RoomData>(context, listen: false)
+        .getRoomsByFloorId(widget.floorId);
   }
 
   //@override
@@ -60,21 +61,33 @@ class _RoomsPageState extends State<RoomsPage> {
                   final room = roomData.rooms[index];
                   return ObjectContainer(
                     icon: Icons.chair,
-                    onDelete: () => roomData.deleteRoom(room),
+                    onDelete: () => {
+                      roomData.deleteRoom(room),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Salle supprimée.'),
+                        ),
+                      )
+                    },
                     onEdit: () => {
-                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const AddRoomPage()))
+                      Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const AddRoomPage()))
                     },
                     onSelect: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) {
-                          return ChangeNotifierProvider(
-                            create: (BuildContext context) => DeviceData(),
-                            child: MaterialApp(
-                              home: DevicesPage(id: room.id.toString(), name: room.name.toString()),
-                            ),
-                          );
-                        },
-                      ));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ChangeNotifierProvider(
+                              create: (BuildContext context) => DeviceData(),
+                              child: MaterialApp(
+                                home: DevicesPage(
+                                    id: room.id.toString(),
+                                    name: room.name.toString()),
+                              ),
+                            );
+                          },
+                        ),
+                      );
                     },
                     title: room.name.toString(),
                     id: room.id.toString(),
@@ -82,15 +95,16 @@ class _RoomsPageState extends State<RoomsPage> {
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
       floatingActionButton: AddButton(
           onTap: () {
             Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const AddRoomPage(),
-                ));
+              MaterialPageRoute(
+                builder: (context) => const AddRoomPage(),
+              ),
+            );
           },
           title: 'Ajouter une salle'),
     );

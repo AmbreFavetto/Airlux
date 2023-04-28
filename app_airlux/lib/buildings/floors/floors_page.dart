@@ -60,7 +60,6 @@ class _FloorsPageState extends State<FloorsPage> {
                   },
                 ),
               ),
-
             },
             icon: const Icon(Icons.arrow_back),
           ),
@@ -82,24 +81,33 @@ class _FloorsPageState extends State<FloorsPage> {
                   final floor = floorData.floors[index];
                   return ObjectContainer(
                     icon: Icons.stairs_outlined,
-                    onDelete: () => floorData.deleteFloor(floor),
+                    onDelete: () => {
+                      floorData.deleteFloor(floor),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Étage supprimé.'),
+                        ),
+                      )
+                    },
                     onEdit: () => {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const AddFloorPage()))
                     },
                     onSelect: () {
-                      Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) {
-                          return ChangeNotifierProvider(
-                            create: (BuildContext context) => RoomData(),
-                            child: MaterialApp(
-                              home: RoomsPage(
-                                  floorId: floor.id.toString(),
-                                  floorNumber: floor.number.toString()),
-                            ),
-                          );
-                        },
-                      ));
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return ChangeNotifierProvider(
+                              create: (BuildContext context) => RoomData(),
+                              child: MaterialApp(
+                                home: RoomsPage(
+                                    floorId: floor.id.toString(),
+                                    floorNumber: floor.number.toString()),
+                              ),
+                            );
+                          },
+                        ),
+                      );
                     },
                     title: floor.number.toString(),
                     id: floor.id.toString(),
@@ -107,14 +115,16 @@ class _FloorsPageState extends State<FloorsPage> {
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
       floatingActionButton: AddButton(
           onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const AddFloorPage(),
-            ));
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const AddFloorPage(),
+              ),
+            );
           },
           title: 'Ajouter un étage'),
     );

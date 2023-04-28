@@ -33,7 +33,14 @@ class DevicesPage extends StatelessWidget {
                   final device = deviceData.devices[index];
                   deviceData.getDevicesByRoomId(id);
                   return DeviceContainer(
-                    onDelete: () => deviceData.deleteDevice(device),
+                    onDelete: () => {
+                      deviceData.deleteDevice(device),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Capteur supprimé.'),
+                        ),
+                      )
+                    },
                     onEdit: () => {},
                     title: device.name.toString(),
                     id: device.id.toString(),
@@ -42,7 +49,7 @@ class DevicesPage extends StatelessWidget {
                 },
               ),
             ),
-          )
+          ),
         ],
       ),
     );
