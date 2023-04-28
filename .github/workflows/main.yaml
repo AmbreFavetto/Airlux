@@ -34,11 +34,11 @@ jobs:
       - name: Determine which directories were changed
         id: changed_files
         run: |
-          changed_files="$(git diff --name-only "setupPipelines")"
-          echo "$(steps.changed_files.outputs.files)"
+          export CHANGED_FILES="$(git diff --name-only main)"
+          echo "Changed files: $CHANGED_FILES"
 
       - name: Lint and test API Cloud
-        if: ${{ contains(steps.changed_files.outputs.files, env.API_CLOUD_DIR) }}
+        if: ${{ contains(env.CHANGED_FILES, env.API_CLOUD_DIR) }}
         run: |
           cd ${{ env.API_CLOUD_DIR }}
           npm ci
