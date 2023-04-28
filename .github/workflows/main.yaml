@@ -35,7 +35,7 @@ jobs:
         id: changed_files
         run: |
           echo "$(cat .git/HEAD)"
-          export CHANGED_FILES="$(git diff --name-only HEAD^..HEAD)"
+          export CHANGED_FILES="$(git diff --name-only HEAD)"
           echo "Changed files: $CHANGED_FILES"
 
       - name: Lint and test API Cloud
