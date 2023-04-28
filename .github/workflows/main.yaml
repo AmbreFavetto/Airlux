@@ -34,7 +34,7 @@ jobs:
       - name: Determine which directories were changed
         id: changed_files
         run: |
-          changed_files="$(git diff --name-only "setupPipelines" HEAD)"
+          changed_files="$(git diff --name-only "setupPipelines")"
           echo "::set-output name=files::$changed_files"
 
       - name: Lint and test API Cloud
