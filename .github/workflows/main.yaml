@@ -42,7 +42,7 @@ jobs:
           echo "${{ contains(env.CHANGED_FILES, env.API_CLOUD_DIR) }}"
 
       - name: Lint and test API Cloud
-        if: ${{ contains(env.CHANGED_FILES, env.API_CLOUD_DIR) }}
+        if: ${{ contains(${{env.CHANGED_FILES}}, ${{env.API_CLOUD_DIR}}) }}
         run: |
           cd ${{ env.API_CLOUD_DIR }}
           npm ci
