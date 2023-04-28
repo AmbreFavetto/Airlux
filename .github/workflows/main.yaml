@@ -34,7 +34,7 @@ jobs:
       - name: Determine which directories were changed
         id: changed_files
         run: |
-          export CHANGED_FILES="$(git diff --name-only HEAD^..HEAD)"
+          export CHANGED_FILES="$(git diff --name-only main..setupPipelines)"
           echo "Changed files: $CHANGED_FILES"
 
       - name: Lint and test API Cloud
