@@ -1,0 +1,44 @@
+services:
+  db_cloud_test:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ../src/db_cloud/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
+    ports:
+      - 8306:3306
+    environment:
+      MYSQL_DATABASE: airlux_cloud_db
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: letmein
+      MYSQL_ROOT_PASSWORD: letmein
+      SERVICE_TAGS: prod
+      SERVICE_NAME: db_cloud_test
+    networks:
+      - cloud_network_test
+
+  api_cloud:
+    build:
+      context: ../
+      dockerfile: ./tests/Dockerfile
+    volumes:
+      - ../src/api_cloud:/usr/app
+      - /usr/app/node_modules
+    ports:
+      - 3020:3020
+    environment:
+      DB_HOST: db_cloud_test
+      DB_PORT: 3306
+      DB_USER: 'admin'
+      DB_PASSWORD: 'letmein'
+      DB_NAME: airlux_cloud_db
+      DB_CONNECTION_LIMIT: 20
+      SERVER_PORT: 3020
+    depends_on:
+      - db_cloud_test
+    networks:
+      - cloud_network_test
+
+networks:
+  cloud_network_test:
+
+

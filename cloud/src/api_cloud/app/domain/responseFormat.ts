@@ -1,12 +1,12 @@
 class ResponseFormat {
 
-  timeStamp:string;
-  statusCode:number;
-  httpStatus:string;
-  message:string;
+  timeStamp: string;
+  statusCode: number;
+  httpStatus: string;
+  message: string;
   data!: JSON;
 
-  constructor(statusCode:number, httpStatus:string, message:string, data?:any){
+  constructor(statusCode: number, httpStatus: string, message: string, data?: any) {
     this.timeStamp = new Date().toLocaleString();
     this.statusCode = statusCode;
     this.httpStatus = httpStatus;
@@ -14,5 +14,5 @@ class ResponseFormat {
     data ? this.data = data : null;
   }
 }
-  
+
 export default ResponseFormat;

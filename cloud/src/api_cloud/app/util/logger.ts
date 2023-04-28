@@ -11,4 +11,8 @@ const log = logger({
   timestamp: () => `,"time": "${new Date().toLocaleString()}"`
 });
 
+if (process.env.NODE_ENV === 'test') {
+  log.level = 'silent'
+}
+
 export default log;

@@ -20,7 +20,8 @@ class FormInputText extends StatelessWidget {
     return Container(
         margin: const EdgeInsets.symmetric(horizontal: 20),
         padding: icon != null
-            ? const EdgeInsets.symmetric(horizontal: 5) : const EdgeInsets.symmetric(horizontal: 15),
+            ? const EdgeInsets.symmetric(horizontal: 5)
+            : const EdgeInsets.symmetric(horizontal: 15),
         alignment: Alignment.center,
         decoration: BoxDecoration(
             color: Colors.white,
@@ -29,7 +30,7 @@ class FormInputText extends StatelessWidget {
               BoxShadow(color: Colors.black26, offset: Offset(0, 2))
             ]),
         child: TextField(
-          cursorColor: kDarkPurple,
+            cursorColor: kDarkPurple,
             controller: name,
             keyboardType: textType,
             style: const TextStyle(color: Colors.black87),

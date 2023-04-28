@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../widget/delayed_animation.dart';
+import 'package:app_airlux/pages/signup_page.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -84,7 +85,12 @@ class LoginPage extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 35),
                 child: TextButton(
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SignupPage(),
+                      ),
+                    );
                   },
                   child: const DelayedAnimation(
                     delay: 100,
@@ -119,6 +125,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               decoration: InputDecoration(
                 labelText: 'Adresse mail',
                 labelStyle: TextStyle(
@@ -131,6 +138,7 @@ class _LoginFormState extends State<LoginForm> {
           DelayedAnimation(
             delay: 100,
             child: TextField(
+              cursorColor: kDarkPurple,
               obscureText: _obscureText,
               decoration: InputDecoration(
                 labelStyle: TextStyle(

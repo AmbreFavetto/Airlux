@@ -18,8 +18,7 @@ CREATE TABLE user (
   PRIMARY KEY (user_id)
 );
 
-
-CREATE TABLE user_building (
+CREATE TABLE userBuilding (
   id              VARCHAR(255) NOT NULL,
   user_id         VARCHAR(255) NOT NULL,
   building_id     VARCHAR(255) DEFAULT NULL,
@@ -36,7 +35,6 @@ CREATE TABLE floor (
   FOREIGN KEY (building_id) REFERENCES building (building_id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE room (
   room_id         VARCHAR(255) NOT NULL,
   name            VARCHAR(255) DEFAULT NULL,
@@ -45,14 +43,23 @@ CREATE TABLE room (
   FOREIGN KEY (floor_id) REFERENCES floor (floor_id) ON DELETE CASCADE
 );
 
-
 CREATE TABLE device (
   device_id       VARCHAR(255) NOT NULL,
   name            VARCHAR(255) DEFAULT NULL,
   room_id         VARCHAR(255) NOT NULL,
   type            ENUM("actuator", "sensor") DEFAULT NULL,
+  category        ENUM("lamp", "lamp_rgb", "blind", "radiator", "air_conditioning", "humidity", "temperature", "pressure") DEFAULT NULL,
+  value           FLOAT NOT NULL,
   PRIMARY KEY (device_id),
   FOREIGN KEY (room_id) REFERENCES room (room_id) ON DELETE CASCADE
+);
+
+CREATE TABLE sousScenario(
+  sous_scenario_id     VARCHAR(255) NOT NULL,
+  device_id            VARCHAR(255) NOT NULL,
+  action               ENUM("on", "off", "color", "intensity", "open", "close", "temperature"),
+  PRIMARY KEY (sous_scenario_id),
+  FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
 );
 
 CREATE TABLE scenario (
@@ -61,21 +68,20 @@ CREATE TABLE scenario (
   PRIMARY KEY (scenario_id)
 );
 
-CREATE TABLE scenario_device (
-  id              VARCHAR(255) NOT NULL,
-  scenario_id     VARCHAR(255) NOT NULL,
-  device_id       VARCHAR(255) NOT NULL,
+CREATE TABLE scenarioSousScenario (
+  id                     VARCHAR(255) NOT NULL,
+  scenario_id            VARCHAR(255) NOT NULL,
+  sous_scenario_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (scenario_id) REFERENCES scenario (scenario_id) ON DELETE CASCADE,
-  FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
+  FOREIGN KEY (sous_scenario_id) REFERENCES sousScenario (sous_scenario_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE timeseries (
   timeseries_id   VARCHAR(255) NOT NULL,
   unit            VARCHAR(255) DEFAULT NULL,
-  timestamp       BIGINT NOT NULL,
-  value           FLOAT,
+  time            TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  value           FLOAT NOT NULL,
   device_id       VARCHAR(255) NOT NULL,
   PRIMARY KEY (timeseries_id),
   FOREIGN KEY (device_id) REFERENCES device (device_id) ON DELETE CASCADE
