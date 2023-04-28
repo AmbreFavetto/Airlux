@@ -1,6 +1,6 @@
 import pool from '../app/config/db.config';
 
-// TEST CI 1
+// TEST CI 2
 
 const QUERY = {
     CREATE_BUILDING: 'INSERT INTO building(name, building_id) VALUES ("testBuilding", "123")',
