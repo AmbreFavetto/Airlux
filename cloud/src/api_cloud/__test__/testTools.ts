@@ -1,5 +1,7 @@
 import pool from '../app/config/db.config';
 
+// Test CI
+
 const QUERY = {
     CREATE_BUILDING: 'INSERT INTO building(name, building_id) VALUES ("testBuilding", "123")',
     CREATE_OTHER_BUILDING: 'INSERT INTO building(name, building_id) VALUES ("testBuilding", "234")',
