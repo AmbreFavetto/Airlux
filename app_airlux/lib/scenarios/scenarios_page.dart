@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:app_airlux/buildings/addBuilding_page.dart';
+import 'package:app_airlux/models/scenarios/scenario.dart';
 import 'package:app_airlux/scenarios/addScenario_page.dart';
+import 'package:app_airlux/scenarios/configureScenario_page.dart';
 import 'package:app_airlux/shared/addButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -20,15 +24,17 @@ class ScenariosPageState extends State<ScenariosPage> {
   //late IO.Socket socket;
   //bool socketState = false;
   late Future<bool> response;
+
   @override
   void initState() {
     super.initState();
     //socket = initSocket();
     //connectSocket(socket);
+    //socket.on('updated_scenarioList', );
     Provider.of<ScenarioData>(context, listen: false).getAllScenarios();
   }
 
-  @override
+  //@override
   //void dispose() {
   //  socket.disconnect();
   //  socket.dispose();
@@ -44,28 +50,44 @@ class ScenariosPageState extends State<ScenariosPage> {
             child: Consumer<ScenarioData>(
               builder: (context, scenarioData, child) {
                 return GridView.builder(
-                  shrinkWrap: true,
+                    shrinkWrap: true,
                     padding: const EdgeInsets.all(20),
                     itemCount: scenarioData.scenarios.length,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                     ),
                     itemBuilder: (context, index) {
-                      final scenario = scenarioData.scenarios[index];
+                      final scenario =
+                          Provider.of<ScenarioData>(context, listen: false)
+                              .scenarios[index];
                       return ObjectContainer(
                         icon: Icons.movie,
                         onDelete: () async => {
-                          response = scenarioData.deleteScenario(scenario),
-                          if (await response)
-                            setState(() {
+                          response =
                               Provider.of<ScenarioData>(context, listen: false)
-                                  .getAllScenarios();
-                            })
+                                  .deleteScenario(scenario),
+                          if (await response)
+                            {
+                              Provider.of<ScenarioData>(context, listen: false)
+                                  .getAllScenarios(),
+                            }
+                          else
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Impossible de supprimer'),
+                              ),
+                            )
                         },
                         onEdit: () => {
-                          //TODO
+                          Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) =>
+                                ConfigureScenarioPage(scenario: scenario),
+                          )),
                         },
-                        onSelect: () {},
+                        onSelect: () {
+                          //TODO active le scenario
+                        },
                         title: scenario.name.toString(),
                         id: scenario.id.toString(),
                       );

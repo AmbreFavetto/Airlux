@@ -16,7 +16,7 @@ class AddScenarioPage extends StatefulWidget {
 
 class AddScenarioPageState extends State<AddScenarioPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController name = TextEditingController();
+  static late TextEditingController name = TextEditingController();
 
   @override
   Widget build(BuildContext context) {

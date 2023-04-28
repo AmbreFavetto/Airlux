@@ -10,7 +10,7 @@ class DeviceData extends ChangeNotifier {
   List<Device> devices = [Device(name: 'firstDevice', id: 1, room_id: 1), Device(name: 'secondDevice', id: 2, room_id: 2)];
 
   void getAllDevices() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/device'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:3010/device'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -22,7 +22,7 @@ class DeviceData extends ChangeNotifier {
   }
 
   void getDevicesByRoomId(String id) async{
-    final response = await http.get(Uri.parse('http://10.0.2.2:3000/device'));
+    final response = await http.get(Uri.parse('http://10.0.2.2:3010/device'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -35,7 +35,7 @@ class DeviceData extends ChangeNotifier {
   }
 
   void deleteDevice(Device device) async {
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3000/device' + device.id.toString()));
+    final response = await http.delete(Uri.parse('http://10.0.2.2:3010/device' + device.id.toString()));
     if (response.statusCode == 200) {
       getAllDevices();
     } else {
