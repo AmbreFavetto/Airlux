@@ -13,7 +13,7 @@ function setData(req: Request, id: string) {
   const data: SousScenario = {
     action: req.body.action,
     device_id: req.body.device_id,
-    sous_scenario_id: id,
+    sousScenario_id: id,
   };
   return data;
 }

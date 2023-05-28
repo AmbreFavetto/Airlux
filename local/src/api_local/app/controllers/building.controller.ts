@@ -5,9 +5,7 @@ import { Request, Response, request } from 'express';
 import logger from '../util/logger';
 import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.model';
 import { v4 as uuidv4 } from 'uuid';
-import { deleteFloor } from './floor.controller.js';
-import { updateUser } from './user.controller.js';
-import HttpStatus, { } from '../util/devTools';
+import HttpStatus, { getRelationToDelete, getEltToDelete } from '../util/devTools';
 import Building from '../interfaces/building.interface';
 
 function setData(req: Request) {
@@ -92,8 +90,6 @@ export const updateBuilding = async (req: Request, res: Response) => {
   }
 };
 
-let hasError = false;
-
 export const deleteBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting building`);
 
@@ -103,43 +99,10 @@ export const deleteBuilding = async (req: Request, res: Response) => {
       return res.status(HttpStatus.BAD_REQUEST.code)
         .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'building_id provided does not exist'));
     }
-    const floorsIds = await dbLocal.keys(`floors:*`);
-    const floorsToDelete: string[] = [];
-    await Promise.all(floorsIds.map(async (id: string) => {
-      const floorData = await dbLocal.hgetall(id);
-      if (floorData.building_id === req.params.id.toString()) {
-        floorsToDelete.push(id);
-      }
-    }));
-    // if (floorsToDelete.length > 0) {
-    //   await Promise.all(floorsToDelete.map(async id => {
-    //     id = id.split(":")[1];
-    //     const floorRes = await deleteFloor(new Request({ params: { id: id }, method: "DELETE", originalUrl: `/floor/${id}` }), new Response());
-    //     if (floorRes.statusCode !== HttpStatus.OK.code) {
-    //       hasError = true;
-    //       return;
-    //     }
-    //   }));
-    // }
-    // let usersIds = await dbLocal.keys('users:*');
-    //await Promise.all(usersIds.map(async (id: string) => {
-    //const userData = await dbLocal.hgetall(id);
-    //let userDataUpdate = userData.building_id.split(",");
-    // if (userDataUpdate.indexOf(req.params.id) != -1) {
-    //   userDataUpdate.splice(userDataUpdate.indexOf(req.params.id), 1);
-    //   id = id.split(":")[1];
-    //   const userRes = await updateUser({ params: { id: id }, body: { building_id: userDataUpdate }, method: "UPDATE", originalUrl: `/user/${id}` })
-    //   if (userRes.statusCode !== HttpStatus.OK.code) {
-    //     hasError = true;
-    //     return;
-    //   }
-    // }
-    //}));
-    if (!hasError) {
-      await dbLocal.del(`buildings:${req.params.id}`);
-      res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
-    }
+    await getRelationToDelete("buildings:" + req.params.id)
+    await getEltToDelete("floors", "buildings:" + req.params.id)
+    res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));

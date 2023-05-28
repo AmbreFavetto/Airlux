@@ -1,6 +1,6 @@
 interface ScenarioSousScenario {
     scenario_id?: string
-    sous_scenario_id?: string
+    sousScenario_id?: string
     id?: string
 }
 

@@ -4,7 +4,7 @@ import logger from '../util/logger.js';
 import { Request, Response } from 'express';
 import userCreateSchema, { userUpdateSchema } from '../models/user.model.js';
 import { v4 as uuidv4 } from 'uuid';
-import HttpStatus, { } from '../util/devTools';
+import HttpStatus, { deleteElt, getRelationToDelete } from '../util/devTools';
 import User from '../interfaces/user.interface';
 
 function setData(req: Request) {
@@ -107,15 +107,10 @@ export const deleteUser = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'user_id provided does not exist'));
     return;
   }
-  database.del(`users:${req.params.id}`, (error: Error | null | undefined) => {
-    if (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-        .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-      return;
-    }
-    res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));
-  });
-};
+  await getRelationToDelete("users:" + req.params.id)
+  await deleteElt("users:" + req.params.id)
+  res.status(HttpStatus.OK.code)
+    .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));
+}
 
 export default HttpStatus;

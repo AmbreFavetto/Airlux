@@ -33,7 +33,7 @@ describe('ScenarioSousScenario controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     scenario_id: '123',
-                    sous_scenario_id: '123'
+                    sousScenario_id: '123'
                 });
 
             expect(response.statusCode).toBe(HttpStatus.CREATED.code);
@@ -46,7 +46,7 @@ describe('ScenarioSousScenario controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test sousScenario',
-                    sous_scenario_id: '123'
+                    sousScenario_id: '123'
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
@@ -59,7 +59,7 @@ describe('ScenarioSousScenario controller', () => {
                 .expect('Content-Type', /json/)
                 .send({
                     scenario_id: 1,
-                    sous_scenario_id: '123'
+                    sousScenario_id: '123'
                 });
 
             expect(response.statusCode).toBe(HttpStatus.BAD_REQUEST.code);
