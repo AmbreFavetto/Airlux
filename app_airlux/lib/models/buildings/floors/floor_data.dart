@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 class FloorData extends ChangeNotifier {
   var str;
 
-  List<Floor> floors = [Floor(number: 0, id: 1, building_id: 1), Floor(number: 0, id: 2, building_id: 2)];
-  Floor floor = Floor(number: 0, id: 1);
+  List<Floor> floors = [Floor(number: '0', id: '1', building_id: '1'), Floor(number: '0', id: '2', building_id: '2')];
+  Floor floor = Floor(number: '0', id: '1', building_id: '1');
 
   void getAllFloors() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3010/floor'));

@@ -8,8 +8,8 @@ import 'package:http/http.dart' as http;
 class RoomData extends ChangeNotifier {
   var str;
 
-  List<Room> rooms = [Room(name: 'firstRoom', id: 1, floor_id: 1), Room(name: 'secondRoom', id: 2, floor_id: 2)];
-  Room room = Room(name: 'room', id: 1);
+  List<Room> rooms = [Room(name: 'firstRoom', id: '1', floor_id: '1'), Room(name: 'secondRoom', id: '2', floor_id: '2')];
+  Room room = Room(name: 'room', id: '1', floor_id: '1');
 
   void getAllRooms() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3010/room'));

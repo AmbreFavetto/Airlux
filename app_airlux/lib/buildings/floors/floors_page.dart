@@ -23,20 +23,20 @@ class FloorsPage extends StatefulWidget {
 }
 
 class _FloorsPageState extends State<FloorsPage> {
-  late IO.Socket socket;
+  //late IO.Socket socket;
 
   void initState() {
     super.initState();
-    socket = initSocket();
-    connectSocket(socket);
+    //socket = initSocket();
+    //connectSocket(socket);
     Provider.of<FloorData>(context, listen: false)
         .getFloorsByBuildingId(widget.roomId);
   }
 
   @override
   void dispose() {
-    socket.disconnect();
-    socket.dispose();
+    //socket.disconnect();
+    //socket.dispose();
     super.dispose();
   }
 
