@@ -1,11 +1,14 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/floors/floors_page.dart';
+import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/buildings/building.dart';
 import '../models/buildings/floors/floor_data.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:http/http.dart' as http;
 
 import '../shared/addButton.dart';
 
@@ -18,6 +21,8 @@ class BuildingsPage extends StatefulWidget {
 
 class _BuildingsPageState extends State<BuildingsPage> {
   //late IO.Socket socket;
+
+  TextEditingController _editBuildingNameController = TextEditingController();
 
   void initState() {
     //  super.initState();
@@ -61,8 +66,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                       )
                     },
                     onEdit: () => {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const AddBuildingPage()))
+                      _editBuilding(context, building, buildingData),
                     },
                     onSelect: () {
                       // print(ModalRoute.of(context)?.settings);
@@ -95,6 +99,57 @@ class _BuildingsPageState extends State<BuildingsPage> {
             ));
           },
           title: 'Ajouter un batiment'),
+    );
+  }
+
+  _editBuilding(BuildContext context, Building building,
+      BuildingData buildingData) async {
+    setState(() {
+      _editBuildingNameController.text = building.name ?? 'No name';
+    });
+    _editFormDialog(context, building, buildingData);
+  }
+
+  _editFormDialog(BuildContext context, Building building, BuildingData buildingData) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (param) {
+        return AlertDialog(
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  http.Response response = await buildingData
+                      .updateBuilding(_editBuildingNameController.text, building);
+                  if (response.statusCode == 200) {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) =>
+                            const BuildingsPage()));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('La mise à jour n\'a pas pu aboutir.'),
+                      ),
+                    );
+                  }
+                },
+                child: const Text(
+                  'Mettre à jour',
+                  style: TextStyle(color: kDarkPurple),
+                ),
+              ),
+            ],
+            title: const Text('Modifier un bâtiment'),
+            content: SingleChildScrollView(
+                child: Column(children: <Widget>[
+              TextField(
+                controller: _editBuildingNameController,
+                decoration: const InputDecoration(
+                    hintText: 'Nom', labelText: 'Nom du bâtiment'),
+              )
+            ])));
+      },
     );
   }
 }

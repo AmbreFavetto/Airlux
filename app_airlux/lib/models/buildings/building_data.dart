@@ -22,8 +22,8 @@ class BuildingData extends ChangeNotifier {
     }
   }
 
-  void getBuilding(int id) async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/building', id));
+  void getBuilding(String id) async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:3010/building/$id'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final dynamic result = str['data']['buildings'];
@@ -42,6 +42,18 @@ class BuildingData extends ChangeNotifier {
       },
       body: jsonEncode(<String, String>{
         'name': name
+      }),
+    );
+  }
+
+  Future<http.Response> updateBuilding(String buildingName, Building building) {
+    return http.put(
+      Uri.parse('http://10.0.2.2:3010/building/' + building.id.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': buildingName,
       }),
     );
   }
