@@ -29,9 +29,9 @@ class MyApp extends StatelessWidget {
         '/welcome': (BuildContext context) => WelcomePage(),
         '/login': (BuildContext context) => LoginPage(),
         '/addBuilding': (BuildContext context) => AddBuildingPage(),
-        '/addFloor': (BuildContext context) => AddFloorPage(),
+        '/addFloor': (BuildContext context) => AddFloorPage(building_id: '', building_name: '',),
         '/infos': (BuildContext context) => BuildingInfoPage(),
-        '/addRoom': (BuildContext context) => AddRoomPage(),
+        '/addRoom': (BuildContext context) => AddRoomPage(floor_name: '',floor_id: '',),
         '/buildings': (BuildContext context) => ChangeNotifierProvider(
               create: (BuildContext context) => BuildingData(),
               child: const MaterialApp(

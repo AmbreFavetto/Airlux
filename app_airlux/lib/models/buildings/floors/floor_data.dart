@@ -47,11 +47,37 @@ class FloorData extends ChangeNotifier {
     }
   }
 
-  void deleteFloor(Floor floor) async {
+  Future<http.Response> addFloor(String name, String buildingId) {
+    return http.post(
+      Uri.parse('http://10.0.2.2:3010/floor'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'name': name,
+        'building_id': buildingId
+      }),
+    );
+  }
+
+  Future<http.Response> updateFloor(String floorName, Floor floor) {
+    return http.put(
+      Uri.parse('http://10.0.2.2:3010/floor/' + floor.id.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': floorName,
+      }),
+    );
+  }
+
+  Future<http.Response> deleteFloor(Floor floor) {
+    return http.delete(Uri.parse('http://10.0.2.2:3010/floor/' + floor.id.toString()));
+  }
+  void deleteFloor2(Floor floor) async {
     final response = await http.delete(Uri.parse('http://10.0.2.2:3010/floor/' + floor.id.toString()));
-    if (response.statusCode == 200) {
-      getAllFloors();
-    } else {
+    if (response.statusCode != 200) {
       throw Exception('Failed to load data');
     }
   }

@@ -34,6 +34,30 @@ class BuildingData extends ChangeNotifier {
     }
   }
 
+  Future<http.Response> addBuilding(String name) {
+    return http.post(
+      Uri.parse('http://10.0.2.2:3010/building'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'name': name,
+      }),
+    );
+  }
+
+  Future<http.Response> updateBuilding(String buildingName, Building building) {
+    return http.put(
+      Uri.parse('http://10.0.2.2:3010/building/' + building.id.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': buildingName,
+      }),
+    );
+  }
+
   void deleteBuilding(Building building) async {
     final response = await http.delete(Uri.parse('http://10.0.2.2:3010/building/' + building.id.toString()));
     if (response.statusCode == 200) {

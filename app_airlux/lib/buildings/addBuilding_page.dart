@@ -1,9 +1,12 @@
 import 'package:app_airlux/shared/titleFormStyle.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants.dart';
+import '../models/buildings/building_data.dart';
 import '../shared/formInputText.dart';
 import '../shared/formBottomButton.dart';
 import 'buildings_page.dart';
+import 'package:http/http.dart' as http;
 
 class AddBuildingPage extends StatefulWidget {
   const AddBuildingPage({super.key});
@@ -42,29 +45,39 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FormBottomButton(
-                          title: 'Sauvegarder',
-                          onTap: () {
-                            if (title.text.isNotEmpty) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const BuildingsPage()),
-                              );
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Le bâtiment a été ajouté.'),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Formulaire invalide.'),
-                                ),
-                              );
-                            }
+                        Consumer<BuildingData>(
+                          builder: (context, buildingData, child) {
+                            return FormBottomButton(
+                              title: 'Sauvegarder',
+                              onTap: () async {
+                                if (title.text.isNotEmpty) {
+                                  http.Response response = await buildingData
+                                      .addBuilding(title.text);
+                                  if (response.statusCode == 201) {
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const BuildingsPage()), //add ConfigureScenarioPage() when ready
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Ajout de bâtiment impossible.'),
+                                      ),
+                                    );
+                                  }
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Formulaire invalide.'),
+                                    ),
+                                  );
+                                }
+                              },
+                            );
                           },
-                        ),
+                        )
                       ],
                     ),
                   ),
