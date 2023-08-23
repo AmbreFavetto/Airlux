@@ -177,7 +177,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          DevicesPage(roomId: widget.room_id)),
+                                          DevicesPage(roomId: widget.room_id, roomName: title.toString())),
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(

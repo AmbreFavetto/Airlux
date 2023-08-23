@@ -12,8 +12,9 @@ import '../shared/titlePageStyle.dart';
 import 'package:http/http.dart' as http;
 
 class DevicesPage extends StatefulWidget {
-  const DevicesPage({super.key, required this.roomId});
+  const DevicesPage({super.key, required this.roomId, required this.roomName});
   final String roomId;
+  final String roomName;
   @override
   _DevicesPageState createState() => _DevicesPageState();
 }
@@ -37,7 +38,7 @@ class _DevicesPageState extends State<DevicesPage> {
           const TitlePageStyle(text: "Devices"),
           const SizedBox(height: 15),
           //TODO
-          TextInformationStyle(text: 'Nom de la salle : AJOUTER NOM'),
+          TextInformationStyle(text: 'Nom de la salle : ${widget.roomName}'),
           Expanded(
             child: Consumer<DeviceData>(
               builder: (context, deviceData, child) => GridView.builder(
@@ -55,7 +56,7 @@ class _DevicesPageState extends State<DevicesPage> {
                           device)).statusCode == 200) {
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => DevicesPage(
-                              roomId: widget.roomId,
+                              roomId: widget.roomId,roomName: widget.roomName
                             )))
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +66,6 @@ class _DevicesPageState extends State<DevicesPage> {
                         )
                       }},
                     onEdit: () => _editDevice(context, device, deviceData),
-                    onSelect: () {},
                     title: device.name.toString(),
                     id: device.id.toString(),
                     category: device.category.toString(),
@@ -108,7 +108,7 @@ class _DevicesPageState extends State<DevicesPage> {
                     Navigator.of(context).push(
                         MaterialPageRoute(
                             builder: (context) =>
-                            DevicesPage(roomId: widget.roomId,)));
+                            DevicesPage(roomId: widget.roomId,roomName:widget.roomName,)));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

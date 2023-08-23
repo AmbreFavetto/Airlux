@@ -93,7 +93,7 @@ class _RoomsPageState extends State<RoomsPage> {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => DeviceData(),
                             child: MaterialApp(
-                              home: DevicesPage(roomId: room.id.toString()),
+                              home: DevicesPage(roomId: room.id.toString(),roomName: room.name.toString(),),
                             ),
                           );
                         },
