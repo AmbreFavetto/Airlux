@@ -49,8 +49,7 @@ class _DevicesPageState extends State<DevicesPage> {
                 ),
                 itemBuilder: (context, index) {
                   final device = deviceData.devices[index];
-                  return ObjectContainer(
-                    icon: Icons.tungsten,
+                  return DeviceContainer(
                     onDelete: () async => {
                       if ((await deviceData.deleteDevice(
                           device)).statusCode == 200) {
@@ -69,6 +68,7 @@ class _DevicesPageState extends State<DevicesPage> {
                     onSelect: () {},
                     title: device.name.toString(),
                     id: device.id.toString(),
+                    category: device.category.toString(),
                   );
                 },
               ),
