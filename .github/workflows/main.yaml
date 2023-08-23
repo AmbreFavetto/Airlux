@@ -1,9 +1,10 @@
+---
 name: main
 
 on:
   push:
     branches:
-      - main
+      - "setupPipelines"
     paths-ignore:
       - "**/README.md" # ignore README changes
   pull_request:
@@ -11,7 +12,7 @@ on:
       - "**/README.md" # ignore README changes
 
 env:
-  API_CLOUD_DIR: cloud/src/api_cloud
+  API_CLOUD_DIR: cloud/src/api_cloud/__test__/testTools.ts
   API_LOCAL_DIR: local/src/api_local
   APPLICATION_DIR: app_airlux/test
   DOCUMENTATION_DIR: airlux
@@ -24,6 +25,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
         uses: actions/setup-node@v2
@@ -32,12 +35,14 @@ jobs:
 
       - name: Determine which directories were changed
         id: changed_files
-        uses: leandrocarneiro/git-diff-paths@v1.0.1
-        with:
-          base: ${{ github.event.pull_request.base.sha }}
+        run: |
+          export CHANGED_FILES="$(git diff --name-only HEAD^ HEAD)"
+          echo $CHANGED_FILES
+          echo ${{ env.API_CLOUD_DIR }}
+          echo "${{ contains(env.CHANGED_FILES, env.API_CLOUD_DIR) }}"
 
       - name: Lint and test API Cloud
-        if: ${{ contains(steps.changed_files.outputs.all_changed_files, env.API_CLOUD_DIR) }}
+        if: ${{ contains(${{env.CHANGED_FILES}}, ${{env.API_CLOUD_DIR}}) }}
         run: |
           cd ${{ env.API_CLOUD_DIR }}
           npm ci
