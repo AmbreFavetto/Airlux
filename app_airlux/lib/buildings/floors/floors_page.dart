@@ -162,9 +162,9 @@ class _FloorsPageState extends State<FloorsPage> {
                   if (response.statusCode == 200) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => FloorsPage(
-                              buildingId: widget.buildingId,
-                              buildingName: widget.buildingName,
-                            )));
+                          buildingId: widget.buildingId,
+                          buildingName: widget.buildingName,
+                        )));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -182,12 +182,12 @@ class _FloorsPageState extends State<FloorsPage> {
             title: const Text('Modifier un étage'),
             content: SingleChildScrollView(
                 child: Column(children: <Widget>[
-              TextField(
-                controller: _editFloorNameController,
-                decoration: const InputDecoration(
-                    hintText: 'Etage', labelText: "Numéro de l'étage"),
-              )
-            ])));
+                  TextField(
+                    controller: _editFloorNameController,
+                    decoration: const InputDecoration(
+                        hintText: 'Etage', labelText: "Numéro de l'étage"),
+                  )
+                ])));
       },
     );
   }

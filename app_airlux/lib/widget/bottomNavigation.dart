@@ -1,14 +1,11 @@
 import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/pages/home_page.dart';
-import 'package:app_airlux/scenarios/scenarios_page.dart';
 import 'package:flutter/material.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
-import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:provider/provider.dart';
 import '../models/buildings/building_data.dart';
-import '../models/scenarios/scenario_data.dart';
-import '../pages/profile_page.dart';
+import '../pages/setting_page.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -47,14 +44,14 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   ? currentTitle = ''
                   : (index == 1) //Bâtiments
                       ? currentTitle = 'Bâtiments'
-                      : (index == 2) //Scénarios
-                          ? currentTitle = 'Scénarios'
-                          : (index == 3) //Profil
-                              ? currentTitle = 'Profil'
+                      // : (index == 2) //Scénarios
+                      //     ? currentTitle = 'Scénarios'
+                          : (index == 2) //Paramètres
+                              ? currentTitle = 'Paramètres'
                               : currentTitle = '';
 
               (index == 0) //Home
-                  ? actionWidget = Icon(
+                  ? actionWidget = const Icon(
                       Icons.cottage,
                       color: kDarkPurple,
                     )
@@ -96,29 +93,29 @@ class _BottomNavigationState extends State<BottomNavigation> {
               ),
               title: Text('Bâtiments'),
             ),
+            // BubbleBottomBarItem(
+            //   backgroundColor: kDarkPurple,
+            //   icon: Icon(
+            //     Icons.movie,
+            //     color: Colors.black,
+            //   ),
+            //   activeIcon: Icon(
+            //     Icons.movie,
+            //     color: kDarkPurple,
+            //   ),
+            //   title: Text('Scénarios'),
+            // ),
             BubbleBottomBarItem(
               backgroundColor: kDarkPurple,
               icon: Icon(
-                Icons.movie,
+                Icons.settings,
                 color: Colors.black,
               ),
               activeIcon: Icon(
-                Icons.movie,
+                Icons.settings,
                 color: kDarkPurple,
               ),
-              title: Text('Scénarios'),
-            ),
-            BubbleBottomBarItem(
-              backgroundColor: kDarkPurple,
-              icon: Icon(
-                Icons.person,
-                color: Colors.black,
-              ),
-              activeIcon: Icon(
-                Icons.person,
-                color: kDarkPurple,
-              ),
-              title: Text('Profil'),
+              title: Text('Paramètres'),
             ),
           ],
         ),
@@ -139,15 +136,15 @@ class _BottomNavigationState extends State<BottomNavigation> {
                         home: BuildingsPage(),
                       ),
                     )
-                  : (currentIndex == 2) //Scénarios
-                      ? ChangeNotifierProvider(
-                          create: (BuildContext context) => ScenarioData(),
-                          child: const MaterialApp(
-                            home: ScenariosPage(),
-                          ),
-                        )
-                      : (currentIndex == 3) //Profil
-                          ? const ProfilePage()
+                  // : (currentIndex == 2) //Scénarios
+                  //     ? ChangeNotifierProvider(
+                  //         create: (BuildContext context) => ScenarioData(),
+                  //         child: const MaterialApp(
+                  //           home: ScenariosPage(),
+                  //         ),
+                  //       )
+                      : (currentIndex == 2) //Profil
+                          ? const SettingPage()
                           : const HomePage(), //Else
         ));
   }

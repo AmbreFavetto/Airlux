@@ -6,6 +6,7 @@ import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/pages/home_page.dart';
 import 'package:app_airlux/pages/login_page.dart';
 import 'package:app_airlux/pages/welcome_page.dart';
+import 'package:app_airlux/pages/cgu_page.dart';
 import 'package:app_airlux/scenarios/scenarios_page.dart';
 import 'package:app_airlux/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => const HomePage(),
         '/welcome': (BuildContext context) => WelcomePage(),
         '/login': (BuildContext context) => LoginPage(),
+        '/cgu': (BuildContext context) => CguPage(),
         '/addBuilding': (BuildContext context) => AddBuildingPage(),
         '/addFloor': (BuildContext context) => AddFloorPage(building_id: '', building_name: '',),
         '/infos': (BuildContext context) => BuildingInfoPage(),

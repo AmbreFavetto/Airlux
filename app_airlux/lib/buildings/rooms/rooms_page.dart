@@ -142,9 +142,9 @@ class _RoomsPageState extends State<RoomsPage> {
                   if (response.statusCode == 200) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => RoomsPage(
-                              floorId: widget.floorId,
-                              floorNumber: widget.floorNumber,
-                            )));
+                          floorId: widget.floorId,
+                          floorNumber: widget.floorNumber,
+                        )));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -162,12 +162,12 @@ class _RoomsPageState extends State<RoomsPage> {
             title: const Text('Modifier une pièce'),
             content: SingleChildScrollView(
                 child: Column(children: <Widget>[
-              TextField(
-                controller: _editRoomNameController,
-                decoration: const InputDecoration(
-                    hintText: 'Nom', labelText: 'Nom de la pièce'),
-              )
-            ])));
+                  TextField(
+                    controller: _editRoomNameController,
+                    decoration: const InputDecoration(
+                        hintText: 'Nom', labelText: 'Nom de la pièce'),
+                  )
+                ])));
       },
     );
   }

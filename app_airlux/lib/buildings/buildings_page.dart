@@ -1,5 +1,6 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/floors/floors_page.dart';
+import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
@@ -54,9 +55,17 @@ class _BuildingsPageState extends State<BuildingsPage> {
                   final building = buildingData.buildings[index];
                   return ObjectContainer(
                     icon: Icons.business,
-                    onDelete: () => buildingData.deleteBuilding(building),
-                    onEdit: () =>
-                        _editBuilding(context, building, buildingData),
+                    onDelete: () => {
+                      buildingData.deleteBuilding(building),
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Bâtiment supprimé.'),
+                        ),
+                      )
+                    },
+                    onEdit: () => {
+                      _editBuilding(context, building, buildingData),
+                    },
                     onSelect: () {
                       // print(ModalRoute.of(context)?.settings);
                       Navigator.of(context).push(MaterialPageRoute(
@@ -83,6 +92,9 @@ class _BuildingsPageState extends State<BuildingsPage> {
       ),
       floatingActionButton: AddButton(
           onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const AddBuildingPage(),
+            ));
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const AddBuildingPage(),
             ));
