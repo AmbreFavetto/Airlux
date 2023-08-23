@@ -84,21 +84,14 @@ class _FloorsPageState extends State<FloorsPage> {
                   final floor = floorData.floors[index];
                   return ObjectContainer(
                     icon: Icons.stairs_outlined,
-                    onDelete: () => {
-                      floorData.deleteFloor(floor),
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Étage supprimé.'),
-                        ),
-                      )
-                    },
-                    onEdit: () => {
-                      Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => const AddFloorPage()))
-                    },
                     onDelete: () async => {
                       if ((await floorData.deleteFloor(
                           floor)).statusCode == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Supression de la salle'),
+                          ),
+                        ),
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => FloorsPage(
                               buildingId: widget.buildingId,
@@ -113,20 +106,18 @@ class _FloorsPageState extends State<FloorsPage> {
                       }},
                     onEdit: () => _editFloor(context, floor, floorData),
                     onSelect: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return ChangeNotifierProvider(
-                              create: (BuildContext context) => RoomData(),
-                              child: MaterialApp(
-                                home: RoomsPage(
-                                    floorId: floor.id.toString(),
-                                    floorNumber: floor.number.toString()),
-                              ),
-                            );
-                          },
-                        ),
-                      );
+                      Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) {
+                          return ChangeNotifierProvider(
+                            create: (BuildContext context) => RoomData(),
+                            child: MaterialApp(
+                              home: RoomsPage(
+                                  floorId: floor.id.toString(),
+                                  floorNumber: floor.number.toString()),
+                            ),
+                          );
+                        },
+                      ));
                     },
                     title: floor.number.toString(),
                     id: floor.id.toString(),
@@ -134,7 +125,7 @@ class _FloorsPageState extends State<FloorsPage> {
                 },
               ),
             ),
-          ),
+          )
         ],
       ),
       floatingActionButton: AddButton(
@@ -171,9 +162,9 @@ class _FloorsPageState extends State<FloorsPage> {
                   if (response.statusCode == 200) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => FloorsPage(
-                              buildingId: widget.buildingId,
-                              buildingName: widget.buildingName,
-                            )));
+                          buildingId: widget.buildingId,
+                          buildingName: widget.buildingName,
+                        )));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -191,12 +182,12 @@ class _FloorsPageState extends State<FloorsPage> {
             title: const Text('Modifier un étage'),
             content: SingleChildScrollView(
                 child: Column(children: <Widget>[
-              TextField(
-                controller: _editFloorNameController,
-                decoration: const InputDecoration(
-                    hintText: 'Etage', labelText: "Numéro de l'étage"),
-              )
-            ])));
+                  TextField(
+                    controller: _editFloorNameController,
+                    decoration: const InputDecoration(
+                        hintText: 'Etage', labelText: "Numéro de l'étage"),
+                  )
+                ])));
       },
     );
   }

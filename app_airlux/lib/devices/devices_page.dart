@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../shared/addButton.dart';
+import '../shared/objectContainer.dart';
 import '../shared/textInformationStyle.dart';
 import '../shared/titlePageStyle.dart';
 import 'package:http/http.dart' as http;
@@ -68,7 +69,6 @@ class _DevicesPageState extends State<DevicesPage> {
                     onSelect: () {},
                     title: device.name.toString(),
                     id: device.id.toString(),
-                    category: device.category.toString(),
                   );
                 },
               ),

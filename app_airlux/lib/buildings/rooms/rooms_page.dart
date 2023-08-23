@@ -18,8 +18,6 @@ import 'package:socket_io_client/socket_io_client.dart' as IO;
 class RoomsPage extends StatefulWidget {
   const RoomsPage(
       {super.key, required this.floorId, required this.floorNumber});
-  const RoomsPage(
-      {super.key, required this.floorId, required this.floorNumber});
   final String floorId;
   final String floorNumber;
 
@@ -35,8 +33,6 @@ class _RoomsPageState extends State<RoomsPage> {
     //super.initState();
     //socket = initSocket();
     //connectSocket(socket);
-    Provider.of<RoomData>(context, listen: false)
-        .getRoomsByFloorId(widget.floorId);
     Provider.of<RoomData>(context, listen: false)
         .getRoomsByFloorId(widget.floorId);
   }
@@ -73,19 +69,23 @@ class _RoomsPageState extends State<RoomsPage> {
                     icon: Icons.chair,
                     onDelete: () async => {
                       if ((await roomData.deleteRoom(
-                      room)).statusCode == 200) {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => RoomsPage(
-                          floorId: widget.floorId,
-                          floorNumber: widget.floorNumber,
-                        )))
-                  } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                  content: Text('La supression de la salle n\'a pu aboutir.'),
-                  ),
-                  )
-                  }},
+                          room)).statusCode == 200) {ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Supression de la salle'),
+                        ),
+                      ),
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => RoomsPage(
+                              floorId: widget.floorId,
+                              floorNumber: widget.floorNumber,
+                            )))
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('La supression de la salle n\'a pu aboutir.'),
+                          ),
+                        )
+                      }},
                     onEdit: () => _editRoom(context, room, roomData),
                     onSelect: () {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -105,7 +105,7 @@ class _RoomsPageState extends State<RoomsPage> {
                 },
               ),
             ),
-          ),
+          )
         ],
       ),
       floatingActionButton: AddButton(
@@ -142,9 +142,9 @@ class _RoomsPageState extends State<RoomsPage> {
                   if (response.statusCode == 200) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => RoomsPage(
-                              floorId: widget.floorId,
-                              floorNumber: widget.floorNumber,
-                            )));
+                          floorId: widget.floorId,
+                          floorNumber: widget.floorNumber,
+                        )));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -162,12 +162,12 @@ class _RoomsPageState extends State<RoomsPage> {
             title: const Text('Modifier une pièce'),
             content: SingleChildScrollView(
                 child: Column(children: <Widget>[
-              TextField(
-                controller: _editRoomNameController,
-                decoration: const InputDecoration(
-                    hintText: 'Nom', labelText: 'Nom de la pièce'),
-              )
-            ])));
+                  TextField(
+                    controller: _editRoomNameController,
+                    decoration: const InputDecoration(
+                        hintText: 'Nom', labelText: 'Nom de la pièce'),
+                  )
+                ])));
       },
     );
   }
