@@ -69,7 +69,11 @@ class _RoomsPageState extends State<RoomsPage> {
                     icon: Icons.chair,
                     onDelete: () async => {
                       if ((await roomData.deleteRoom(
-                      room)).statusCode == 200) {
+                      room)).statusCode == 200) {ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Supression de la salle'),
+                        ),
+                      ),
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => RoomsPage(
                           floorId: widget.floorId,

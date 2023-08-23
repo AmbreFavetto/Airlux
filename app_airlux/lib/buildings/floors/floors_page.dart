@@ -87,6 +87,11 @@ class _FloorsPageState extends State<FloorsPage> {
                     onDelete: () async => {
                       if ((await floorData.deleteFloor(
                           floor)).statusCode == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Supression de la salle'),
+                          ),
+                        ),
                         Navigator.of(context).push(MaterialPageRoute(
                             builder: (context) => FloorsPage(
                               buildingId: widget.buildingId,

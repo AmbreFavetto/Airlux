@@ -76,7 +76,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                     },
                   )),
               ListTile(
-                  title: const Text('Lampe RGB'),
+                  title: const Text('Lampe RGB'), // NE MARCHE PAS il faut lier le model de device avec ça
                   leading: Radio<Category>(
                     value: Category.lamp_rgb,
                     groupValue: _category,
