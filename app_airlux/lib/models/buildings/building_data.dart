@@ -12,7 +12,6 @@ class BuildingData extends ChangeNotifier {
 
   void getAllBuildings() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3010/building'));
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/building'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['buildings'];
@@ -60,7 +59,6 @@ class BuildingData extends ChangeNotifier {
   }
 
   void deleteBuilding(Building building) async {
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3010/building/' + building.id.toString()));
     final response = await http.delete(Uri.parse('http://10.0.2.2:3010/building/' + building.id.toString()));
     if (response.statusCode == 200) {
       getAllBuildings();
