@@ -1,8 +1,8 @@
 class Room {
   Room({this.name,  this.id, this.floor_id});
   String? name;
-  int? id = null;
-  int? floor_id = null;
+  String? id = null;
+  String? floor_id = null;
 
   Room.fromJson(Map<String, dynamic> json) {
     id = json['room_id'];

@@ -5,11 +5,11 @@ import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../constants.dart';
 import '../models/buildings/building.dart';
 import '../models/buildings/floors/floor_data.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:http/http.dart' as http;
-
 import '../shared/addButton.dart';
 
 class BuildingsPage extends StatefulWidget {
@@ -21,9 +21,7 @@ class BuildingsPage extends StatefulWidget {
 
 class _BuildingsPageState extends State<BuildingsPage> {
   //late IO.Socket socket;
-
   TextEditingController _editBuildingNameController = TextEditingController();
-
   void initState() {
     //  super.initState();
     //  socket = initSocket();
@@ -76,7 +74,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                             create: (BuildContext context) => FloorData(),
                             child: MaterialApp(
                               home: FloorsPage(
-                                  roomId: building.id.toString(),
+                                  buildingId: building.id.toString(),
                                   buildingName: building.name.toString()),
                             ),
                           );
@@ -97,6 +95,9 @@ class _BuildingsPageState extends State<BuildingsPage> {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const AddBuildingPage(),
             ));
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const AddBuildingPage(),
+            ));
           },
           title: 'Ajouter un batiment'),
     );
@@ -110,7 +111,8 @@ class _BuildingsPageState extends State<BuildingsPage> {
     _editFormDialog(context, building, buildingData);
   }
 
-  _editFormDialog(BuildContext context, Building building, BuildingData buildingData) {
+  _editFormDialog(
+      BuildContext context, Building building, BuildingData buildingData) {
     return showDialog(
       context: context,
       barrierDismissible: true,
@@ -119,13 +121,11 @@ class _BuildingsPageState extends State<BuildingsPage> {
             actions: <Widget>[
               TextButton(
                 onPressed: () async {
-                  http.Response response = await buildingData
-                      .updateBuilding(_editBuildingNameController.text, building);
+                  http.Response response = await buildingData.updateBuilding(
+                      _editBuildingNameController.text, building);
                   if (response.statusCode == 200) {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const BuildingsPage()));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => const BuildingsPage()));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

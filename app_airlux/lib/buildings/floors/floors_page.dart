@@ -1,9 +1,11 @@
+import 'package:app_airlux/models/buildings/floors/floor.dart';
 import 'package:app_airlux/models/buildings/rooms/room_data.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:app_airlux/shared/sockets.dart';
 import 'package:app_airlux/shared/titlePageStyle.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../constants.dart';
 import '../../models/buildings/floors/floor_data.dart';
 import '../../shared/addButton.dart';
 import '../../shared/textInformationStyle.dart';
@@ -11,11 +13,12 @@ import '../buildings_page.dart';
 import 'addFloor_page.dart';
 import '../rooms/rooms_page.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:http/http.dart' as http;
 
 class FloorsPage extends StatefulWidget {
   const FloorsPage(
-      {super.key, required this.roomId, required this.buildingName});
-  final String roomId;
+      {super.key, required this.buildingId, required this.buildingName});
+  final String buildingId;
   final String buildingName;
 
   @override
@@ -23,20 +26,20 @@ class FloorsPage extends StatefulWidget {
 }
 
 class _FloorsPageState extends State<FloorsPage> {
-  late IO.Socket socket;
-
+  //late IO.Socket socket;
+  TextEditingController _editFloorNameController = TextEditingController();
   void initState() {
     super.initState();
-    socket = initSocket();
-    connectSocket(socket);
+    //socket = initSocket();
+    //connectSocket(socket);
     Provider.of<FloorData>(context, listen: false)
-        .getFloorsByBuildingId(widget.roomId);
+        .getFloorsByBuildingId(widget.buildingId);
   }
 
   @override
   void dispose() {
-    socket.disconnect();
-    socket.dispose();
+    //socket.disconnect();
+    //socket.dispose();
     super.dispose();
   }
 
@@ -67,7 +70,7 @@ class _FloorsPageState extends State<FloorsPage> {
           const TitlePageStyle(text: "Étage"),
           const SizedBox(height: 15),
           TextInformationStyle(
-              text: 'Nom du bâtiment : ${widget.buildingName}'),
+              text: "Numéro de l'étage : ${widget.buildingName}"),
           Expanded(
             child: Consumer<FloorData>(
               builder: (context, floorData, child) => GridView.builder(
@@ -93,6 +96,22 @@ class _FloorsPageState extends State<FloorsPage> {
                       Navigator.of(context).push(MaterialPageRoute(
                           builder: (context) => const AddFloorPage()))
                     },
+                    onDelete: () async => {
+                      if ((await floorData.deleteFloor(
+                          floor)).statusCode == 200) {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => FloorsPage(
+                              buildingId: widget.buildingId,
+                              buildingName: widget.buildingName,
+                            )))
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('La supression de l\'étage n\'a pu aboutir.'),
+                          ),
+                        )
+                      }},
+                    onEdit: () => _editFloor(context, floor, floorData),
                     onSelect: () {
                       Navigator.of(context).push(
                         MaterialPageRoute(
@@ -120,13 +139,65 @@ class _FloorsPageState extends State<FloorsPage> {
       ),
       floatingActionButton: AddButton(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => const AddFloorPage(),
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => AddFloorPage(
+                building_id: widget.buildingId,
+                building_name: widget.buildingName,
               ),
-            );
+            ));
           },
           title: 'Ajouter un étage'),
+    );
+  }
+
+  _editFloor(BuildContext context, Floor floor, FloorData floorData) async {
+    setState(() {
+      _editFloorNameController.text = floor.number ?? 'No name';
+    });
+    _editFormDialog(context, floor, floorData);
+  }
+
+  _editFormDialog(BuildContext context, Floor floor, FloorData floorData) {
+    return showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (param) {
+        return AlertDialog(
+            actions: <Widget>[
+              TextButton(
+                onPressed: () async {
+                  http.Response response = await floorData.updateFloor(
+                      _editFloorNameController.text, floor);
+                  if (response.statusCode == 200) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => FloorsPage(
+                              buildingId: widget.buildingId,
+                              buildingName: widget.buildingName,
+                            )));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('La mise à jour n\'a pas pu aboutir.'),
+                      ),
+                    );
+                  }
+                },
+                child: const Text(
+                  'Mettre à jour',
+                  style: TextStyle(color: kDarkPurple),
+                ),
+              ),
+            ],
+            title: const Text('Modifier un étage'),
+            content: SingleChildScrollView(
+                child: Column(children: <Widget>[
+              TextField(
+                controller: _editFloorNameController,
+                decoration: const InputDecoration(
+                    hintText: 'Etage', labelText: "Numéro de l'étage"),
+              )
+            ])));
+      },
     );
   }
 }

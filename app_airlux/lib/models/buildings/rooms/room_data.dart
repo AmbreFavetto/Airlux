@@ -8,8 +8,8 @@ import 'package:http/http.dart' as http;
 class RoomData extends ChangeNotifier {
   var str;
 
-  List<Room> rooms = [Room(name: 'firstRoom', id: 1, floor_id: 1), Room(name: 'secondRoom', id: 2, floor_id: 2)];
-  Room room = Room(name: 'room', id: 1);
+  List<Room> rooms = [Room(name: 'firstRoom', id: '1', floor_id: '1'), Room(name: 'secondRoom', id: '2', floor_id: '2')];
+  Room room = Room(name: 'room', id: '1', floor_id: '1');
 
   void getAllRooms() async {
     final response = await http.get(Uri.parse('http://10.0.2.2:3010/room'));
@@ -48,12 +48,38 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  void deleteRoom(Room room) async {
+  Future<http.Response> addRoom(String name, String floorId) {
+    return http.post(
+      Uri.parse('http://10.0.2.2:3010/room'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode({
+        'name': name,
+        'floor_id': floorId
+      }),
+    );
+  }
+
+  Future<http.Response> updateRoom(String roomName, Room room) {
+    return http.put(
+      Uri.parse('http://10.0.2.2:3010/room/' + room.id.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'name': roomName,
+      }),
+    );
+  }
+
+  void deleteRoom2(Room room) async {
     final response = await http.delete(Uri.parse('http://10.0.2.2:3010/room/' + room.id.toString()));
-    if (response.statusCode == 200) {
-      getAllRooms();
-    } else {
+    if (response.statusCode != 200) {
       throw Exception('Failed to load data');
     }
+  }
+  Future<http.Response> deleteRoom(Room room) {
+    return http.delete(Uri.parse('http://10.0.2.2:3010/room/' + room.id.toString()));
   }
 }
