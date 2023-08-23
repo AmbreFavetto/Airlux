@@ -69,23 +69,23 @@ class _RoomsPageState extends State<RoomsPage> {
                     icon: Icons.chair,
                     onDelete: () async => {
                       if ((await roomData.deleteRoom(
-                          room)).statusCode == 200) {ScaffoldMessenger.of(context).showSnackBar(
+                      room)).statusCode == 200) {ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Supression de la salle'),
                         ),
                       ),
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => RoomsPage(
-                              floorId: widget.floorId,
-                              floorNumber: widget.floorNumber,
-                            )))
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('La supression de la salle n\'a pu aboutir.'),
-                          ),
-                        )
-                      }},
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => RoomsPage(
+                          floorId: widget.floorId,
+                          floorNumber: widget.floorNumber,
+                        )))
+                  } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                  content: Text('La supression de la salle n\'a pu aboutir.'),
+                  ),
+                  )
+                  }},
                     onEdit: () => _editRoom(context, room, roomData),
                     onSelect: () {
                       Navigator.of(context).push(MaterialPageRoute(
