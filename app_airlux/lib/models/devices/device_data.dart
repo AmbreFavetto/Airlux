@@ -77,7 +77,7 @@ class DeviceData extends ChangeNotifier {
   }
 
   Future<http.Response> deleteDevice(Device device) {
-    return http.delete(Uri.parse('http://10.0.2.2:3010/room/' + device.id.toString()));
+    return http.delete(Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()));
   }
 
   void deleteDevice2(Device device) async {
