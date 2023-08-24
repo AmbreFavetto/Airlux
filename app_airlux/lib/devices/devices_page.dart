@@ -76,6 +76,7 @@ class _DevicesPageState extends State<DevicesPage> {
                     title: device.name.toString(),
                     id: device.id.toString(),
                     category: device.category.toString(),
+                    value: device.value == 1 ? true : false,
                   );
                 },
               ),

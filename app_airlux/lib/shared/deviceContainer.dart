@@ -9,10 +9,11 @@ class DeviceContainer extends StatefulWidget {
       {Key? key,
       required this.onDelete,
       required this.onEdit,
-        required this.onTap,
+      required this.onTap,
       required this.title,
       required this.id,
-      required this.category})
+      required this.category,
+      required this.value})
       : super(key: key);
 
   final void Function() onDelete;
@@ -21,18 +22,21 @@ class DeviceContainer extends StatefulWidget {
   final String title;
   final String id;
   final String category;
+  final bool value;
 
   @override
   State<DeviceContainer> createState() => _DeviceContainerState();
 }
 
 class _DeviceContainerState extends State<DeviceContainer> {
+  var _isSelected;
+
   @override
   void initState() {
     super.initState();
+    _isSelected = widget.value;
   }
 
-  var _isSelected = false;
   var _isActive = false;
 
   var _lampIntensity = 50.0;

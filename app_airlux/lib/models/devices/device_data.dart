@@ -35,9 +35,6 @@ class DeviceData extends ChangeNotifier {
   }
 
   Future<http.Response> addDevice(String name, String category, String room_id) {
-    print(name);
-    print(category);
-    print(room_id);
     return http.post(
       Uri.parse('http://10.0.2.2:3010/device'),
       headers: <String, String>{
