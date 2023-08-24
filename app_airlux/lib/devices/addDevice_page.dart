@@ -22,8 +22,9 @@ enum Category {
 }
 
 class AddDevicePage extends StatefulWidget {
-  const AddDevicePage({super.key, required this.room_id});
+  const AddDevicePage({super.key, required this.room_id, required this.room_name});
   final String room_id;
+  final String room_name;
   @override
   _AddDevicePageState createState() => _AddDevicePageState();
 }
@@ -177,7 +178,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
                                 Navigator.of(context).push(
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          DevicesPage(roomId: widget.room_id, roomName: title.toString())),
+                                          DevicesPage(roomId: widget.room_id, roomName: widget.room_name)),
                                 );
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(

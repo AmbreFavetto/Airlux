@@ -517,7 +517,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                           )
                                         : widget.category == kHumidity
                                             ? const Icon(
-                                                Icons.percent,
+                                                Icons.water_drop,
                                                 color: Colors.black26,
                                                 size: 50.0,
                                               )

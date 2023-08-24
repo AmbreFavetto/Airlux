@@ -86,7 +86,7 @@ class _DevicesPageState extends State<DevicesPage> {
       floatingActionButton: AddButton(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddDevicePage(room_id: widget.roomId),
+              builder: (context) => AddDevicePage(room_id: widget.roomId, room_name: widget.roomName,),
             ));
           },
           title: 'Ajouter un batiment'),
