@@ -107,7 +107,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
                               showLabels: true,
                               enableTooltip: true,
                               minorTicksPerInterval: 1,
-                              onChanged: (dynamic value){
+                              onChanged: (dynamic value) {
                                 setState(() {
                                   _currentSliderValue = value;
                                 });
@@ -327,6 +327,129 @@ class _DeviceContainerState extends State<DeviceContainer> {
                   },
                 );
                 break;
+              case kHumidity:
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.only(
+                      topEnd: Radius.circular(25),
+                      topStart: Radius.circular(25),
+                    ),
+                  ),
+                  builder: (BuildContext context) {
+                    return SingleChildScrollView(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const TitleModalBottom(text: 'Humidité'),
+                            const Text('On/Off'),
+                            Switch(
+                              value: _isActive,
+                              activeColor: kOrange,
+                              onChanged: (bool value) {
+                                setState(() {
+                                  _isActive = value;
+                                });
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.expand_more,
+                                  color: Colors.black26),
+                              tooltip: 'Quitter',
+                              onPressed: () => Navigator.pop(context),
+                              iconSize: 45.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+                break;
+              case kTemperature:
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.only(
+                      topEnd: Radius.circular(25),
+                      topStart: Radius.circular(25),
+                    ),
+                  ),
+                  builder: (BuildContext context) {
+                    return SingleChildScrollView(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const TitleModalBottom(text: 'Temperature'),
+                            const Text('On/Off'),
+                            Switch(
+                              value: _isActive,
+                              activeColor: kOrange,
+                              onChanged: (bool value) {
+                                setState(() {
+                                  _isActive = value;
+                                });
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.expand_more,
+                                  color: Colors.black26),
+                              tooltip: 'Quitter',
+                              onPressed: () => Navigator.pop(context),
+                              iconSize: 45.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+                break;
+              case kPressure:
+                showModalBottomSheet(
+                  context: context,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadiusDirectional.only(
+                      topEnd: Radius.circular(25),
+                      topStart: Radius.circular(25),
+                    ),
+                  ),
+                  builder: (BuildContext context) {
+                    return SingleChildScrollView(
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            const TitleModalBottom(text: 'Pression'),
+                            const Text('On/Off'),
+                            Switch(
+                              value: _isActive,
+                              activeColor: kOrange,
+                              onChanged: (bool value) {
+                                setState(() {
+                                  _isActive = value;
+                                });
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.expand_more,
+                                  color: Colors.black26),
+                              tooltip: 'Quitter',
+                              onPressed: () => Navigator.pop(context),
+                              iconSize: 45.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+                break;
               default:
                 break;
             }
@@ -389,11 +512,30 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                             color: Colors.black26,
                                             size: 50.0,
                                           )
-                                        : const Icon(
-                                            Icons.dangerous_outlined,
-                                            color: Colors.black26,
-                                            size: 50.0,
-                                          ),
+                                        : widget.category == kHumidity
+                                            ? const Icon(
+                                                Icons.percent,
+                                                color: Colors.black26,
+                                                size: 50.0,
+                                              )
+                                            : widget.category == kTemperature
+                                                ? const Icon(
+                                                    Icons.device_thermostat,
+                                                    color: Colors.black26,
+                                                    size: 50.0,
+                                                  )
+                                                : widget.category == kPressure
+                                                    ? const Icon(
+                                                        Icons.tire_repair,
+                                                        color: Colors.black26,
+                                                        size: 50.0,
+                                                      )
+                                                    : const Icon(
+                                                        Icons
+                                                            .dangerous_outlined,
+                                                        color: Colors.black26,
+                                                        size: 50.0,
+                                                      ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 3),
@@ -439,7 +581,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
 
 class TitleModalBottom extends StatelessWidget {
   const TitleModalBottom({
-    Key? key, required this.text,
+    Key? key,
+    required this.text,
   }) : super(key: key);
 
   final String text;
@@ -455,4 +598,3 @@ class TitleModalBottom extends StatelessWidget {
     );
   }
 }
-

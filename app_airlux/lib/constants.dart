@@ -11,3 +11,6 @@ const kLampRgb = 'lamp_rgb';
 const kBlind = 'blind';
 const kRadiator = 'radiator';
 const kAirConditioning = 'air_conditioning';
+const kHumidity = 'humidity';
+const kTemperature = 'temperature';
+const kPressure = 'pressure';

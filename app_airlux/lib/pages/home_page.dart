@@ -12,7 +12,7 @@ class HomePage extends StatelessWidget {
         //mainAxisAlignment: MainAxisAlignment.center,
         children: const [
           AppBarBuilder(),
-          Text('Bienvenue user'),
+          Text('Bienvenue, voici tous les devices activés :'),
         ],
       ),
     );
