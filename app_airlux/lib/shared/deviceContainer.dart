@@ -9,6 +9,7 @@ class DeviceContainer extends StatefulWidget {
       {Key? key,
       required this.onDelete,
       required this.onEdit,
+        required this.onTap,
       required this.title,
       required this.id,
       required this.category})
@@ -16,6 +17,7 @@ class DeviceContainer extends StatefulWidget {
 
   final void Function() onDelete;
   final void Function() onEdit;
+  final void Function(bool value) onTap;
   final String title;
   final String id;
   final String category;
@@ -457,6 +459,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
           onTap: () {
             setState(() {
               _isSelected = !_isSelected;
+              widget.onTap(_isSelected);
             });
           },
           child: Container(

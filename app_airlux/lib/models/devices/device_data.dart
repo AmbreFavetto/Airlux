@@ -53,7 +53,6 @@ class DeviceData extends ChangeNotifier {
   }
 
   Future<http.Response> updateDevice(String deviceName, Device device) {
-    print(device.id.toString());
     return http.put(
       Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()),
       headers: <String, String>{
@@ -64,6 +63,19 @@ class DeviceData extends ChangeNotifier {
       }),
     );
   }
+
+  Future<http.Response> updateDeviceValue(int value, Device device) {
+    return http.put(
+      Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, int>{
+        'value': value,
+      }),
+    );
+  }
+
   Future<http.Response> deleteDevice(Device device) {
     return http.delete(Uri.parse('http://10.0.2.2:3010/room/' + device.id.toString()));
   }

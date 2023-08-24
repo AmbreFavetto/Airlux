@@ -65,6 +65,13 @@ class _DevicesPageState extends State<DevicesPage> {
                           ),
                         )
                       }},
+                    onTap: (value) async => {
+                      if (value) {
+                        await deviceData.updateDeviceValue(1, device)
+                      } else {
+                        await deviceData.updateDeviceValue(0, device)
+                      }
+                    },
                     onEdit: () => _editDevice(context, device, deviceData),
                     title: device.name.toString(),
                     id: device.id.toString(),
