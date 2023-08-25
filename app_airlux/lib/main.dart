@@ -3,6 +3,7 @@ import 'package:app_airlux/buildings/buildingInfo_page.dart';
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/buildings/rooms/addRoom_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
+import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/pages/home_page.dart';
 import 'package:app_airlux/pages/login_page.dart';
 import 'package:app_airlux/pages/welcome_page.dart';
@@ -26,7 +27,12 @@ class MyApp extends StatelessWidget {
       initialRoute: '/welcome',
       routes: <String, WidgetBuilder>{
         '/mainPage': (BuildContext context) => BottomNavigation(),
-        '/home': (BuildContext context) => const HomePage(),
+        '/home': (BuildContext context) => ChangeNotifierProvider(
+          create: (BuildContext context) => DeviceData(),
+          child: const MaterialApp(
+            home: HomePage(),
+          ),
+        ),
         '/welcome': (BuildContext context) => WelcomePage(),
         '/login': (BuildContext context) => LoginPage(),
         '/cgu': (BuildContext context) => CguPage(),

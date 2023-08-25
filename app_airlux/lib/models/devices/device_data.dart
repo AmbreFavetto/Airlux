@@ -34,6 +34,28 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
+  // Set 'on' for state on and 'off' for state off
+  void getDevicesByState(String state) async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:3010/device'));
+    if (response.statusCode == 200) {
+      str = json.decode(response.body);
+      final List<dynamic> results = str['data']['devices'];
+      if (state == "on") {
+        results.removeWhere((item) => (item["value"]).toString()!= "1");
+        devices = results.map((e) => Device.fromJson(e)).toList();
+        notifyListeners();
+      }
+      else if (state == "off") {
+        results.removeWhere((item) => (item["value"]).toString()!= "0");
+        devices = results.map((e) => Device.fromJson(e)).toList();
+        notifyListeners();
+      }
+      else throw Exception('Unvalid State');
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
   Future<http.Response> addDevice(String name, String category, String room_id) {
     return http.post(
       Uri.parse('http://10.0.2.2:3010/device'),
