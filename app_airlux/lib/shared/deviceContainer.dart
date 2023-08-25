@@ -29,15 +29,13 @@ class DeviceContainer extends StatefulWidget {
 }
 
 class _DeviceContainerState extends State<DeviceContainer> {
-  var _isSelected;
+  var _isActive;
 
   @override
   void initState() {
     super.initState();
-    _isSelected = widget.value;
+    _isActive = widget.value;
   }
-
-  var _isActive = false;
 
   var _lampIntensity = 50.0;
   Color _lampRgbPickerColor = const Color(0xffffffff);
@@ -462,8 +460,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
           },
           onTap: () {
             setState(() {
-              _isSelected = !_isSelected;
-              widget.onTap(_isSelected);
+              _isActive = !_isActive;
+              widget.onTap(_isActive);
             });
           },
           child: Container(
@@ -478,7 +476,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
             width: 150,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-                color: _isSelected == false ? kOrange : Colors.greenAccent,
+                color: _isActive == false ? kOrange : Colors.greenAccent,
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: const [
                   BoxShadow(color: Colors.black26, offset: Offset(0, 2))
