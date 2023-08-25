@@ -37,9 +37,9 @@ class _DeviceContainerState extends State<DeviceContainer> {
     _isActive = widget.value;
   }
 
-  var _lampIntensity = 50.0;
+  double _lampIntensity = 20;
   Color _lampRgbPickerColor = const Color(0xffffffff);
-  double _currentSliderValue = 20;
+  final List<double> sliderValues = [0.5, 20.0, 40.0, 60.0, 80.0, 100.0];
 
   @override
   Widget build(BuildContext context) {
@@ -78,71 +78,34 @@ class _DeviceContainerState extends State<DeviceContainer> {
                               },
                             ),
                             const Text('Intensité'),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.baseline,
-                              textBaseline: TextBaseline.alphabetic,
-                              children: [
-                                Text(
-                                  _lampIntensity.toInt().toString(),
+                            StatefulBuilder(
+                              builder: (context, state) => Center(
+                                child: SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                    inactiveTrackColor: const Color(0xFF8D8E98),
+                                    activeTrackColor: kDarkPurple,
+                                    thumbColor: kLightRed,
+                                    overlayColor: kDarkRed,
+                                    thumbShape: const RoundSliderThumbShape(
+                                        enabledThumbRadius: 13.0),
+                                    overlayShape: const RoundSliderOverlayShape(
+                                        overlayRadius: 20.0),
+                                  ),
+                                  child: Slider(
+                                    value: _lampIntensity,
+                                    min: 0.0,
+                                    max: 100.0,
+                                    divisions: sliderValues.length - 1,
+                                    label: _lampIntensity.toString(),
+                                    onChanged: (value) {
+                                      state(() {
+                                        _lampIntensity = value;
+                                      });
+                                    },
+                                  ),
                                 ),
-                                const Text(
-                                  '%',
-                                ),
-                              ],
+                              ),
                             ),
-                            Slider(
-                              value: _currentSliderValue,
-                              max: 100,
-                              divisions: 5,
-                              label: _currentSliderValue.round().toString(),
-                              onChanged: (double value) {
-                                setState(() {
-                                  _currentSliderValue = value;
-                                });
-                              },
-                            ),
-                            SfSlider(
-                              min: 0.0,
-                              max: 100.0,
-                              value: _currentSliderValue,
-                              interval: 20,
-                              showTicks: true,
-                              showLabels: true,
-                              enableTooltip: true,
-                              minorTicksPerInterval: 1,
-                              onChanged: (dynamic value) {
-                                setState(() {
-                                  _currentSliderValue = value;
-                                });
-                              },
-                            ),
-                            // GestureDetector(
-                            //   child: Container(
-                            //     child: SliderTheme(
-                            //       data: SliderTheme.of(context).copyWith(
-                            //         inactiveTrackColor: const Color(0xFF8D8E98),
-                            //         activeTrackColor: const Color(0xFF8D8E98),
-                            //         thumbColor: kLightRed,
-                            //         overlayColor: kDarkRed,
-                            //         thumbShape: const RoundSliderThumbShape(
-                            //             enabledThumbRadius: 15.0),
-                            //         overlayShape: const RoundSliderOverlayShape(
-                            //             overlayRadius: 30.0),
-                            //       ),
-                            //       child: Slider(
-                            //         value: _lampIntensity,
-                            //         min: 0.0,
-                            //         max: 100.0,
-                            //         onChanged: (value) {
-                            //           setState(() {
-                            //             _lampIntensity = value;
-                            //           });
-                            //         },
-                            //       ),
-                            //     ),
-                            //   )
-                            // ),
                             IconButton(
                               icon: const Icon(Icons.expand_more,
                                   color: Colors.black26),
