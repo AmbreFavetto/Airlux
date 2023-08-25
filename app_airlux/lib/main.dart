@@ -26,11 +26,11 @@ class MyApp extends StatelessWidget {
       title: 'Airlux App',
       initialRoute: '/welcome',
       routes: <String, WidgetBuilder>{
-        '/mainPage': (BuildContext context) => BottomNavigation(),
-        '/home': (BuildContext context) => ChangeNotifierProvider(
+        '/home': (BuildContext context) => HomePage(),
+        '/mainPage': (BuildContext context) => ChangeNotifierProvider(
           create: (BuildContext context) => DeviceData(),
           child: const MaterialApp(
-            home: HomePage(),
+            home: BottomNavigation(),
           ),
         ),
         '/welcome': (BuildContext context) => WelcomePage(),

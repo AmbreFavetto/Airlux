@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import '../models/buildings/building_data.dart';
+import '../models/devices/device_data.dart';
 import '../pages/setting_page.dart';
 
 class BottomNavigation extends StatefulWidget {
@@ -46,9 +47,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
                       ? currentTitle = 'Bâtiments'
                       // : (index == 2) //Scénarios
                       //     ? currentTitle = 'Scénarios'
-                          : (index == 2) //Paramètres
-                              ? currentTitle = 'Paramètres'
-                              : currentTitle = '';
+                      : (index == 2) //Paramètres
+                          ? currentTitle = 'Paramètres'
+                          : currentTitle = '';
 
               (index == 0) //Home
                   ? actionWidget = const Icon(
@@ -126,26 +127,32 @@ class _BottomNavigationState extends State<BottomNavigation> {
           actions: [actionWidget],
         ),
         body: SafeArea(
-          top: true,
-          child: (currentIndex == 0) //Home
-              ? const HomePage()
-              : (currentIndex == 1) //Bâtiments
-                  ? ChangeNotifierProvider(
-                      create: (BuildContext context) => BuildingData(),
-                      child: const MaterialApp(
-                        home: BuildingsPage(),
-                      ),
-                    )
-                  // : (currentIndex == 2) //Scénarios
-                  //     ? ChangeNotifierProvider(
-                  //         create: (BuildContext context) => ScenarioData(),
-                  //         child: const MaterialApp(
-                  //           home: ScenariosPage(),
-                  //         ),
-                  //       )
-                      : (currentIndex == 2) //Profil
-                          ? const SettingPage()
-                          : const HomePage(), //Else
-        ));
+            top: true,
+            child: (currentIndex == 0) //Home
+                ? const HomePage()
+                : (currentIndex == 1) //Bâtiments
+                    ? ChangeNotifierProvider(
+                        create: (BuildContext context) => BuildingData(),
+                        child: const MaterialApp(
+                          home: BuildingsPage(),
+                        ),
+                      )
+                    // : (currentIndex == 2) //Scénarios
+                    //     ? ChangeNotifierProvider(
+                    //         create: (BuildContext context) => ScenarioData(),
+                    //         child: const MaterialApp(
+                    //           home: ScenariosPage(),
+                    //         ),
+                    //       )
+                    : (currentIndex == 2) //Profil
+                        ? const SettingPage()
+                        : ChangeNotifierProvider(
+                            create: (BuildContext context) => DeviceData(),
+                            child: const MaterialApp(
+                              home: HomePage(),
+                            ),
+                          )
+            //: const HomePage(), //Else
+            ));
   }
 }

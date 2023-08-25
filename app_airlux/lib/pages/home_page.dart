@@ -1,4 +1,5 @@
 import 'package:app_airlux/constants.dart';
+import 'package:app_airlux/shared/activatedDeviceContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:app_airlux/shared/deviceContainer.dart';
 import 'package:app_airlux/models/devices/device.dart';
@@ -7,8 +8,6 @@ import 'package:provider/provider.dart';
 import '../widget/appBarBuilder.dart';
 import 'package:http/http.dart' as http;
 
-
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
@@ -16,7 +15,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   TextEditingController _editDeviceNameController = TextEditingController();
   @override
   void initState() {
@@ -29,10 +27,12 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        //mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          AppBarBuilder(),
-          Text('Bienvenue, voici tous les devices activés :'),
+          const AppBarBuilder(),
+          const Text(
+            'Bienvenue, voici tous les appareils activés :',
+            style: TextStyle(fontSize: 17.0),
+          ),
           Expanded(
             child: Consumer<DeviceData>(
               builder: (context, deviceData, child) => GridView.builder(
@@ -44,32 +44,9 @@ class _HomePageState extends State<HomePage> {
                 ),
                 itemBuilder: (context, index) {
                   final device = deviceData.devices[index];
-                  return DeviceContainer(
-                    onDelete: () async => {
-                      if ((await deviceData.deleteDevice(
-                          device)).statusCode == 200) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => HomePage()))
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('La supression de du capteur n\'a pu aboutir.'),
-                          ),
-                        )
-                      }},
-                    onTap: (value) async => {
-                      if (value) {
-                        await deviceData.updateDeviceValue(1, device)
-                      } else {
-                        await deviceData.updateDeviceValue(0, device)
-                      }
-                    },
-                    onEdit: () => _editDevice(context, device, deviceData),
-                    title: device.name.toString(),
-                    id: device.id.toString(),
-                    category: device.category.toString(),
-                    value: device.value == 1 ? true : false,
-                  );
+                  return ActivatedDeviceContainer(
+                      title: device.name.toString(),
+                      category: device.category.toString());
                 },
               ),
             ),
@@ -78,13 +55,15 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-  _editDevice(BuildContext context, Device device,
-      DeviceData deviceData) async {
+
+  _editDevice(
+      BuildContext context, Device device, DeviceData deviceData) async {
     setState(() {
       _editDeviceNameController.text = device.name ?? 'No name';
     });
     _editFormDialog(context, device, deviceData);
   }
+
   _editFormDialog(BuildContext context, Device device, DeviceData deviceData) {
     return showDialog(
       context: context,
@@ -95,13 +74,11 @@ class _HomePageState extends State<HomePage> {
               TextButton(
                 onPressed: () async {
                   print(_editDeviceNameController.text);
-                  http.Response response = await deviceData
-                      .updateDevice(_editDeviceNameController.text, device);
+                  http.Response response = await deviceData.updateDevice(
+                      _editDeviceNameController.text, device);
                   if (response.statusCode == 200) {
                     Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                HomePage()));
+                        MaterialPageRoute(builder: (context) => HomePage()));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -119,12 +96,12 @@ class _HomePageState extends State<HomePage> {
             title: const Text('Modifier un capteur'),
             content: SingleChildScrollView(
                 child: Column(children: <Widget>[
-                  TextField(
-                    controller: _editDeviceNameController,
-                    decoration: const InputDecoration(
-                        hintText: 'Nom', labelText: 'Nom du capteur'),
-                  )
-                ])));
+              TextField(
+                controller: _editDeviceNameController,
+                decoration: const InputDecoration(
+                    hintText: 'Nom', labelText: 'Nom du capteur'),
+              )
+            ])));
       },
     );
   }
