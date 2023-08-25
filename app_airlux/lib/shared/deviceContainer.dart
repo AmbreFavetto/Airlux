@@ -38,8 +38,10 @@ class _DeviceContainerState extends State<DeviceContainer> {
   }
 
   double _lampIntensity = 20;
+  double _lampRgbIntensity = 20;
+  double _radiatorValue = 18;
+
   Color _lampRgbPickerColor = const Color(0xffffffff);
-  final List<double> sliderValues = [0.5, 20.0, 40.0, 60.0, 80.0, 100.0];
 
   @override
   Widget build(BuildContext context) {
@@ -78,34 +80,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
                               },
                             ),
                             const Text('Intensité'),
-                            StatefulBuilder(
-                              builder: (context, state) => Center(
-                                child: SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                    inactiveTrackColor: const Color(0xFF8D8E98),
-                                    activeTrackColor: kDarkPurple,
-                                    thumbColor: kLightRed,
-                                    overlayColor: kDarkRed,
-                                    thumbShape: const RoundSliderThumbShape(
-                                        enabledThumbRadius: 13.0),
-                                    overlayShape: const RoundSliderOverlayShape(
-                                        overlayRadius: 20.0),
-                                  ),
-                                  child: Slider(
-                                    value: _lampIntensity,
-                                    min: 0.0,
-                                    max: 100.0,
-                                    divisions: sliderValues.length - 1,
-                                    label: _lampIntensity.toString(),
-                                    onChanged: (value) {
-                                      state(() {
-                                        _lampIntensity = value;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
+                            LampIntensitySlider(currentValue: _lampIntensity),
                             IconButton(
                               icon: const Icon(Icons.expand_more,
                                   color: Colors.black26),
@@ -147,6 +122,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                 });
                               },
                             ),
+                            const Text('Intensité'),
+                            LampIntensitySlider(currentValue: _lampRgbIntensity),
                             ColorPicker(
                               enableAlpha: false,
                               labelTypes: [],
@@ -239,6 +216,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                 });
                               },
                             ),
+                            const Text('Température'),
+                            RadiatorSlider(currentValue: _radiatorValue),
                             IconButton(
                               icon: const Icon(Icons.expand_more,
                                   color: Colors.black26),
@@ -562,6 +541,90 @@ class TitleModalBottom extends StatelessWidget {
       child: Text(
         text,
         style: const TextStyle(color: kDarkPurple, fontSize: 25.0),
+      ),
+    );
+  }
+}
+
+class LampIntensitySlider extends StatelessWidget {
+  LampIntensitySlider({
+    Key? key,
+    required this.currentValue,
+}) : super (key: key);
+
+  double currentValue;
+  final List<double> sliderValues = [0.5, 20.0, 40.0, 60.0, 80.0, 100.0];
+
+  @override
+  Widget build(BuildContext context){
+    return StatefulBuilder(
+      builder: (context, state) => Center(
+        child: SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            inactiveTrackColor: const Color(0xFF8D8E98),
+            activeTrackColor: kDarkPurple,
+            thumbColor: kLightRed,
+            overlayColor: kDarkRed,
+            thumbShape: const RoundSliderThumbShape(
+                enabledThumbRadius: 13.0),
+            overlayShape: const RoundSliderOverlayShape(
+                overlayRadius: 20.0),
+          ),
+          child: Slider(
+            value: currentValue,
+            min: 0.0,
+            max: 100.0,
+            divisions: sliderValues.length - 1,
+            label: currentValue.toString(),
+            onChanged: (value) {
+              state(() {
+                currentValue = value;
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RadiatorSlider extends StatelessWidget {
+  RadiatorSlider({
+    Key? key,
+    required this.currentValue,
+  }) : super (key: key);
+
+  double currentValue;
+  final List<double> sliderValues = [0.0, 6.0, 12.0, 15.0, 17.0, 18.0, 20.0, 22.0];
+
+  @override
+  Widget build(BuildContext context){
+    return StatefulBuilder(
+      builder: (context, state) => Center(
+        child: SliderTheme(
+          data: SliderTheme.of(context).copyWith(
+            inactiveTrackColor: Colors.red,
+            activeTrackColor: Colors.blue,
+            thumbColor: Colors.grey,
+            overlayColor: Colors.grey,
+            thumbShape: const RoundSliderThumbShape(
+                enabledThumbRadius: 13.0),
+            overlayShape: const RoundSliderOverlayShape(
+                overlayRadius: 20.0),
+          ),
+          child: Slider(
+            value: currentValue,
+            min: 0.0,
+            max: 22.0,
+            divisions: sliderValues.length - 1,
+            label: currentValue.toString(),
+            onChanged: (value) {
+              state(() {
+                currentValue = value;
+              });
+            },
+          ),
+        ),
       ),
     );
   }
