@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:syncfusion_flutter_sliders/sliders.dart';
+import 'package:thermostat/thermostat.dart';
 
 import '../constants.dart';
 
@@ -39,7 +39,6 @@ class _DeviceContainerState extends State<DeviceContainer> {
 
   double _lampIntensity = 20;
   double _lampRgbIntensity = 20;
-  double _radiatorValue = 18;
 
   Color _lampRgbPickerColor = const Color(0xffffffff);
 
@@ -98,6 +97,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
               case kLampRgb:
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.only(
                       topEnd: Radius.circular(25),
@@ -123,7 +123,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                               },
                             ),
                             const Text('Intensité'),
-                            LampIntensitySlider(currentValue: _lampRgbIntensity),
+                            LampIntensitySlider(
+                                currentValue: _lampRgbIntensity),
                             ColorPicker(
                               enableAlpha: false,
                               labelTypes: [],
@@ -192,6 +193,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
               case kRadiator:
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.only(
                       topEnd: Radius.circular(25),
@@ -217,7 +219,13 @@ class _DeviceContainerState extends State<DeviceContainer> {
                               },
                             ),
                             const Text('Température'),
-                            RadiatorSlider(currentValue: _radiatorValue),
+                            const Thermostat(
+                              minVal: 15,
+                              maxVal: 25,
+                              curVal: 0, // valeur courante, à remplacer par la valeur qu'on recoit
+                              setPoint: 18.0,
+                              setPointMode: SetPointMode.displayAndEdit,
+                            ),
                             IconButton(
                               icon: const Icon(Icons.expand_more,
                                   color: Colors.black26),
@@ -235,6 +243,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
               case kAirConditioning:
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.only(
                       topEnd: Radius.circular(25),
@@ -258,6 +267,14 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                   _isActive = value;
                                 });
                               },
+                            ),
+                            const Text('Température'),
+                            const Thermostat(
+                              minVal: 10,
+                              maxVal: 30,
+                              curVal: 0, // valeur courante, à remplacer par la valeur qu'on recoit
+                              setPoint: 18.0,
+                              setPointMode: SetPointMode.displayAndEdit,
                             ),
                             IconButton(
                               icon: const Icon(Icons.expand_more,
@@ -550,13 +567,13 @@ class LampIntensitySlider extends StatelessWidget {
   LampIntensitySlider({
     Key? key,
     required this.currentValue,
-}) : super (key: key);
+  }) : super(key: key);
 
   double currentValue;
   final List<double> sliderValues = [0.5, 20.0, 40.0, 60.0, 80.0, 100.0];
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return StatefulBuilder(
       builder: (context, state) => Center(
         child: SliderTheme(
@@ -565,57 +582,13 @@ class LampIntensitySlider extends StatelessWidget {
             activeTrackColor: kDarkPurple,
             thumbColor: kLightRed,
             overlayColor: kDarkRed,
-            thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 13.0),
-            overlayShape: const RoundSliderOverlayShape(
-                overlayRadius: 20.0),
+            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 13.0),
+            overlayShape: const RoundSliderOverlayShape(overlayRadius: 20.0),
           ),
           child: Slider(
             value: currentValue,
             min: 0.0,
             max: 100.0,
-            divisions: sliderValues.length - 1,
-            label: currentValue.toString(),
-            onChanged: (value) {
-              state(() {
-                currentValue = value;
-              });
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class RadiatorSlider extends StatelessWidget {
-  RadiatorSlider({
-    Key? key,
-    required this.currentValue,
-  }) : super (key: key);
-
-  double currentValue;
-  final List<double> sliderValues = [0.0, 6.0, 12.0, 15.0, 17.0, 18.0, 20.0, 22.0];
-
-  @override
-  Widget build(BuildContext context){
-    return StatefulBuilder(
-      builder: (context, state) => Center(
-        child: SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            inactiveTrackColor: Colors.red,
-            activeTrackColor: Colors.blue,
-            thumbColor: Colors.grey,
-            overlayColor: Colors.grey,
-            thumbShape: const RoundSliderThumbShape(
-                enabledThumbRadius: 13.0),
-            overlayShape: const RoundSliderOverlayShape(
-                overlayRadius: 20.0),
-          ),
-          child: Slider(
-            value: currentValue,
-            min: 0.0,
-            max: 22.0,
             divisions: sliderValues.length - 1,
             label: currentValue.toString(),
             onChanged: (value) {
