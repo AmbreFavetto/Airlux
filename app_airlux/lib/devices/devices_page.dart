@@ -61,7 +61,7 @@ class _DevicesPageState extends State<DevicesPage> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('La supression de du capteur n\'a pu aboutir.'),
+                            content: Text('La supression du capteur n\'a pu aboutir.'),
                           ),
                         )
                       }},
