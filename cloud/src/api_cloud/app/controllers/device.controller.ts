@@ -45,6 +45,17 @@ function matchRegex(value: string, category: string) {
     "pressure": "^(0.0)" // définir bornes précises
   }
 
+  const regex = new RegExp(listCategoryRegex[category])
+
+  if (value.match(regex) === null) {
+    return false
+  } else {
+    return true
+  }
+
+}
+
+function setDefaultValue(category: string) {
   const listDefaultValues: Record<string, string> =
   {
     "lamp": "(0,0)",
@@ -56,16 +67,8 @@ function matchRegex(value: string, category: string) {
     "temperature": "(0.0)",
     "pressure": "(0.0)"
   }
-  logger.info("before RegExp")
-  logger.info(listCategoryRegex[category])
-  const regex = new RegExp(listCategoryRegex[category])
 
-  if (value.match(regex) === null) {
-    return false
-  } else {
-    return listDefaultValues[category]
-  }
-
+  return listDefaultValues[category]
 }
 
 export const createDevice = async (req: Request, res: Response) => {
@@ -83,16 +86,8 @@ export const createDevice = async (req: Request, res: Response) => {
     } else {
       req.body.type = "sensor"
     }
-    logger.info("les regex")
-    const result = matchRegex(req.body.value, req.body.category)
-    if (!result) {
-      return res.status(HttpStatus.BAD_REQUEST.code)
-        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
-    } else {
-      req.body.value = result
-      logger.info(result)
-    }
-    logger.info(req)
+    const result = setDefaultValue(req.body.category)
+    req.body.value = result
     const data = setData(req, id);
     database.query(QUERY.CREATE_DEVICE, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
