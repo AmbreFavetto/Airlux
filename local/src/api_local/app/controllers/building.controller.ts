@@ -1,10 +1,9 @@
 import dbLocal from '../config/db_local.config';
 import dbCloud from '../config/db_cloud.config.js';
 import ResponseFormat from '../domain/responseFormat';
-import { Request, Response, request } from 'express';
+import { Request, Response } from 'express';
 import logger from '../util/logger';
 import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.model';
-import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { getRelationToDelete, getEltToDelete } from '../util/devTools';
 import Building from '../interfaces/building.interface';
 
@@ -22,7 +21,7 @@ export const createBuilding = async (req: Request, res: Response) => {
     res.status(HttpStatus.BAD_REQUEST.code)
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   } else {
-    const key = `buildings:${uuidv4()}`;
+    const key = `buildings:${req.body.building_id}`;
     var data = setData(req);
     try {
       await dbLocal.hmset(key, data);
@@ -32,21 +31,6 @@ export const createBuilding = async (req: Request, res: Response) => {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
     }
-  }
-};
-
-export const getBuildings = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching buildings`);
-  try {
-    const keys = await dbLocal.keys('buildings:*');
-    let buildings = await Promise.all(keys.map(async (key: string) => {
-      const data = await dbLocal.hgetall(key);
-      return { [key]: data };
-    }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings }));
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 

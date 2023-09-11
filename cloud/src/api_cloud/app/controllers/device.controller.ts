@@ -32,6 +32,41 @@ function setUpdateData(req: Request, previousValues: Device) {
   return data;
 }
 
+function matchRegex(value: string, category: string) {
+  const listCategoryRegex: Record<string, string> =
+  {
+    "lamp": "^\((0|1),(0|[1-9][0-9]?|100)\)$",
+    "lamp_rgb": "^\((0|1),(0|[1-9][0-9]?|100),\((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?),(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?),(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\)\)$",
+    "blind": "^\((0|1)\)$",
+    "radiator": "^\((0|1)\)$",
+    "air_conditioning": "^\((0|1)\)$",
+    "humidity": "^(0.0)", // définir bornes précises
+    "temperature": "^(0.0)", // définir bornes précises
+    "pressure": "^(0.0)" // définir bornes précises
+  }
+
+  const listDefaultValues: Record<string, string> =
+  {
+    "lamp": "(0,0)",
+    "lamp_rgb": "(0,0,(255,255,255))",
+    "blind": "(0)",
+    "radiator": "(0)",
+    "air_conditioning": "(0)",
+    "humidity": "(0.0)",
+    "temperature": "(0.0)",
+    "pressure": "(0.0)"
+  }
+
+  const regex = new RegExp(listCategoryRegex[category])
+
+  if (value.match(regex) === null) {
+    return false
+  } else {
+    return listDefaultValues[category]
+  }
+
+}
+
 export const createDevice = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, creating device`);
   const { error } = deviceCreateSchema.validate(req.body);
@@ -46,6 +81,13 @@ export const createDevice = async (req: Request, res: Response) => {
       req.body.type = "actuator"
     } else {
       req.body.type = "sensor"
+    }
+    const result = matchRegex(req.body.value, req.body.category)
+    if (!result) {
+      return res.status(HttpStatus.BAD_REQUEST.code)
+        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
+    } else {
+      req.body.value = result
     }
     const data = setData(req, id);
     database.query(QUERY.CREATE_DEVICE, Object.values(data), () => {
@@ -109,10 +151,12 @@ export const updateDevice = async (req: Request, res: Response) => {
     if (req.body.category) {
       if (listActuator.includes(req.body.category)) {
         req.body.type = "actuator"
+        if (!matchRegex(req.body.value, req.body.category)) {
+          return res.status(HttpStatus.BAD_REQUEST.code)
+            .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
+        }
       } else {
         req.body.type = "sensor"
-        // récupérer value envoyée par esp32 (mqtt)
-        req.body.value = 8 // valeur temporaire le temps de faire la connexion mqtt
       }
     }
     const data = setUpdateData(req, results);
