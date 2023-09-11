@@ -17,4 +17,4 @@ COPY --from=builder /usr/app/package.json /usr/app/package.json
 COPY --from=builder /usr/app/node_modules /usr/app/node_modules
 
 CMD ["npm", "start"]
-# ENTRYPOINT ["tail", "-f", "/dev/null"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]
