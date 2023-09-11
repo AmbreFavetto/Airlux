@@ -13,7 +13,7 @@ function setData(req: Request, id: string) {
   const data: SousScenario = {
     action: req.body.action,
     device_id: req.body.device_id,
-    sous_scenario_id: id,
+    sousScenario_id: id,
   };
   return data;
 }
@@ -28,7 +28,7 @@ function setUpdateData(req: Request, previousValues: SousScenario) {
 const tabDeviceCategoryAction: Record<string, Array<string>> = {
   lamp: ["on", "off", "intensity"],
   lamp_rgb: ["on", "off", "intensity", "color"],
-  pane: ["open", "close"],
+  blind: ["open", "close"],
   radiator: ["on", "off", "temperature"],
   air_conditioning: ["on", "off", "temperature"]
 };

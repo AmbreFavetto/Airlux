@@ -4,7 +4,7 @@
   "description": "Node.js Restful CRUD API with Node.js, Express and MySQL",
   "scripts": {
     "build": "tsc",
-    "start": "node dist/app/main.js",
+    "start": "node dist/main.js",
     "lint": "eslint .  --ext .ts",
     "test": "NODE_ENV=test jest -i --colors --verbose"
   },

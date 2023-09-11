@@ -22,6 +22,7 @@ services:
       dockerfile: ./tests/Dockerfile
     volumes:
       - ../src/api_cloud:/usr/app
+      - /usr/app/node_modules
     ports:
       - 3020:3020
     environment:

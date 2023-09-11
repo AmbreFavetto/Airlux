@@ -1,5 +1,5 @@
 import express from 'express';
-import { getBuilding, createBuilding, getBuildings, deleteBuilding, updateBuilding } from '../controllers/building.controller.js';
+import { getBuilding, createBuilding, getBuildings, deleteBuilding, updateBuilding } from '../controllers/building.controller';
 
 const buildingRoutes = express.Router();
 
@@ -7,7 +7,7 @@ buildingRoutes.route('/')
   .get(getBuildings)
   .post(createBuilding);
 
-  buildingRoutes.route('/:id')
+buildingRoutes.route('/:id')
   .get(getBuilding)
   .put(updateBuilding)
   .delete(deleteBuilding);
