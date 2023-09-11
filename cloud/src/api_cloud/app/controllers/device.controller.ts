@@ -16,7 +16,7 @@ function setData(req: Request, id: string) {
     room_id: req.body.room_id,
     type: req.body.type,
     category: req.body.category,
-    value: 0,
+    value: "0.0",
     device_id: id
   };
   return data;
