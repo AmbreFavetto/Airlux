@@ -16,7 +16,7 @@ function setData(req: Request, id: string) {
     room_id: req.body.room_id,
     type: req.body.type,
     category: req.body.category,
-    value: "0.0",
+    value: req.body.value,
     device_id: id
   };
   return data;
@@ -56,7 +56,8 @@ function matchRegex(value: string, category: string) {
     "temperature": "(0.0)",
     "pressure": "(0.0)"
   }
-
+  logger.info("before RegExp")
+  logger.info(listCategoryRegex[category])
   const regex = new RegExp(listCategoryRegex[category])
 
   if (value.match(regex) === null) {
@@ -82,13 +83,16 @@ export const createDevice = async (req: Request, res: Response) => {
     } else {
       req.body.type = "sensor"
     }
+    logger.info("les regex")
     const result = matchRegex(req.body.value, req.body.category)
     if (!result) {
       return res.status(HttpStatus.BAD_REQUEST.code)
         .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
     } else {
       req.body.value = result
+      logger.info(result)
     }
+    logger.info(req)
     const data = setData(req, id);
     database.query(QUERY.CREATE_DEVICE, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
