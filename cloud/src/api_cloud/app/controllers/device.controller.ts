@@ -25,9 +25,6 @@ function setData(req: Request, id: string) {
 function setUpdateData(req: Request, previousValues: Device) {
   const data: Device = {};
   req.body.name ? data.name = req.body.name : data.name = previousValues.name
-  req.body.room_id ? data.room_id = req.body.room_id : data.room_id = previousValues.room_id
-  req.body.type ? data.type = req.body.type : data.type = previousValues.type
-  req.body.category ? data.category = req.body.category : data.category = previousValues.category
   req.body.value ? data.value = req.body.value : data.value = previousValues.value
   return data;
 }
@@ -35,19 +32,17 @@ function setUpdateData(req: Request, previousValues: Device) {
 function matchRegex(value: string, category: string) {
   const listCategoryRegex: Record<string, string> =
   {
-    "lamp": "^\((0|1),(0|[1-9][0-9]?|100)\)$",
-    "lamp_rgb": "^\((0|1),(0|[1-9][0-9]?|100),\((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?),(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?),(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\)\)$",
-    "blind": "^\((0|1)\)$",
-    "radiator": "^\((0|1)\)$",
-    "air_conditioning": "^\((0|1)\)$",
+    "lamp": "^(0|1),(0|[1-9][0-9]?|100)$",
+    "lamp_rgb": "^(0|1),(0|[1-9][0-9]?|100),(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?),(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?),(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$",
+    "blind": "^(0|1)$",
+    "radiator": "^(0|1)$",
+    "air_conditioning": "^(0|1)$",
     "humidity": "^(0.0)", // définir bornes précises
     "temperature": "^(0.0)", // définir bornes précises
     "pressure": "^(0.0)" // définir bornes précises
   }
 
-  const regex = new RegExp(listCategoryRegex[category])
-
-  if (value.match(regex) === null) {
+  if (value.match(listCategoryRegex[category]) === null) {
     return false
   } else {
     return true
@@ -143,20 +138,12 @@ export const updateDevice = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    if (req.body.room_id) {
-      await processData(QUERY.SELECT_ROOM, req.body.room_id)
-    }
     const results: Device = await processData(QUERY.SELECT_DEVICE, req.params.id)
-    if (req.body.category) {
-      if (listActuator.includes(req.body.category)) {
-        req.body.type = "actuator"
-        if (!matchRegex(req.body.value, req.body.category)) {
-          return res.status(HttpStatus.BAD_REQUEST.code)
-            .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
-        }
-      } else {
-        req.body.type = "sensor"
-      }
+    logger.info(results.category)
+    logger.info(req.body.value)
+    if (!matchRegex(req.body.value, results.category!)) {
+      return res.status(HttpStatus.BAD_REQUEST.code)
+        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
     }
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating device`);
