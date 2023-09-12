@@ -83,13 +83,13 @@ class DeviceData extends ChangeNotifier {
     );
   }
 
-  Future<http.Response> updateDeviceValue(int value, Device device) {
+  Future<http.Response> updateDeviceValue(String value, Device device) {
     return http.put(
       Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode(<String, int>{
+      body: jsonEncode(<String, String>{
         'value': value,
       }),
     );
