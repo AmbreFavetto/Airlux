@@ -41,12 +41,12 @@ class DeviceData extends ChangeNotifier {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
       if (state == "on") {
-        results.removeWhere((item) => (item["value"]).toString()!= "1");
+        results.removeWhere((item) => (item["value"]).substring(0, 1) != "1");
         devices = results.map((e) => Device.fromJson(e)).toList();
         notifyListeners();
       }
       else if (state == "off") {
-        results.removeWhere((item) => (item["value"]).toString()!= "0");
+        results.removeWhere((item) => (item["value"]).substring(0, 1) != "0");
         devices = results.map((e) => Device.fromJson(e)).toList();
         notifyListeners();
       }
