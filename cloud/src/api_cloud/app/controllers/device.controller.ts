@@ -53,14 +53,14 @@ function matchRegex(value: string, category: string) {
 function setDefaultValue(category: string) {
   const listDefaultValues: Record<string, string> =
   {
-    "lamp": "(0,0)",
-    "lamp_rgb": "(0,0,(255,255,255))",
-    "blind": "(0)",
-    "radiator": "(0)",
-    "air_conditioning": "(0)",
-    "humidity": "(0.0)",
-    "temperature": "(0.0)",
-    "pressure": "(0.0)"
+    "lamp": "0,0",
+    "lamp_rgb": "0,0,255,255,255",
+    "blind": "0",
+    "radiator": "0",
+    "air_conditioning": "0",
+    "humidity": "0.0",
+    "temperature": "0.0",
+    "pressure": "0.0"
   }
 
   return listDefaultValues[category]
@@ -139,8 +139,6 @@ export const updateDevice = async (req: Request, res: Response) => {
   }
   try {
     const results: Device = await processData(QUERY.SELECT_DEVICE, req.params.id)
-    logger.info(results.category)
-    logger.info(req.body.value)
     if (!matchRegex(req.body.value, results.category!)) {
       return res.status(HttpStatus.BAD_REQUEST.code)
         .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
