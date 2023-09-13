@@ -13,7 +13,7 @@ class DeviceContainer extends StatefulWidget {
       required this.title,
       required this.id,
       required this.category,
-      required this.value})
+      required this.result})
       : super(key: key);
 
   final void Function() onDelete;
@@ -22,7 +22,7 @@ class DeviceContainer extends StatefulWidget {
   final String title;
   final String id;
   final String category;
-  final bool value;
+  final String result;
 
   @override
   State<DeviceContainer> createState() => _DeviceContainerState();
@@ -30,17 +30,42 @@ class DeviceContainer extends StatefulWidget {
 
 class _DeviceContainerState extends State<DeviceContainer> {
   var _isActive;
+  var resultSplitted;
+  var _lampIntensity;
+  var _lampRgbIntensity;
+  var _currentColor;
 
   @override
   void initState() {
     super.initState();
-    _isActive = widget.value;
+    resultSplitted = widget.result.split(',');
+
+    if (int.parse(resultSplitted[0]) == 1){
+      _isActive = true;
+    } else {
+      _isActive = false;
+    }
+
+    if(widget.category == kLamp) {
+      _lampIntensity = double.parse(resultSplitted[1]);
+    } else {
+      _lampIntensity = 20;
+    }
+
+    if(widget.category == kLampRgb) {
+      _lampRgbIntensity = double.parse(resultSplitted[1]);
+    } else {
+      _lampRgbIntensity = 20;
+    }
+
+    if(widget.category == kLampRgb) {
+      _currentColor = Color.fromRGBO(int.parse(resultSplitted[2]), int.parse(resultSplitted[3]), int.parse(resultSplitted[4]), 1);
+    } else {
+      _currentColor = Colors.white;
+    }
+
   }
-
-  double _lampIntensity = 20;
-  double _lampRgbIntensity = 20;
-
-  Color _lampRgbPickerColor = const Color(0xffffffff);
+  List<Color> colors = [Colors.white, Colors.red, Colors.pink, Colors.purple, Colors.blue, Colors.green, Colors.amber, Colors.orange, Colors.grey];
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +79,7 @@ class _DeviceContainerState extends State<DeviceContainer> {
               case kLamp:
                 showModalBottomSheet(
                   context: context,
+                  isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadiusDirectional.only(
                       topEnd: Radius.circular(25),
@@ -124,14 +150,13 @@ class _DeviceContainerState extends State<DeviceContainer> {
                             ),
                             const Text('Intensité'),
                             LampIntensitySlider(
-                                currentValue: _lampRgbIntensity),
-                            ColorPicker(
-                              enableAlpha: false,
-                              labelTypes: [],
-                              pickerColor: _lampRgbPickerColor,
+                                currentValue: _lampRgbIntensity,),
+                            BlockPicker(
+                              availableColors: colors,
+                              pickerColor: _currentColor,
                               onColorChanged: (Color color) {
                                 setState(() {
-                                  _lampRgbPickerColor = color;
+                                  _currentColor = color;
                                 });
                               },
                             ),
@@ -222,7 +247,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                             const Thermostat(
                               minVal: 15,
                               maxVal: 25,
-                              curVal: 0, // valeur courante, à remplacer par la valeur qu'on recoit
+                              curVal:
+                                  0, // valeur courante, à remplacer par la valeur qu'on recoit
                               setPoint: 18.0,
                               setPointMode: SetPointMode.displayAndEdit,
                             ),
@@ -272,7 +298,8 @@ class _DeviceContainerState extends State<DeviceContainer> {
                             const Thermostat(
                               minVal: 10,
                               maxVal: 30,
-                              curVal: 0, // valeur courante, à remplacer par la valeur qu'on recoit
+                              curVal:
+                                  0, // valeur courante, à remplacer par la valeur qu'on recoit
                               setPoint: 18.0,
                               setPointMode: SetPointMode.displayAndEdit,
                             ),

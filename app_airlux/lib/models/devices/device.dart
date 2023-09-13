@@ -5,7 +5,7 @@ class Device {
   String? id ;
   String? type = "";
   String? category;
-  int? value;
+  String? value;
 
   Device.fromJson(Map<String, dynamic> json) {
     id = json['device_id'];

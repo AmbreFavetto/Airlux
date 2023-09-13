@@ -65,18 +65,40 @@ class _DevicesPageState extends State<DevicesPage> {
                           ),
                         )
                       }},
-                    onTap: (value) async => {
-                      if (value) {
-                        await deviceData.updateDeviceValue(1, device)
-                      } else {
-                        await deviceData.updateDeviceValue(0, device)
+                    onTap: (value) async {
+                      switch (device.category){
+                        case kLamp:
+                          if (value){
+                            await deviceData.updateDeviceValue("1,20", device);
+                          } else {
+                            await deviceData.updateDeviceValue("0,0", device);
+                          }
+                          break;
+                        case kLampRgb:
+                          if (value){
+                            await deviceData.updateDeviceValue("1,20,255,255,255", device);
+                          } else {
+                            await deviceData.updateDeviceValue("0,0,0,0,0", device);
+                          }
+                          break;
+                        case kRadiator:
+                        case kAirConditioning:
+                        case kBlind:
+                          if (value){
+                            await deviceData.updateDeviceValue("1", device);
+                          } else {
+                            await deviceData.updateDeviceValue("0", device);
+                          }
+                          break;
+                        default:
+                          break;
                       }
                     },
                     onEdit: () => _editDevice(context, device, deviceData),
                     title: device.name.toString(),
                     id: device.id.toString(),
                     category: device.category.toString(),
-                    value: device.value == 1 ? true : false,
+                    result: device.value.toString(),
                   );
                 },
               ),
