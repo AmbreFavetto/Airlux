@@ -13,7 +13,6 @@ class BuildingData extends ChangeNotifier {
   Building building = Building(name: 'building', id: '1');
 
   void getAllBuildings() async {
-    print('${prefixUrl} : ${port.toString()} /building');
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);

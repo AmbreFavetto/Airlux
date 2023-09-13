@@ -6,11 +6,13 @@ import 'package:http/http.dart' as http;
 
 class DeviceData extends ChangeNotifier {
   var str;
-
+  //var prefixUrl = 'http://192.168.1.29';
+  var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
+  var port = 3010;
   List<Device> devices = [];
 
   void getAllDevices() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/device'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -22,7 +24,7 @@ class DeviceData extends ChangeNotifier {
   }
 
   void getDevicesByRoomId(String id) async{
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/device'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -36,7 +38,7 @@ class DeviceData extends ChangeNotifier {
 
   // Set 'on' for state on and 'off' for state off
   void getDevicesByState(String state) async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/device'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -58,7 +60,7 @@ class DeviceData extends ChangeNotifier {
 
   Future<http.Response> addDevice(String name, String category, String room_id) {
     return http.post(
-      Uri.parse('http://10.0.2.2:3010/device'),
+      Uri.parse('${prefixUrl}:${port.toString()}/device'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -73,7 +75,7 @@ class DeviceData extends ChangeNotifier {
 
   Future<http.Response> updateDevice(String deviceName, Device device) {
     return http.put(
-      Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()),
+      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -85,7 +87,7 @@ class DeviceData extends ChangeNotifier {
 
   Future<http.Response> updateDeviceValue(String value, Device device) {
     return http.put(
-      Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()),
+      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -96,12 +98,12 @@ class DeviceData extends ChangeNotifier {
   }
 
   Future<http.Response> deleteDevice(Device device) {
-    return http.delete(Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()));
+    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'));
   }
 
   void deleteDevice2(Device device) async {
     print(device.id.toString());
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3010/device/' + device.id.toString()));
+    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'));
     if (response.statusCode != 200) {
       throw Exception('Failed to load data');
     }

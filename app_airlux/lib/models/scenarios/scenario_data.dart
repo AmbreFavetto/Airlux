@@ -7,12 +7,14 @@ import 'package:http/http.dart' as http;
 class ScenarioData extends ChangeNotifier {
 
   //late IO.Socket _socket;
-
+  //var prefixUrl = 'http://192.168.1.29';
+  var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
+  var port = 3010;
   var str;
   List<Scenario> scenarios = [Scenario(name: 'firstScenario', id: '0'), Scenario(name: 'secondScenario', id: '1'), Scenario(name: 'thirdScenario', id: '2')];
 
   Future<bool> checkApiOnline() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/scenario'));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -21,7 +23,7 @@ class ScenarioData extends ChangeNotifier {
   }
 
   void getAllScenarios() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/scenario'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/scenario'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['scenarios'];
@@ -39,7 +41,7 @@ class ScenarioData extends ChangeNotifier {
 
   Future<http.Response> addScenario(String name) {
     return http.post(
-      Uri.parse('http://10.0.2.2:3010/scenario'),
+      Uri.parse('${prefixUrl}:${port.toString()}/scenario'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -50,7 +52,7 @@ class ScenarioData extends ChangeNotifier {
   }
   Future<http.Response> modifyScenarioName(Scenario scenario, String name) {
     return http.put(
-      Uri.parse('http://10.0.2.2:3010/scenario/'+scenario.id.toString()),
+      Uri.parse('${prefixUrl}:${port.toString()}/scenario/${scenario.id.toString()}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -61,7 +63,7 @@ class ScenarioData extends ChangeNotifier {
   }
 
   Future<bool> deleteScenario(Scenario scenario) async {
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3010/scenario/' + scenario.id.toString()));
+    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/scenario/${scenario.id.toString()}'));
     if (response.statusCode == 200) {
       notifyListeners();
       return true;
