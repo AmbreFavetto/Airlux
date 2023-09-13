@@ -6,12 +6,15 @@ import 'package:http/http.dart' as http;
 
 class BuildingData extends ChangeNotifier {
   var str;
-
+  //var prefixUrl = 'http://192.168.1.29';
+  var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
+  var port = 3010;
   List<Building> buildings = [Building(name: 'firstBuilding', id: '1'), Building(name: 'secondBuilding', id: '2')];
   Building building = Building(name: 'building', id: '1');
 
   void getAllBuildings() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/building'));
+    print('${prefixUrl} : ${port.toString()} /building');
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['buildings'];
@@ -23,7 +26,7 @@ class BuildingData extends ChangeNotifier {
   }
 
   void getBuilding(int id) async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:3010/building', id));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building', id));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final dynamic result = str['data']['buildings'];
@@ -36,7 +39,7 @@ class BuildingData extends ChangeNotifier {
 
   Future<http.Response> addBuilding(String name) {
     return http.post(
-      Uri.parse('http://10.0.2.2:3010/building'),
+      Uri.parse('${prefixUrl}:${port.toString()}/building'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -48,7 +51,7 @@ class BuildingData extends ChangeNotifier {
 
   Future<http.Response> updateBuilding(String buildingName, Building building) {
     return http.put(
-      Uri.parse('http://10.0.2.2:3010/building/' + building.id.toString()),
+      Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -59,7 +62,7 @@ class BuildingData extends ChangeNotifier {
   }
 
   void deleteBuilding(Building building) async {
-    final response = await http.delete(Uri.parse('http://10.0.2.2:3010/building/' + building.id.toString()));
+    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'));
     if (response.statusCode == 200) {
       getAllBuildings();
     } else {
