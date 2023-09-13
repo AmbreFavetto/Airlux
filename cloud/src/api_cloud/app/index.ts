@@ -10,10 +10,14 @@ import routesRoom from './routes/room.routes';
 import routesUser from './routes/user.routes';
 import routesUserBuilding from './routes/userBuilding.routes';
 import routesTimeseries from './routes/timeseries.routes';
+import routesHealth from './routes/health.routes';
 
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+//Health
+app.use('/health', routesHealth);
 
 //Building
 app.use('/building', routesBuilding);
