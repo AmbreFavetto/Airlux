@@ -33,6 +33,7 @@ services:
       - db_local
     networks:
       - local_network
+      - cloud_network
 
   mqtt:
     image: eclipse-mosquitto
@@ -44,3 +45,4 @@ services:
 
 networks:
   local_network:
+  cloud_network:

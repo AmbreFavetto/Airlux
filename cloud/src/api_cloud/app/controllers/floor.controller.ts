@@ -20,7 +20,6 @@ function setData(req: Request, id: string) {
 function setUpdateData(req: Request, previousValues: Floor) {
   const data: Floor = {};
   req.body.name ? data.name = req.body.name : data.name = previousValues.name
-  req.body.building_id ? data.building_id = req.body.building_id : data.building_id = previousValues.building_id
   return data;
 }
 
@@ -91,9 +90,6 @@ export const updateFloor = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    if (req.body.building_id) {
-      await processData(QUERY.SELECT_BUILDING, req.body.building_id)
-    }
     const results: Floor = await processData(QUERY.SELECT_FLOOR, req.params.id)
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating floor`);
@@ -105,7 +101,7 @@ export const updateFloor = async (req: Request, res: Response) => {
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} or Building by id ${req.body.building_id} was not found`));
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
     }
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));

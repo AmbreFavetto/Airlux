@@ -2,6 +2,11 @@ import axios from 'axios';
 import ResponseFormat from '../domain/responseFormat';
 import { Request, Response, NextFunction } from 'express';
 
+// reception du fichier de log
+
+
+// gestion des logs
+
 export const testAxios = (req: Request, res: Response, next: NextFunction) => {
     axios.post('http://localhost:3010/floor', {
         "name": "test",

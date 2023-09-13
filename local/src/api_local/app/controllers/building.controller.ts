@@ -6,7 +6,7 @@ import logger from '../util/logger';
 import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.model';
 import HttpStatus, { getRelationToDelete, getEltToDelete } from '../util/devTools';
 import Building from '../interfaces/building.interface';
-import winston from "../config/winston.config";
+import { addLog } from "../util/logFile";
 
 function setData(req: Request) {
   const data: Building = {
@@ -32,7 +32,7 @@ export const createBuilding = async (req: Request, res: Response) => {
     var data = setData(req);
     try {
       await dbLocal.hmset(key, data);
-      winston.log('info', `POST createBuilding {name:${req.body.name}, building_id:${req.body.building_id}}`);
+      addLog("POST", "/building", JSON.stringify(req.body))
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
     } catch (err) {
@@ -87,6 +87,7 @@ export const updateBuilding = async (req: Request, res: Response) => {
     } else {
       try {
         await dbLocal.hmset(`buildings:${req.params.id}`, req.body);
+        addLog("PUT", `/building/${req.params.id}`, JSON.stringify(req.body))
         res.status(HttpStatus.CREATED.code)
           .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building updated`));
       } catch (error) {
@@ -108,6 +109,7 @@ export const deleteBuilding = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("buildings:" + req.params.id)
     await getEltToDelete("floors", "buildings:" + req.params.id)
+    addLog("DELETE", `/building/${req.params.id}`, JSON.stringify(req.body))
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
   } catch (error) {
