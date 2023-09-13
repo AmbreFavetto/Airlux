@@ -22,6 +22,12 @@ export const createBuilding = async (req: Request, res: Response) => {
     res.status(HttpStatus.BAD_REQUEST.code)
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   } else {
+    const test = await dbLocal.keys('buildings:*');
+    logger.error(test)
+    if (test.length != 0) {
+      return res.status(HttpStatus.BAD_REQUEST.code)
+        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'Local building already exists'));
+    }
     const key = `buildings:${req.body.building_id}`;
     var data = setData(req);
     try {
@@ -33,6 +39,21 @@ export const createBuilding = async (req: Request, res: Response) => {
       res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
         .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
     }
+  }
+};
+
+export const getBuildings = async (req: Request, res: Response) => {
+  logger.info(`${req.method} ${req.originalUrl}, fetching buildings`);
+  try {
+    const keys = await dbLocal.keys('buildings:*');
+    let buildings = await Promise.all(keys.map(async (key: string) => {
+      const data = await dbLocal.hgetall(key);
+      return { [key]: data };
+    }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings }));
+  } catch (error) {
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
