@@ -32,7 +32,13 @@ export const createBuilding = async (req: Request, res: Response) => {
   }
   // Create Building
   try {
-    const id = uuidv4();
+    let id
+    if (req.body.building_id) {
+      id = req.body.building_id
+    } else {
+      id = uuidv4();
+    }
+
     const data = setData(req, id);
     database.query(QUERY.CREATE_BUILDING, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)

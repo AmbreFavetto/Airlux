@@ -6,6 +6,7 @@ import logger from '../util/logger';
 import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.model';
 import HttpStatus, { getRelationToDelete, getEltToDelete } from '../util/devTools';
 import Building from '../interfaces/building.interface';
+import winston from "../config/winston.config";
 
 function setData(req: Request) {
   const data: Building = {
@@ -25,6 +26,7 @@ export const createBuilding = async (req: Request, res: Response) => {
     var data = setData(req);
     try {
       await dbLocal.hmset(key, data);
+      winston.log('info', `POST createBuilding {name:${req.body.name}, building_id:${req.body.building_id}}`);
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
     } catch (err) {

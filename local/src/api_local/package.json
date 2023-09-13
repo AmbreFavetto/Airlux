@@ -21,7 +21,8 @@
     "supertest": "^6.3.3",
     "ts-node": "^10.9.1",
     "typescript": "^4.6.3",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "winston": "^3.10.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
