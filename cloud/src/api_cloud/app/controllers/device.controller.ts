@@ -75,7 +75,7 @@ export const createDevice = async (req: Request, res: Response) => {
   }
   try {
     await processData(QUERY.SELECT_ROOM, (req.body.room_id))
-    let id
+    let id: string
     if (req.body.device_id) {
       id = req.body.device_id
     } else {
@@ -91,7 +91,7 @@ export const createDevice = async (req: Request, res: Response) => {
     const data = setData(req, id);
     database.query(QUERY.CREATE_DEVICE, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`));
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device with id ${id} created`, { id }));
     });
   } catch (err) {
     if ((err as Error).message === "not_found") {

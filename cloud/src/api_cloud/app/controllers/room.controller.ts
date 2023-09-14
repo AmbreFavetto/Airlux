@@ -33,7 +33,7 @@ export const createRoom = async (req: Request, res: Response) => {
   try {
     // check if floor_id exists
     await processData(QUERY.SELECT_FLOOR, req.body.floor_id);
-    let id
+    let id: string
     if (req.body.room_id) {
       id = req.body.room_id
     } else {
@@ -42,7 +42,7 @@ export const createRoom = async (req: Request, res: Response) => {
     const data = setData(req, id);
     database.query(QUERY.CREATE_ROOM, Object.values(data));
     res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room created`));
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room with id ${id} created`, { id }));
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)

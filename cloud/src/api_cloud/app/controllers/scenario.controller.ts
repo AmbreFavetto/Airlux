@@ -30,7 +30,7 @@ export const createScenario = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    let id
+    let id: string
     if (req.body.scenario_id) {
       id = req.body.scenario_id
     } else {
@@ -39,7 +39,7 @@ export const createScenario = async (req: Request, res: Response) => {
     const data = setData(req, id);
     database.query(QUERY.CREATE_SCENARIO, Object.values(data));
     res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario created`));
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario with id ${id} created`, { id }));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
