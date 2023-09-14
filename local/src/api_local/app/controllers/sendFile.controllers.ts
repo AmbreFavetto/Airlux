@@ -11,19 +11,15 @@ const apiEndpoint = 'http://api_cloud:3010/syncLog';
 export const sendFile = async (req: Request, res: Response) => {
     try {
         // Créer un objet FormData pour envoyer le fichier
-        const formData = new FormData();
+        //const formData = new FormData();
         const textFile = fs.readFileSync(logFile, { encoding: "utf-8" })
 
         //formData.append('logFile', 'sync.log')
-        formData.append('sync.log', textFile)
-        logger.info(formData);
+        //formData.append('sync.log', textFile)
+        //logger.info(formData);
 
         // Envoyer le fichier à l'API distante en utilisant Axios
-        const response = await axios.post(apiEndpoint, formData, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+        const response = await axios.post(apiEndpoint, { 'file': textFile });
         logger.info(response)
 
         if (response.status === 200) {
