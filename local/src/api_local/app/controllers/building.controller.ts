@@ -46,11 +46,12 @@ export const getBuildings = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching buildings`);
   try {
     const keys = await dbLocal.keys('buildings:*');
-    let buildings = await Promise.all(keys.map(async (key: string) => {
-      const data = await dbLocal.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const buildings = await dbLocal.hgetall(key);
+      const building_id = key.split("buildings:")[1];
+      return { building_id, ...buildings };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -64,9 +65,10 @@ export const getBuilding = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'building_id provided does not exist'));
   } else {
     try {
-      const result = await dbLocal.hgetall(`buildings:${req.params.id}`);
+      const buildings = await dbLocal.hgetall(`buildings:${req.params.id}`);
+      buildings.building_id = req.params.id;
       res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building retrieved`, { [`buildings:${req.params.id}`]: result }));
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building retrieved`, { buildings }));
     } catch (error) {
       res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id buildings:${req.params.id} was not found`));
