@@ -95,7 +95,7 @@ export const updateBuilding = async (req: Request, res: Response) => {
     const data = setUpdateData(req, results)
     database.query(QUERY.UPDATE_BUILDING, [...Object.values(data), req.params.id]);
     return res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor updated`, { id: req.params.id, ...req.body }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building updated`, { id: req.params.id, ...req.body }));
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
