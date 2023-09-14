@@ -30,15 +30,12 @@ export const createFloor = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the building_id provided does not exist'));
     return;
   }
-  let key;
-  if (req.body.floor_id) {
-    key = `floors:${req.body.floor_id}`
-  } else {
-    key = `floors:${uuidv4()}`;
+  if (!req.body.floor_id) {
+    req.body.floor_id = `floors:${uuidv4()}`;
   }
   var data = setData(req);
   try {
-    const result = await database.hmset(key, data);
+    const result = await database.hmset(req.body.floor_id, data);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor created`, { result }));
   } catch (err) {

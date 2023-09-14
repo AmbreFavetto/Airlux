@@ -31,13 +31,10 @@ export const createSousScenario = async (req: Request, res: Response) => {
       return;
     }
     var data = setData(req);
-    let key
-    if (req.body.sousScenario_id) {
-      key = `sousScenarios:${req.body.sousScenario_id}`
-    } else {
-      key = `sousScenarios:${uuidv4()}`;
+    if (!req.body.sousScenario_id) {
+      req.body.sousScenario_id = `sousScenarios:${uuidv4()}`;
     }
-    const result = await database.hmset(key, data);
+    const result = await database.hmset(req.body.sousScenario_id, data);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `SousScenario created`, { result }));
   } catch (error) {

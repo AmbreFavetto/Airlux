@@ -31,16 +31,12 @@ export const createDevice = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the room_id provided does not exist'));
     return;
   }
-  let key
-  if (req.body.device_id) {
-    key = `devices:${req.body.device_id}`
-  } else {
-    key = `devices:${uuidv4()}`;
+  if (!req.body.device_id) {
+    req.body.device_id = `devices:${uuidv4()}`;
   }
-
   var data = setData(req);
   try {
-    const result = await database.hmset(key, data);
+    const result = await database.hmset(req.body.device_id, data);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device created`, { result }));
   } catch (err) {
