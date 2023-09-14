@@ -34,7 +34,12 @@ export const createFloor = async (req: Request, res: Response) => {
   try {
     // check if building_id exists
     await processData(QUERY.SELECT_BUILDING, req.body.building_id);
-    const id = uuidv4();
+    let id
+    if (req.body.floor_id) {
+      id = req.body.floor_id
+    } else {
+      id = uuidv4();
+    }
     const data = setData(req, id);
     database.query(QUERY.CREATE_FLOOR, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)

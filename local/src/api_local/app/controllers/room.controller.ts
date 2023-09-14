@@ -29,7 +29,12 @@ export const createRoom = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the floor_id provided does not exist'));
     return;
   }
-  const key = `rooms:${uuidv4()}`;
+  let key
+  if (req.body.room_id) {
+    key = `rooms:${req.body.room_id}`
+  } else {
+    key = `rooms:${uuidv4()}`;
+  }
   var data = setData(req);
   try {
     const result = await database.hmset(key, data);

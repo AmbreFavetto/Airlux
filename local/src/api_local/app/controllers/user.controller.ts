@@ -28,7 +28,12 @@ export const createUser = async (req: Request, res: Response) => {
   }
   try {
     var data = setData(req);
-    const key = `users:${uuidv4()}`;
+    let key
+    if (req.body.user_id) {
+      key = `users:${req.body.user_id}`
+    } else {
+      key = `users:${uuidv4()}`;
+    }
     const result = await database.hmset(key, data);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User created`, { result }));

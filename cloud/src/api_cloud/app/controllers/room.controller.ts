@@ -33,7 +33,12 @@ export const createRoom = async (req: Request, res: Response) => {
   try {
     // check if floor_id exists
     await processData(QUERY.SELECT_FLOOR, req.body.floor_id);
-    const id = uuidv4();
+    let id
+    if (req.body.room_id) {
+      id = req.body.room_id
+    } else {
+      id = uuidv4();
+    }
     const data = setData(req, id);
     database.query(QUERY.CREATE_ROOM, Object.values(data));
     res.status(HttpStatus.CREATED.code)

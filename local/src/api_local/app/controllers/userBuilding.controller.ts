@@ -25,7 +25,12 @@ export const createUserBuilding = async (req: Request, res: Response) => {
   }
   try {
     var data = setData(req);
-    const key = `usersBuildings:${uuidv4()}`;
+    let key
+    if (req.body.id) {
+      key = `usersBuildings:${req.body.id}`
+    } else {
+      key = `usersBuildings:${uuidv4()}`;
+    }
     const result = await database.hmset(key, data);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `UserBuilding created`, { result }));

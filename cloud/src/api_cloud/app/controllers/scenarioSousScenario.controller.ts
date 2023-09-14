@@ -34,7 +34,12 @@ export const createScenarioSousScenario = async (req: Request, res: Response) =>
   try {
     await processData(QUERY.SELECT_SCENARIO, req.body.scenario_id);
     await processData(QUERY.SELECT_SOUS_SCENARIO, req.body.sousScenario_id);
-    const id = uuidv4();
+    let id
+    if (req.body.id) {
+      id = req.body.id
+    } else {
+      id = uuidv4();
+    }
     const data = setData(req, id);
     database.query(QUERY.CREATE_SCENARIO_SOUS_SCENARIO, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)

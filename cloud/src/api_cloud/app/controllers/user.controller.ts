@@ -38,7 +38,12 @@ export const createUser = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    const id = uuidv4();
+    let id
+    if (req.body.user_id) {
+      id = req.body.user_id
+    } else {
+      id = uuidv4();
+    }
     const data = setData(req, id);
     database.query(QUERY.CREATE_USER, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
