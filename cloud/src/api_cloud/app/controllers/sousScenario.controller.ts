@@ -21,7 +21,6 @@ function setData(req: Request, id: string) {
 function setUpdateData(req: Request, previousValues: SousScenario) {
   const data: SousScenario = {};
   req.body.action ? data.action = req.body.action : data.action = previousValues.action
-  req.body.device_id ? data.device_id = req.body.device_id : data.device_id = previousValues.device_id
   return data;
 }
 
@@ -108,9 +107,6 @@ export const updateSousScenario = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    if (req.body.device_id) {
-      await processData(QUERY.SELECT_DEVICE, req.body.device_id)
-    }
     const results: SousScenario = await processData(QUERY.SELECT_SOUS_SCENARIO, req.params.id)
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating sousScenario`);

@@ -12,11 +12,16 @@ import routesScenario from './routes/scenario.routes'
 import routesSousScenario from './routes/sousScenario.routes'
 import routesScenarioSousScenario from './routes/scenarioSousScenario.routes'
 import routesUserBuilding from './routes/userBuilding.routes'
+import routesSendFile from './routes/sendFile.routes'
+
 import logger from './util/logger'
 
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json());
+
+//SendFile
+app.use('/send', routesSendFile);
 
 //Building
 app.use('/building', routesBuilding);
