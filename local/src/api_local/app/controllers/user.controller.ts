@@ -42,11 +42,12 @@ export const getUsers = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching users`);
   try {
     const keys = await database.keys('users:*');
-    let users = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const users = await database.hgetall(key);
+      const user_id = key.split("users:")[1];
+      return { user_id, ...users };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Users retrieved`, { users }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Users retrieved`, { users: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -61,9 +62,10 @@ export const getUser = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`users:${req.params.id}`);
+    const users = await database.hgetall(`users:${req.params.id}`);
+    users.user_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User retrieved`, { [`users:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User retrieved`, { users }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id users:${req.params.id} was not found`));

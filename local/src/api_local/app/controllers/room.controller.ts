@@ -45,11 +45,12 @@ export const getRooms = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching rooms`);
   try {
     const keys = await database.keys('rooms:*');
-    let rooms = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const rooms = await database.hgetall(key);
+      const room_id = key.split("rooms:")[1];
+      return { room_id, ...rooms };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Rooms retrieved`, { rooms }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Rooms retrieved`, { rooms: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -64,9 +65,10 @@ export const getRoom = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`rooms:${req.params.id}`);
+    const rooms = await database.hgetall(`rooms:${req.params.id}`);
+    rooms.room_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room retrieved`, { [`rooms:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room retrieved`, { rooms }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id rooms:${req.params.id} was not found`));

@@ -39,11 +39,12 @@ export const getScenariosSousScenarios = async (req: Request, res: Response) => 
   logger.info(`${req.method} ${req.originalUrl}, fetching ScenariosSousScenarios`);
   try {
     const keys = await database.keys('scenariosSousScenarios:*');
-    let scenariosSousScenarios = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const scenariosSousScenarios = await database.hgetall(key);
+      const scenarioSousScenario_id = key.split("scenariosSousScenarios:")[1];
+      return { scenarioSousScenario_id, ...scenariosSousScenarios };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `ScenariosSousScenarios retrieved`, { scenariosSousScenarios }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `ScenariosSousScenarios retrieved`, { scenariosSousScenarios: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -58,9 +59,10 @@ export const getScenarioSousScenario = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`scenariosSousScenarios:${req.params.id}`);
+    const scenariosSousScenarios = await database.hgetall(`scenariosSousScenarios:${req.params.id}`);
+    scenariosSousScenarios.scenarioSousScenario_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `ScenariosSousScenarios retrieved`, { [`scenariosSousScenarios:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `ScenariosSousScenarios retrieved`, { scenariosSousScenarios }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `ScenariosSousScenarios by id scenariosSousScenarios:${req.params.id} was not found`));

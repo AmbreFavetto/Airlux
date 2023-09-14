@@ -39,11 +39,12 @@ export const getScenarios = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching scenarios`);
   try {
     const keys = await database.keys('scenarios:*');
-    let scenarios = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const scenarios = await database.hgetall(key);
+      const scenario_id = key.split("scenarios:")[1];
+      return { scenario_id, ...scenarios };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenarios retrieved`, { scenarios }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenarios retrieved`, { scenarios: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -58,9 +59,10 @@ export const getScenario = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`scenarios:${req.params.id}`);
+    const scenarios = await database.hgetall(`scenarios:${req.params.id}`);
+    scenarios.scenario_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario retrieved`, { [`scenarios:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario retrieved`, { scenarios }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id scenarios:${req.params.id} was not found`));

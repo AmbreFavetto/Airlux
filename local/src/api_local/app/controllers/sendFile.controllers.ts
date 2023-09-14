@@ -6,7 +6,7 @@ import logger from '../util/logger'
 import HttpStatus from '../util/devTools';
 
 const logFile = 'sync.log';
-const apiEndpoint = 'http://192.168.1.29:3010/syncLog';
+const apiEndpoint = 'http://api_cloud:3010/syncLog';
 
 export const sendFile = async (req: Request, res: Response) => {
     try {

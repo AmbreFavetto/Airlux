@@ -45,11 +45,12 @@ export const getSousScenarios = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching sousScenarios`);
   try {
     const keys = await database.keys('sousScenarios:*');
-    let sousScenarios = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const sousScenarios = await database.hgetall(key);
+      const sousScenario_id = key.split("sousScenarios:")[1];
+      return { sousScenario_id, ...sousScenarios };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenarios retrieved`, { sousScenarios }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenarios retrieved`, { sousScenarios: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -64,9 +65,10 @@ export const getSousScenario = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`sousScenarios:${req.params.id}`);
+    const sousScenarios = await database.hgetall(`sousScenarios:${req.params.id}`);
+    sousScenarios.sousScenario_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `SousScenario retrieved`, { [`sousScenarios:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `SousScenario retrieved`, { sousScenarios }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `SousScenario by id sousScenarios:${req.params.id} was not found`));
