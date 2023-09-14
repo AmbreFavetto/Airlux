@@ -47,11 +47,12 @@ export const getDevices = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching devices`);
   try {
     const keys = await database.keys('devices:*');
-    let devices = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const devices = await database.hgetall(key);
+      const device_id = key.split("devices:")[1];
+      return { device_id, ...devices };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Devices retrieved`, { devices }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Devices retrieved`, { devices: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -66,9 +67,10 @@ export const getDevice = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`devices:${req.params.id}`);
+    const devices = await database.hgetall(`devices:${req.params.id}`);
+    devices.device_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device retrieved`, { [`devices:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device retrieved`, { devices }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id devices:${req.params.id} was not found`));

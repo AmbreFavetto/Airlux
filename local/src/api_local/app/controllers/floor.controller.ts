@@ -46,11 +46,12 @@ export const getFloors = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching floors`);
   try {
     const keys = await database.keys('floors:*');
-    let floors = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const floors = await database.hgetall(key);
+      const floor_id = key.split("floors:")[1];
+      return { floor_id, ...floors };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floors retrieved`, { floors }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floors retrieved`, { floors: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -65,9 +66,10 @@ export const getFloor = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`floors:${req.params.id}`);
+    const floors = await database.hgetall(`floors:${req.params.id}`);
+    floors.floor_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor retrieved`, { [`floors:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor retrieved`, { floors }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id floors:${req.params.id} was not found`));

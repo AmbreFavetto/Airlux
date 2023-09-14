@@ -39,11 +39,12 @@ export const getUsersBuildings = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching usersBuildings`);
   try {
     const keys = await database.keys('usersBuildings:*');
-    let usersBuildings = await Promise.all(keys.map(async (key: string) => {
-      const data = await database.hgetall(key);
-      return { [key]: data };
+    const data = await Promise.all(keys.map(async (key: string) => {
+      const usersBuildings = await database.hgetall(key);
+      const userBuilding_id = key.split("usersBuildings:")[1];
+      return { userBuilding_id, ...usersBuildings };
     }));
-    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `UsersBuildings retrieved`, { usersBuildings }));
+    res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `UsersBuildings retrieved`, { usersBuildings: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -58,9 +59,10 @@ export const getUserBuilding = async (req: Request, res: Response) => {
     return;
   }
   try {
-    const result = await database.hgetall(`usersBuildings:${req.params.id}`);
+    const usersBuildings = await database.hgetall(`usersBuildings:${req.params.id}`);
+    usersBuildings.userBuilding_id = req.params.id;
     res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `UserBuilding retrieved`, { [`usersBuildings:${req.params.id}`]: result }));
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `UserBuilding retrieved`, { usersBuildings }));
   } catch (error) {
     res.status(HttpStatus.NOT_FOUND.code)
       .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `UserBuilding by id usersBuildings:${req.params.id} was not found`));
