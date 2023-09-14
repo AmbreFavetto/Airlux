@@ -38,7 +38,7 @@ export const createUser = async (req: Request, res: Response) => {
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
   }
   try {
-    let id
+    let id: string
     if (req.body.user_id) {
       id = req.body.user_id
     } else {
@@ -47,7 +47,7 @@ export const createUser = async (req: Request, res: Response) => {
     const data = setData(req, id);
     database.query(QUERY.CREATE_USER, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User created`));
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User with id ${id} created`, { id }));
     });
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)

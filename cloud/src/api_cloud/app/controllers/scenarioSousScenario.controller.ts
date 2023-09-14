@@ -34,7 +34,7 @@ export const createScenarioSousScenario = async (req: Request, res: Response) =>
   try {
     await processData(QUERY.SELECT_SCENARIO, req.body.scenario_id);
     await processData(QUERY.SELECT_SOUS_SCENARIO, req.body.sousScenario_id);
-    let id
+    let id: string
     if (req.body.id) {
       id = req.body.id
     } else {
@@ -43,7 +43,7 @@ export const createScenarioSousScenario = async (req: Request, res: Response) =>
     const data = setData(req, id);
     database.query(QUERY.CREATE_SCENARIO_SOUS_SCENARIO, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `scenarioSousScenario created`));
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `scenarioSousScenario with id ${id} created`, { id }));
     });
   } catch (err) {
     if ((err as Error).message === "not_found") {

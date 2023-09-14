@@ -51,7 +51,7 @@ export const createSousScenario = async (req: Request, res: Response) => {
           .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, `Action ${req.body.action} for device category ${results.category} is not available`));
       }
     }
-    let id
+    let id: string
     if (req.body.sousScenario_id) {
       id = req.body.sousScenario_id
     } else {
@@ -60,7 +60,7 @@ export const createSousScenario = async (req: Request, res: Response) => {
     const data = setData(req, id);
     database.query(QUERY.CREATE_SOUS_SCENARIO, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `sousScenario created`));
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `sousScenario with id ${id} created`, { id }));
     });
   } catch (err) {
     if ((err as Error).message === "not_found") {

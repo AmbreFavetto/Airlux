@@ -27,7 +27,7 @@ export const createTimeseries = async (req: Request, res: Response) => {
   }
   try {
     await processData(QUERY.SELECT_DEVICE, (req.body.device_id))
-    let id
+    let id: string
     if (req.body.timeseries_id) {
       id = req.body.timeseries_id
     } else {
@@ -36,7 +36,7 @@ export const createTimeseries = async (req: Request, res: Response) => {
     const data = setData(req, id);
     database.query(QUERY.CREATE_TIMESERIES, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Timeseries created`));
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Timeseries with id ${id} created`, { id }));
     });
   } catch (err) {
     if ((err as Error).message === "not_found") {

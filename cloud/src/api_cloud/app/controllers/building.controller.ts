@@ -32,7 +32,7 @@ export const createBuilding = async (req: Request, res: Response) => {
   }
   // Create Building
   try {
-    let id
+    let id: string
     if (req.body.building_id) {
       id = req.body.building_id
     } else {
@@ -42,7 +42,7 @@ export const createBuilding = async (req: Request, res: Response) => {
     const data = setData(req, id);
     database.query(QUERY.CREATE_BUILDING, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building created`));
+        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building with id ${id} created`, { id }));
     });
   } catch (err) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
