@@ -28,13 +28,10 @@ export const createUser = async (req: Request, res: Response) => {
   }
   try {
     var data = setData(req);
-    let key
-    if (req.body.user_id) {
-      key = `users:${req.body.user_id}`
-    } else {
-      key = `users:${uuidv4()}`;
+    if (!req.body.user_id) {
+      req.body.user_id = `users:${uuidv4()}`;
     }
-    const result = await database.hmset(key, data);
+    const result = await database.hmset(req.body.user_id, data);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User created`, { result }));
   } catch (err) {

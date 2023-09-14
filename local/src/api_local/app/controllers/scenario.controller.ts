@@ -24,13 +24,10 @@ export const createScenario = async (req: Request, res: Response) => {
   }
   try {
     var data = setData(req);
-    let key
-    if (req.body.scenario_id) {
-      key = `scenarios:${req.body.scenario_id}`
-    } else {
-      key = `scenarios:${uuidv4()}`;
+    if (!req.body.scenario_id) {
+      req.body.scenario_id = `scenarios:${uuidv4()}`;
     }
-    const result = await database.hmset(key, data);
+    const result = await database.hmset(req.body.scenario_id, data);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario created`, { result }));
   } catch (error) {
