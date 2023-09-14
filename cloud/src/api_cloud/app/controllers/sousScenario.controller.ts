@@ -51,7 +51,12 @@ export const createSousScenario = async (req: Request, res: Response) => {
           .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, `Action ${req.body.action} for device category ${results.category} is not available`));
       }
     }
-    const id = uuidv4();
+    let id
+    if (req.body.sousScenario_id) {
+      id = req.body.sousScenario_id
+    } else {
+      id = uuidv4();
+    }
     const data = setData(req, id);
     database.query(QUERY.CREATE_SOUS_SCENARIO, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)

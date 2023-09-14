@@ -34,7 +34,12 @@ export const createUserBuilding = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_USER, req.body.user_id);
     await processData(QUERY.SELECT_BUILDING, req.body.building_id);
-    const id = uuidv4();
+    let id
+    if (req.body.id) {
+      id = req.body.id
+    } else {
+      id = uuidv4();
+    }
     const data = setData(req, id);
     database.query(QUERY.CREATE_USER_BUILDING, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)

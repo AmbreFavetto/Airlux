@@ -27,7 +27,12 @@ export const createTimeseries = async (req: Request, res: Response) => {
   }
   try {
     await processData(QUERY.SELECT_DEVICE, (req.body.device_id))
-    const id = uuidv4();
+    let id
+    if (req.body.timeseries_id) {
+      id = req.body.timeseries_id
+    } else {
+      id = uuidv4();
+    }
     const data = setData(req, id);
     database.query(QUERY.CREATE_TIMESERIES, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)

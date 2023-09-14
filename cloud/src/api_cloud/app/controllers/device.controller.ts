@@ -75,7 +75,12 @@ export const createDevice = async (req: Request, res: Response) => {
   }
   try {
     await processData(QUERY.SELECT_ROOM, (req.body.room_id))
-    const id = uuidv4();
+    let id
+    if (req.body.device_id) {
+      id = req.body.device_id
+    } else {
+      id = uuidv4();
+    }
     if (listActuator.includes(req.body.category)) {
       req.body.type = "actuator"
     } else {

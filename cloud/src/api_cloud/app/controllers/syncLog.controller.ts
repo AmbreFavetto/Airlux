@@ -4,7 +4,7 @@ import logger from '../util/logger';
 import HttpStatus from '../util/devTools';
 
 export const syncLog = async (req: Request, res: Response, next: NextFunction) => {
-  logger.info(req.body);
+  logger.info(req);
   return res.status(HttpStatus.OK.code)
     .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `ok`));
 };
