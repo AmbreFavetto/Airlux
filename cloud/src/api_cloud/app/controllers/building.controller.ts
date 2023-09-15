@@ -38,7 +38,6 @@ export const createBuilding = async (req: Request, res: Response) => {
     } else {
       id = uuidv4();
     }
-
     const data = setData(req, id);
     database.query(QUERY.CREATE_BUILDING, Object.values(data), () => {
       return res.status(HttpStatus.CREATED.code)

@@ -30,6 +30,8 @@ export const createUser = async (req: Request, res: Response) => {
     var data = setData(req);
     if (!req.body.user_id) {
       req.body.user_id = `users:${uuidv4()}`;
+    } else {
+      req.body.user_id = `users:${req.body.user_id}`;
     }
     const result = await database.hmset(req.body.user_id, data);
     res.status(HttpStatus.CREATED.code)

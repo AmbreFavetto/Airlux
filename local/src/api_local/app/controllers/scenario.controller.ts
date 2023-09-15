@@ -26,6 +26,8 @@ export const createScenario = async (req: Request, res: Response) => {
     var data = setData(req);
     if (!req.body.scenario_id) {
       req.body.scenario_id = `scenarios:${uuidv4()}`;
+    } else {
+      req.body.scenario_id = `scenarios:${req.body.scenario_id}`;
     }
     const result = await database.hmset(req.body.scenario_id, data);
     res.status(HttpStatus.CREATED.code)

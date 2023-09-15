@@ -11,7 +11,7 @@ import Floor from '../interfaces/floor.interface';
 function setData(req: Request) {
   const data = {
     name: req.body.name,
-    building_id: req.body.building_id
+    building_id: req.body.building_id,
   };
   return data;
 }
@@ -32,6 +32,8 @@ export const createFloor = async (req: Request, res: Response) => {
   }
   if (!req.body.floor_id) {
     req.body.floor_id = `floors:${uuidv4()}`;
+  } else {
+    req.body.floor_id = `floors:${req.body.floor_id}`;
   }
   var data = setData(req);
   try {

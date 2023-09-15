@@ -31,6 +31,8 @@ export const createRoom = async (req: Request, res: Response) => {
   }
   if (!req.body.room_id) {
     req.body.room_id = `rooms:${uuidv4()}`;
+  } else {
+    req.body.room_id = `rooms:${req.body.room_id}`;
   }
   var data = setData(req);
   try {
