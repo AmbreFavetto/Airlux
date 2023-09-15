@@ -29,9 +29,9 @@ class _FloorsPageState extends State<FloorsPage> {
   //late IO.Socket socket;
   TextEditingController _editFloorNameController = TextEditingController();
   void initState() {
-    super.initState();
-    //socket = initSocket();
-    //connectSocket(socket);
+    //  super.initState();
+    //  socket = initSocket();
+    //  connectSocket(socket);
     Provider.of<FloorData>(context, listen: false)
         .getFloorsByBuildingId(widget.buildingId);
   }
@@ -70,7 +70,7 @@ class _FloorsPageState extends State<FloorsPage> {
           const TitlePageStyle(text: "Étage"),
           const SizedBox(height: 15),
           TextInformationStyle(
-              text: "Numéro de l'étage : ${widget.buildingName}"),
+              text: "Batiment : ${widget.buildingName}"),
           Expanded(
             child: Consumer<FloorData>(
               builder: (context, floorData, child) => GridView.builder(
@@ -89,7 +89,7 @@ class _FloorsPageState extends State<FloorsPage> {
                           floor)).statusCode == 200) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Supression de la salle'),
+                            content: Text('Etage supprimé'),
                           ),
                         ),
                         Navigator.of(context).push(MaterialPageRoute(
@@ -113,13 +113,13 @@ class _FloorsPageState extends State<FloorsPage> {
                             child: MaterialApp(
                               home: RoomsPage(
                                   floorId: floor.id.toString(),
-                                  floorNumber: floor.number.toString()),
+                                  floorNumber: floor.name.toString()),
                             ),
                           );
                         },
                       ));
                     },
-                    title: floor.number.toString(),
+                    title: floor.name.toString(),
                     id: floor.id.toString(),
                   );
                 },
@@ -143,7 +143,7 @@ class _FloorsPageState extends State<FloorsPage> {
 
   _editFloor(BuildContext context, Floor floor, FloorData floorData) async {
     setState(() {
-      _editFloorNameController.text = floor.number ?? 'No name';
+      _editFloorNameController.text = floor.name ?? 'No name';
     });
     _editFormDialog(context, floor, floorData);
   }

@@ -71,7 +71,7 @@ class _RoomsPageState extends State<RoomsPage> {
                       if ((await roomData.deleteRoom(
                       room)).statusCode == 200) {ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Supression de la salle'),
+                          content: Text('Supression de la pièce'),
                         ),
                       ),
                     Navigator.of(context).push(MaterialPageRoute(
@@ -82,7 +82,7 @@ class _RoomsPageState extends State<RoomsPage> {
                   } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                  content: Text('La supression de la salle n\'a pu aboutir.'),
+                  content: Text('La supression de la pièce n\'a pu aboutir.'),
                   ),
                   )
                   }},

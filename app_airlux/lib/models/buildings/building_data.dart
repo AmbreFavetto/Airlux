@@ -8,11 +8,21 @@ class BuildingData extends ChangeNotifier {
   var str;
   //var prefixUrl = 'http://192.168.1.29';
   var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
+  var portCloud = 3010;
+  var portLocal = 3030;
   var port = 3010;
-  List<Building> buildings = [Building(name: 'firstBuilding', id: '1'), Building(name: 'secondBuilding', id: '2')];
+  List<Building> buildings = [Building(name: ' ', id: '1'), Building(name: ' ', id: '2')];
   Building building = Building(name: 'building', id: '1');
 
+  Future<bool> checkApiOnline() async {
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
+    return await response.statusCode == 200 ? true : false ;
+  }
+
   void getAllBuildings() async {
+    if (await checkApiOnline() == false) port = portLocal;
+    else port = portCloud;
+    print('${prefixUrl} : ${port.toString()} /building');
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
@@ -25,6 +35,9 @@ class BuildingData extends ChangeNotifier {
   }
 
   void getBuilding(int id) async {
+    if (await checkApiOnline() == false) port = portLocal;
+    else port = portCloud;
+
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building', id));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
@@ -36,7 +49,10 @@ class BuildingData extends ChangeNotifier {
     }
   }
 
-  Future<http.Response> addBuilding(String name) {
+  Future<http.Response> addBuilding(String name) async {
+    if (await checkApiOnline() == false) port = portLocal;
+    else port = portCloud;
+
     return http.post(
       Uri.parse('${prefixUrl}:${port.toString()}/building'),
       headers: <String, String>{
@@ -48,7 +64,10 @@ class BuildingData extends ChangeNotifier {
     );
   }
 
-  Future<http.Response> updateBuilding(String buildingName, Building building) {
+  Future<http.Response> updateBuilding(String buildingName, Building building) async {
+    if (await checkApiOnline() == false) port = portLocal;
+    else port = portCloud;
+
     return http.put(
       Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'),
       headers: <String, String>{
@@ -61,6 +80,9 @@ class BuildingData extends ChangeNotifier {
   }
 
   void deleteBuilding(Building building) async {
+    if (await checkApiOnline() == false) port = portLocal;
+    else port = portCloud;
+
     final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'));
     if (response.statusCode == 200) {
       getAllBuildings();
