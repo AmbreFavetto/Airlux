@@ -3,7 +3,7 @@ import ResponseFormat from '../domain/responseFormat';
 import { Request, Response } from 'express';
 import logger from '../util/logger';
 import QUERY from '../query/sousScenario.query';
-import sousScenarioCreateSchema, { sousScenarioUpdateSchema } from '../models/sousScenario.model';
+import sousScenarioCreateSchema from '../models/sousScenario.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import SousScenario from '../interfaces/sousScenario.interface';
@@ -15,12 +15,6 @@ function setData(req: Request, id: string) {
     device_id: req.body.device_id,
     sousScenario_id: id,
   };
-  return data;
-}
-
-function setUpdateData(req: Request, previousValues: SousScenario) {
-  const data: SousScenario = {};
-  req.body.action ? data.action = req.body.action : data.action = previousValues.action
   return data;
 }
 

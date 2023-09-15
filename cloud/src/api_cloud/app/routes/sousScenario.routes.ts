@@ -1,5 +1,5 @@
 import express from 'express';
-import { getSousScenarios, createSousScenario, getSousScenario, deleteSousScenario, updateSousScenario } from '../controllers/sousScenario.controller';
+import { getSousScenarios, createSousScenario, getSousScenario, deleteSousScenario } from '../controllers/sousScenario.controller';
 
 const scenarioRoutes = express.Router();
 
@@ -9,7 +9,6 @@ scenarioRoutes.route('/')
 
 scenarioRoutes.route('/:id')
   .get(getSousScenario)
-  .put(updateSousScenario)
   .delete(deleteSousScenario);
 
 export default scenarioRoutes;
