@@ -9,7 +9,7 @@ const deviceCreateSchema = Joi.object().keys({
 
 const deviceUpdateSchema = Joi.object().keys({
   name: Joi.string().optional(),
-  value: Joi.string().optional(),
+  value: Joi.string().optional()
 });
 
 export default deviceCreateSchema;

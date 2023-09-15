@@ -15,6 +15,18 @@ function setData(req: Request) {
   return data;
 }
 
+const tabDeviceCategoryAction: Record<string, Array<string>> = {
+  lamp: ["on", "off", "intensity"],
+  lamp_rgb: ["on", "off", "intensity", "color"],
+  blind: ["open", "close"],
+  radiator: ["on", "off", "temperature"],
+  air_conditioning: ["on", "off", "temperature"]
+};
+
+function verifyAction(category: string, action: string) {
+  return tabDeviceCategoryAction[category].includes(action) ? true : false
+}
+
 export const createSousScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, creating sousScenarios`);
   const { error } = sousScenarioCreateSchema.validate(req.body);
@@ -26,19 +38,25 @@ export const createSousScenario = async (req: Request, res: Response) => {
   try {
     const deviceIdExist = await database.exists(`devices:${req.body.device_id}`);
     if (!deviceIdExist) {
-      res.status(HttpStatus.BAD_REQUEST.code)
-        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the device_id provided does not exist'));
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Device by id ${req.body.device_id} was not found`));
       return;
     }
-    var data = setData(req);
-    if (!req.body.sousScenario_id) {
-      req.body.sousScenario_id = `sousScenarios:${uuidv4()}`;
-    } else {
-      req.body.sousScenario_id = `sousScenarios:${req.body.sousScenario_id}`;
+    const device = await database.hgetall(`devices:${req.params.id}`);
+    if (device.category) {
+      if (!verifyAction(device.category, req.body.action)) {
+        return res.status(HttpStatus.BAD_REQUEST.code)
+          .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, `Action ${req.body.action} for device category ${device.category} is not available`));
+      }
     }
-    const result = await database.hmset(req.body.sousScenario_id, data);
+    var data = setData(req);
+
+    if (!req.body.sousScenario_id) {
+      req.body.sousScenario_id = uuidv4();
+    }
+    await database.hmset(`sousScenarios:${req.body.sousScenario_id}`, data);
     res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `SousScenario created`, { result }));
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `sousScenario with id ${req.body.sousScenario_id} created`, { id: req.body.sousScenario_id }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -54,6 +72,10 @@ export const getSousScenarios = async (req: Request, res: Response) => {
       const sousScenario_id = key.split("sousScenarios:")[1];
       return { sousScenario_id, ...sousScenarios };
     }));
+    if (data.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No SousScenarios found`));
+    }
     res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenarios retrieved`, { sousScenarios: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -63,75 +85,42 @@ export const getSousScenarios = async (req: Request, res: Response) => {
 
 export const getSousScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching sousScenario`);
-  if (!(await database.exists(`sousScenarios:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'sousScenario_id provided does not exist'));
-    return;
-  }
   try {
+    if (!(await database.exists(`sousScenarios:${req.params.id}`))) {
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `sousScenario by id ${req.params.id} was not found`));
+      return;
+    }
     const sousScenarios = await database.hgetall(`sousScenarios:${req.params.id}`);
     sousScenarios.sousScenario_id = req.params.id;
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `SousScenario retrieved`, { sousScenarios }));
   } catch (error) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `SousScenario by id sousScenarios:${req.params.id} was not found`));
-  }
-};
-
-export const updateSousScenario = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching sousScenario`);
-  const { error } = sousScenarioUpdateSchema.validate(req.body);
-  if (error) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
-    return;
-  }
-  if (!(await database.exists(`sousScenarios:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'sousScenario_id provided does not exist'));
-    return;
-  }
-  if (req.body.device_id) {
-    const deviceIdsExist = await Promise.all(req.body.device_id.map(async (id: string) => {
-      return await database.exists(`devices:${id}`);
-    }));
-    if (!deviceIdsExist) {
-      res.status(HttpStatus.BAD_REQUEST.code)
-        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the device_id provided does not exist'));
-      return;
-    }
-    const uniqueDeviceIds = req.body.device_id.filter((item: string, index: number) => req.body.device_id.indexOf(item) === index);
-    req.body.device_id = uniqueDeviceIds;
-  }
-  try {
-    await database.hmset(`sousScenarios:${req.params.id}`, req.body);
-    if (res) {
-      res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `SousScenario updated`));
-    } else {
-      return {
-        statusCode: HttpStatus.OK.code,
-        message: `SousScenario updated`
-      };
-    }
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
 export const deleteSousScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting sousScenario`);
-  if (!(await database.exists(`sousScenarios:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'sousScenario_id provided does not exist'));
-    return;
+  try {
+    if (!(await database.exists(`sousScenarios:${req.params.id}`))) {
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `sousScenario by id ${req.params.id} was not found`));
+      return;
+    }
+    await getRelationToDelete("sousScenarios:" + req.params.id)
+    await deleteElt("sousScenarios:" + req.params.id)
+    res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `SousScenario deleted`));
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `id was not found`));
+    }
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
-  await getRelationToDelete("sousScenarios:" + req.params.id)
-  await deleteElt("sousScenarios:" + req.params.id)
-  res.status(HttpStatus.OK.code)
-    .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `SousScenario deleted`));
 };
 
 export default HttpStatus;

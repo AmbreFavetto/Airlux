@@ -86,7 +86,7 @@ export const getRoom = async (req: Request, res: Response) => {
 };
 
 export const updateRoom = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching room`);
+  logger.info(`${req.method} ${req.originalUrl}, updating room`);
   const { error } = roomUpdateSchema.validate(req.body);
   if (error) {
     return res.status(HttpStatus.BAD_REQUEST.code)
@@ -95,7 +95,6 @@ export const updateRoom = async (req: Request, res: Response) => {
   try {
     const results: Room = await processData(QUERY.SELECT_ROOM, req.params.id)
     const data = setUpdateData(req, results);
-    logger.info(`${req.method} ${req.originalUrl}, updating room`);
     database.query(QUERY.UPDATE_ROOM, [...Object.values(data), req.params.id]);
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room updated`, { id: req.params.id, ...req.body }));

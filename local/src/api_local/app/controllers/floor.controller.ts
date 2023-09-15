@@ -4,12 +4,11 @@ import logger from '../util/logger.js';
 import { Request, Response } from 'express';
 import floorCreateSchema, { floorUpdateSchema } from '../models/floor.model';
 import { v4 as uuidv4 } from 'uuid';
-import { deleteRoom } from './room.controller.js';
-import HttpStatus, { } from '../util/devTools';
+import HttpStatus, { getEltToDelete } from '../util/devTools';
 import Floor from '../interfaces/floor.interface';
 
 function setData(req: Request) {
-  const data = {
+  const data: Floor = {
     name: req.body.name,
     building_id: req.body.building_id,
   };
@@ -18,28 +17,30 @@ function setData(req: Request) {
 
 export const createFloor = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, creating floor`);
+  // validate body with model
   const { error } = floorCreateSchema.validate(req.body);
   if (error) {
     res.status(HttpStatus.BAD_REQUEST.code)
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
     return;
   }
+  // check if building_id exists
   const buildingIdsExist = await database.exists(`buildings:${req.body.building_id}`);
   if (!buildingIdsExist) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the building_id provided does not exist'));
+    res.status(HttpStatus.NOT_FOUND.code)
+      .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.body.building_id} was not found`));
     return;
   }
+
   if (!req.body.floor_id) {
-    req.body.floor_id = `floors:${uuidv4()}`;
-  } else {
-    req.body.floor_id = `floors:${req.body.floor_id}`;
+    req.body.floor_id = uuidv4();
   }
+
   var data = setData(req);
   try {
-    const result = await database.hmset(req.body.floor_id, data);
+    await database.hmset(`floors:${req.body.floor_id}`, data);
     res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor created`, { result }));
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor with id ${req.body.floor_id} created`, { id: req.body.floor_id }));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -55,6 +56,10 @@ export const getFloors = async (req: Request, res: Response) => {
       const floor_id = key.split("floors:")[1];
       return { floor_id, ...floors };
     }));
+    if (data.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Floors found`));
+    }
     res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floors retrieved`, { floors: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -65,8 +70,8 @@ export const getFloors = async (req: Request, res: Response) => {
 export const getFloor = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching floor`);
   if (!(await database.exists(`floors:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'floor_id provided does not exist'));
+    res.status(HttpStatus.NOT_FOUND.code)
+      .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
     return;
   }
   try {
@@ -75,30 +80,25 @@ export const getFloor = async (req: Request, res: Response) => {
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor retrieved`, { floors }));
   } catch (error) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id floors:${req.params.id} was not found`));
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
 export const updateFloor = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching floor`);
+  logger.info(`${req.method} ${req.originalUrl}, updating floor`);
   const { error } = floorUpdateSchema.validate(req.body);
   if (error) {
     res.status(HttpStatus.BAD_REQUEST.code)
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
     return;
   }
-  if (!(await database.exists(`floors:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'floor_id provided does not exist'));
-    return;
-  }
-  if (req.body.building_id && !(await database.exists(`buildings:${req.body.building_id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'the building_id provided does not exist'));
-    return;
-  }
   try {
+    if (!(await database.exists(`floors:${req.params.id}`))) {
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
+      return;
+    }
     await database.hmset(`floors:${req.params.id}`, req.body);
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor updated`));
@@ -108,47 +108,22 @@ export const updateFloor = async (req: Request, res: Response) => {
   }
 };
 
-let hasError = false;
-
 export const deleteFloor = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting floor`);
   try {
     const floorExists = await database.exists(`floors:${req.params.id}`)
     if (!floorExists) {
-      return res.status(HttpStatus.BAD_REQUEST.code)
-        .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'floor_id provided does not exist'));
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id}  was not found`));
     }
-    const roomsIds = await database.keys(`rooms:*`);
-    const roomsToDelete: string[] = [];
-    await Promise.all(roomsIds.map(async (id: string) => {
-      const roomData = await database.hgetall(id);
-      if (roomData.floor_id === req.params.id.toString()) {
-        roomsToDelete.push(id);
-      }
-    }));
-    // if (roomsToDelete.length > 0) {
-    //   await Promise.all(roomsToDelete.map(async id => {
-    //     id = id.split(":")[1];
-    //     const roomRes = await deleteRoom({ params: { id: id }, method: "DELETE", originalUrl: `/room/${id}` });
-    //     if (roomRes.statusCode !== HttpStatus.OK.code) {
-    //       hasError = true;
-    //       return;
-    //     }
-    //   }));
-    // }
-    if (!hasError) {
-      await database.del(`floors:${req.params.id}`)
-      if (res) {
-        return res.status(HttpStatus.OK.code)
-          .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
-      } else {
-        return {
-          statusCode: HttpStatus.OK.code,
-          message: `Floor deleted`
-        };
-      }
+    await getEltToDelete("rooms", "floors:" + req.params.id)
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `id was not found`));
     }
-  } catch (error) {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }

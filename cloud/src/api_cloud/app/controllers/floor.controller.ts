@@ -88,7 +88,7 @@ export const getFloor = async (req: Request, res: Response) => {
 };
 
 export const updateFloor = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching floor`);
+  logger.info(`${req.method} ${req.originalUrl}, updating floor`);
   const { error } = floorUpdateSchema.validate(req.body);
   if (error) {
     return res.status(HttpStatus.BAD_REQUEST.code)
@@ -102,7 +102,6 @@ export const updateFloor = async (req: Request, res: Response) => {
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor updated`, { id: req.params.id, ...req.body }));
     });
-
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
@@ -124,7 +123,7 @@ export const deleteFloor = async (req: Request, res: Response) => {
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} or Building by id ${req.body.building_id} was not found`));
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id} was not found`));
     }
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));

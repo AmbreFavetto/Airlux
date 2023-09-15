@@ -4,7 +4,7 @@ import logger from '../util/logger.js';
 import { Request, Response } from 'express';
 import userBuildingCreateSchema, { userBuildingUpdateSchema } from '../models/userBuilding.model.js';
 import { v4 as uuidv4 } from 'uuid';
-import HttpStatus, { } from '../util/devTools';
+import HttpStatus, { deleteElt } from '../util/devTools';
 import UserBuilding from '../interfaces/userBuilding.interface.js';
 
 function setData(req: Request) {
@@ -24,15 +24,23 @@ export const createUserBuilding = async (req: Request, res: Response) => {
     return;
   }
   try {
+    const userIdExist = await database.exists(`users:${req.body.user_id}`);
+    if (!userIdExist) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by id ${req.body.user_id} was not found`));
+    }
+    const buildingIdExist = await database.exists(`buildings:${req.body.building_id}`);
+    if (!buildingIdExist) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.body.building_id} was not found`));
+    }
     var data = setData(req);
     if (!req.body.id) {
-      req.body.id = `usersBuildings:${uuidv4()}`;
-    } else {
-      req.body.id = `usersBuildings:${req.body.id}`;
+      req.body.id = uuidv4();
     }
-    const result = await database.hmset(req.body.id, data);
+    await database.hmset(`usersBuildings:${req.body.id}`, data);
     res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `UserBuilding created`, { result }));
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `userBuilding with id ${req.body.id} created`, { id: req.body.id }));
   } catch (err) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -48,6 +56,10 @@ export const getUsersBuildings = async (req: Request, res: Response) => {
       const userBuilding_id = key.split("usersBuildings:")[1];
       return { userBuilding_id, ...usersBuildings };
     }));
+    if (data.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No UsersBuildings found`));
+    }
     res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `UsersBuildings retrieved`, { usersBuildings: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -57,68 +69,36 @@ export const getUsersBuildings = async (req: Request, res: Response) => {
 
 export const getUserBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching userBuilding`);
-  if (!(await database.exists(`usersBuildings:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'userBuilding_id provided does not exist'));
-    return;
-  }
   try {
+    if (!(await database.exists(`usersBuildings:${req.params.id}`))) {
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `userBuilding by id ${req.params.id} was not found`));
+      return;
+    }
     const usersBuildings = await database.hgetall(`usersBuildings:${req.params.id}`);
     usersBuildings.userBuilding_id = req.params.id;
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `UserBuilding retrieved`, { usersBuildings }));
   } catch (error) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `UserBuilding by id usersBuildings:${req.params.id} was not found`));
-  }
-};
-
-export const updateUserBuilding = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching userBuilding`);
-  const { error } = userBuildingUpdateSchema.validate(req.body);
-  if (error) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
-    return;
-  }
-  if (!(await database.exists(`usersBuildings:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'userBuilding_id provided does not exist'));
-    return;
-  }
-  try {
-    await database.hmset(`usersBuildings:${req.params.id}`, req.body);
-    if (res) {
-      res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `UserBuilding updated`));
-    } else {
-      return {
-        statusCode: HttpStatus.OK.code,
-        message: `UserBuilding updated`
-      };
-    }
-  } catch (error) {
-    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
 export const deleteUserBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting userBuilding`);
-  if (!(await database.exists(`usersBuildings:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'userBuilding_id provided does not exist'));
-    return;
-  }
-  database.del(`usersBuildings:${req.params.id}`, (error: Error | null | undefined) => {
-    if (error) {
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
-        .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
-      return;
+  try {
+    await deleteElt(req.params.id);
+    return res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding deleted`));
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `userBuilding by id ${req.params.id} was not found`));
     }
-    res.status(HttpStatus.OK.code)
-      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `UserBuilding deleted`));
-  });
+    res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
+  }
 };
 
 export default HttpStatus;

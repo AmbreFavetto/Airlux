@@ -8,7 +8,6 @@ const roomCreateSchema = Joi.object().keys({
 
 const roomUpdateSchema = Joi.object().keys({
   name: Joi.string().optional(),
-  floor_id: Joi.string().optional()
 });
 
 export default roomCreateSchema;

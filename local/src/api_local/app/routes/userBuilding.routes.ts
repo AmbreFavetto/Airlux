@@ -1,5 +1,5 @@
 import express from 'express';
-import { getUsersBuildings, createUserBuilding, getUserBuilding, deleteUserBuilding, updateUserBuilding } from '../controllers/userBuilding.controller';
+import { getUsersBuildings, createUserBuilding, getUserBuilding, deleteUserBuilding } from '../controllers/userBuilding.controller';
 
 const userBuildingRoutes = express.Router();
 
@@ -9,7 +9,6 @@ userBuildingRoutes.route('/')
 
 userBuildingRoutes.route('/:id')
   .get(getUserBuilding)
-  .put(updateUserBuilding)
   .delete(deleteUserBuilding);
 
 export default userBuildingRoutes;

@@ -86,8 +86,7 @@ export const createDevice = async (req: Request, res: Response) => {
     } else {
       req.body.type = "sensor"
     }
-    const result = setDefaultValue(req.body.category)
-    req.body.value = result
+    req.body.value = setDefaultValue(req.body.category)
     const data = setData(req, id);
     database.query(QUERY.CREATE_DEVICE, Object.values(data), () => {
       res.status(HttpStatus.CREATED.code)

@@ -6,10 +6,4 @@ const scenarioSousScenarioCreateSchema = Joi.object().keys({
   id: Joi.string().optional()
 });
 
-const scenarioSousScenarioUpdateSchema = Joi.object().keys({
-  scenario_id: Joi.string().optional(),
-  sousScenario_id: Joi.string().optional()
-});
-
 export default scenarioSousScenarioCreateSchema;
-export { scenarioSousScenarioUpdateSchema };

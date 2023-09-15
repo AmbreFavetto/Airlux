@@ -56,7 +56,6 @@ export const getBuildings = async (req: Request, res: Response) => {
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: results }));
   } catch (err) {
-    logger.error(err);
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No buildings found`));
@@ -72,7 +71,7 @@ export const getBuilding = async (req: Request, res: Response) => {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Buildings retrieved`, { buildings: results }));
-  } catch (err: unknown) {
+  } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Building by id ${req.params.id} was not found`));

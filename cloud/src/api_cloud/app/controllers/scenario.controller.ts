@@ -79,7 +79,7 @@ export const getScenario = async (req: Request, res: Response) => {
 };
 
 export const updateScenario = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching scenario`);
+  logger.info(`${req.method} ${req.originalUrl}, updating scenario`);
   const { error } = scenarioUpdateSchema.validate(req.body);
   if (error) {
     return res.status(HttpStatus.BAD_REQUEST.code)
@@ -88,7 +88,6 @@ export const updateScenario = async (req: Request, res: Response) => {
   try {
     const results: Scenario = await processData(QUERY.SELECT_SCENARIO, req.params.id)
     const data = setUpdateData(req, results);
-    logger.info(`${req.method} ${req.originalUrl}, updating scenario`);
     database.query(QUERY.UPDATE_SCENARIO, [...Object.values(data), req.params.id]);
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario updated`, { id: req.params.id, ...req.body }));

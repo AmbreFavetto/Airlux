@@ -24,14 +24,13 @@ export const createScenario = async (req: Request, res: Response) => {
   }
   try {
     var data = setData(req);
+
     if (!req.body.scenario_id) {
-      req.body.scenario_id = `scenarios:${uuidv4()}`;
-    } else {
-      req.body.scenario_id = `scenarios:${req.body.scenario_id}`;
+      req.body.scenario_id = uuidv4();
     }
-    const result = await database.hmset(req.body.scenario_id, data);
+    await database.hmset(`scenarios:${req.body.scenario_id}`, data);
     res.status(HttpStatus.CREATED.code)
-      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario created`, { result }));
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario with id ${req.body.scenario_id} created`, { id: req.body.scenario_id }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -48,6 +47,10 @@ export const getScenarios = async (req: Request, res: Response) => {
       const scenario_id = key.split("scenarios:")[1];
       return { scenario_id, ...scenarios };
     }));
+    if (data.length === 0) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `No Scenarios found`));
+    }
     res.status(HttpStatus.OK.code).send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenarios retrieved`, { scenarios: data }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
@@ -57,46 +60,38 @@ export const getScenarios = async (req: Request, res: Response) => {
 
 export const getScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching scenario`);
-  if (!(await database.exists(`scenarios:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'scenario_id provided does not exist'));
-    return;
-  }
   try {
+    if (!(await database.exists(`scenarios:${req.params.id}`))) {
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
+      return;
+    }
     const scenarios = await database.hgetall(`scenarios:${req.params.id}`);
     scenarios.scenario_id = req.params.id;
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario retrieved`, { scenarios }));
   } catch (error) {
-    res.status(HttpStatus.NOT_FOUND.code)
-      .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id scenarios:${req.params.id} was not found`));
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
 };
 
 export const updateScenario = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching scenario`);
+  logger.info(`${req.method} ${req.originalUrl}, updating scenario`);
   const { error } = scenarioUpdateSchema.validate(req.body);
   if (error) {
     res.status(HttpStatus.BAD_REQUEST.code)
       .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, error.details[0].message));
     return;
   }
-  if (!(await database.exists(`scenarios:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'scenario_id provided does not exist'));
-    return;
-  }
   try {
-    await database.hmset(`scenarios:${req.params.id}`, req.body);
-    if (res) {
-      res.status(HttpStatus.CREATED.code)
-        .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario updated`));
-    } else {
-      return {
-        statusCode: HttpStatus.OK.code,
-        message: `Scenario updated`
-      };
+    if (!(await database.exists(`scenarios:${req.params.id}`))) {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
     }
+    await database.hmset(`scenarios:${req.params.id}`, req.body);
+    res.status(HttpStatus.CREATED.code)
+      .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario updated`, { id: req.params.id, ...req.body }));
   } catch (error) {
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -105,15 +100,25 @@ export const updateScenario = async (req: Request, res: Response) => {
 
 export const deleteScenario = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting scenario`);
-  if (!(await database.exists(`scenarios:${req.params.id}`))) {
-    res.status(HttpStatus.BAD_REQUEST.code)
-      .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, 'scenario_id provided does not exist'));
-    return;
+  try {
+    if (!(await database.exists(`scenarios:${req.params.id}`))) {
+      res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
+      return;
+    }
+    await getRelationToDelete("scenarios:" + req.params.id)
+    await deleteElt("scenarios:" + req.params.id)
+    res.status(HttpStatus.OK.code)
+      .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario deleted`));
+
+  } catch (err) {
+    if ((err as Error).message === "not_found") {
+      return res.status(HttpStatus.NOT_FOUND.code)
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `id was not found`));
+    }
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
+      .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
   }
-  await getRelationToDelete("scenarios:" + req.params.id)
-  await deleteElt("scenarios:" + req.params.id)
-  res.status(HttpStatus.OK.code)
-    .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario deleted`));
 };
 
 export default HttpStatus;
