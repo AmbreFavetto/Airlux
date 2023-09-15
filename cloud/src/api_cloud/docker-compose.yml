@@ -1,7 +1,11 @@
+volumes:
+  prometheus_data: {}
+
 services:
   db_cloud:
     image: mysql:8.0
-    command: --default-authentication-plugin=mysql_native_password
+    command: 
+      --default-authentication-plugin=mysql_native_password
     volumes:
       - ../db_cloud/initdb:/var/lib/mysql
       - ../db_cloud/initdb.sql:/docker-entrypoint-initdb.d/0_init.sql
@@ -12,6 +16,25 @@ services:
       MYSQL_ROOT_PASSWORD: letmein
       SERVICE_TAGS: prod
       SERVICE_NAME: db_cloud
+    networks:
+      - cloud_network
+
+  mysql_exporter:
+    image: prom/mysqld-exporter
+    command:
+      - '--collect.global_status'
+      - '--collect.global_variables'
+      - '--collect.auto_increment.columns'
+      - '--collect.info_schema.processlist'
+      - '--web.listen-address=:9104'
+      - '--web.telemetry-path=/metrics'
+      - '--config.my-cnf=/etc/my.cnf'
+    ports:
+      - "9104:9104"
+    environment:
+      DATA_SOURCE_NAME: "admin:letmein@(db_cloud:3306)/"
+    volumes:
+      - ../exporter/my.cnf:/etc/my.cnf
     networks:
       - cloud_network
 
@@ -33,6 +56,33 @@ services:
       SERVER_PORT: 3010
     depends_on:
       - db_cloud
+    networks:
+      - cloud_network
+
+  grafana:
+    image: grafana/grafana
+    restart: always
+    volumes:
+      - ../grafana/provisioning:/etc/grafana/provisioning/datasources
+    ports:
+      - 3000:3000
+    networks:
+      - cloud_network
+
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    volumes:
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    ports:
+      - 9090:9090
     networks:
       - cloud_network
 
