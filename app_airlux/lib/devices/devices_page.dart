@@ -25,6 +25,8 @@ class _DevicesPageState extends State<DevicesPage> {
   @override
   void initState() {
     super.initState();
+    //  socket = initSocket();
+    //  connectSocket(socket);
     Provider.of<DeviceData>(context, listen: false).getDevicesByRoomId(widget.roomId);
   }
 
@@ -37,8 +39,7 @@ class _DevicesPageState extends State<DevicesPage> {
           const SizedBox(width: 10.0, height: 20.0),
           const TitlePageStyle(text: "Devices"),
           const SizedBox(height: 15),
-          //TODO
-          TextInformationStyle(text: 'Nom de la salle : ${widget.roomName}'),
+          TextInformationStyle(text: 'Pièce : ${widget.roomName}'),
           Expanded(
             child: Consumer<DeviceData>(
               builder: (context, deviceData, child) => GridView.builder(

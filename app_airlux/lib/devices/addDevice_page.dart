@@ -166,9 +166,6 @@ class _AddDevicePageState extends State<AddDevicePage> {
                           title: 'Sauvegarder',
                           onTap: () async {
                             if (title.text.isNotEmpty && (_category != null)) {
-                              if (_category!.name == 'lamp_rgb')
-                                category = 'lamp rgb';
-                              else
                                 category = _category!.name;
                               http.Response response =
                                   await deviceData.addDevice(
