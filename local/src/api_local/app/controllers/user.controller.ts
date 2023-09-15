@@ -6,6 +6,7 @@ import userCreateSchema, { userUpdateSchema } from '../models/user.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { deleteElt, getRelationToDelete } from '../util/devTools';
 import User from '../interfaces/user.interface';
+import { addLog } from '../util/logFile.js';
 
 function setData(req: Request) {
   const data: User = {
@@ -32,6 +33,9 @@ export const createUser = async (req: Request, res: Response) => {
       req.body.user_id = uuidv4();
     }
     await database.hmset(`users:${req.body.user_id}`, data);
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("POST", `/user`, JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User with id ${req.body.user_id} created`, { id: req.body.user_id }));
   } catch (err) {
@@ -93,6 +97,9 @@ export const updateUser = async (req: Request, res: Response) => {
       return;
     }
     await database.hmset(`users:${req.params.id}`, req.body);
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("PUT", `/user/${req.params.id}`, JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User updated`));
   } catch (error) {
@@ -111,6 +118,9 @@ export const deleteUser = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("users:" + req.params.id)
     await deleteElt("users:" + req.params.id)
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("DELETE", `/user/${req.params.id}`, JSON.stringify(req.body))
+    }
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));
   } catch (err) {

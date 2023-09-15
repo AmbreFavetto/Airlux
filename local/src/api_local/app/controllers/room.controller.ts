@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import roomCreateSchema, { roomUpdateSchema } from '../models/room.model';
 import HttpStatus, { getEltToDelete } from '../util/devTools';
 import Room from '../interfaces/room.interface';
+import { addLog } from '../util/logFile';
 
 function setData(req: Request) {
   const data: Room = {
@@ -37,6 +38,9 @@ export const createRoom = async (req: Request, res: Response) => {
     var data = setData(req);
 
     await database.hmset(`rooms:${req.body.room_id}`, data);
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("POST", "/room", JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room with id ${req.body.room_id} created`, { id: req.body.room_id }));
   } catch (err) {
@@ -97,6 +101,9 @@ export const updateRoom = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.params.id} was not found`));
     }
     await database.hmset(`rooms:${req.params.id}`, req.body);
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("PUT", `/room/${req.params.id}`, JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room updated`, { id: req.params.id, ...req.body }));
   } catch (error) {
@@ -114,6 +121,9 @@ export const deleteRoom = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.params.id} was not found`));
     }
     await getEltToDelete("devices", "rooms:" + req.params.id)
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("DELETE", `/room/${req.params.id}`, JSON.stringify(req.body))
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room deleted`));
   } catch (err) {

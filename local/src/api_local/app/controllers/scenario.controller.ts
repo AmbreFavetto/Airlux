@@ -6,6 +6,7 @@ import scenarioCreateSchema, { scenarioUpdateSchema } from '../models/scenario.m
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { deleteElt, getRelationToDelete } from '../util/devTools';
 import Scenario from '../interfaces/scenario.interface';
+import { addLog } from '../util/logFile.js';
 
 function setData(req: Request) {
   const data: Scenario = {
@@ -29,6 +30,9 @@ export const createScenario = async (req: Request, res: Response) => {
       req.body.scenario_id = uuidv4();
     }
     await database.hmset(`scenarios:${req.body.scenario_id}`, data);
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("POST", `/scenario`, JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario with id ${req.body.scenario_id} created`, { id: req.body.scenario_id }));
   } catch (error) {
@@ -90,6 +94,9 @@ export const updateScenario = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
     }
     await database.hmset(`scenarios:${req.params.id}`, req.body);
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("PUT", `/scenario/${req.params.id}`, JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario updated`, { id: req.params.id, ...req.body }));
   } catch (error) {
@@ -108,9 +115,11 @@ export const deleteScenario = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("scenarios:" + req.params.id)
     await deleteElt("scenarios:" + req.params.id)
+    if (req.headers.sync && req.headers.sync === "1") {
+      addLog("DELETE", `/scenario/${req.params.id}`, JSON.stringify(req.body))
+    }
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Scenario deleted`));
-
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
