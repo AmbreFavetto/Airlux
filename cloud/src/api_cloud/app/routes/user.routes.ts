@@ -7,7 +7,7 @@ userRoutes.route('/')
   .get(getUsers)
   .post(createUser);
 
-  userRoutes.route('/:id')
+userRoutes.route('/:id')
   .get(getUser)
   .put(updateUser)
   .delete(deleteUser);
