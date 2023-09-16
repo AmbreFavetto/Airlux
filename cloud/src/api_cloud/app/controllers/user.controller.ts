@@ -104,7 +104,7 @@ export const login = async (req: Request, res: Response) => {
       }, secretKey, { expiresIn: '3 hours' })
 
       res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token }));
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token, user_id: result.user_id }));
     } else {
       res.status(401)
         .send(new ResponseFormat(401, "Unauthorized", "Authentication failed"));
