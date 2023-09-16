@@ -1,14 +1,15 @@
 import 'dart:convert';
 
+import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/models/user/user.dart';
 import 'package:app_airlux/models/user/user_data.dart';
+import 'package:app_airlux/pages/home_page.dart';
 import 'package:app_airlux/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../widget/delayed_animation.dart';
 import 'package:app_airlux/pages/signup_page.dart';
-
 
 class LoginPage extends StatefulWidget {
   @override
@@ -74,48 +75,53 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-                Column(
-                  children: [
-                    DelayedAnimation(
-                      delay: 100,
-                      child: TextField(
-                        cursorColor: kDarkPurple,
-                        controller: email,
-                        decoration: InputDecoration(
-                          labelText: 'Adresse mail',
-                          labelStyle: TextStyle(
-                            color: Colors.grey[400],
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 30),
-                    DelayedAnimation(
-                      delay: 100,
-                      child: TextField(
-                        cursorColor: kDarkPurple,
-                        obscureText: _obscureText,
-                        controller: password,
-                        decoration: InputDecoration(
-                          labelStyle: TextStyle(
-                            color: Colors.grey[400],
-                          ),
-                          labelText: 'Mot de passe',
-                          suffixIcon: IconButton(
-                            icon: const Icon(
-                              Icons.visibility,
-                              color: Colors.black,
+                Container(
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 30,
+                  ),
+                  child: Column(
+                    children: [
+                      DelayedAnimation(
+                        delay: 100,
+                        child: TextField(
+                          cursorColor: kDarkPurple,
+                          controller: email,
+                          decoration: InputDecoration(
+                            labelText: 'Adresse mail',
+                            labelStyle: TextStyle(
+                              color: Colors.grey[400],
                             ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: 30),
+                      DelayedAnimation(
+                        delay: 100,
+                        child: TextField(
+                          cursorColor: kDarkPurple,
+                          obscureText: _obscureText,
+                          controller: password,
+                          decoration: InputDecoration(
+                            labelStyle: TextStyle(
+                              color: Colors.grey[400],
+                            ),
+                            labelText: 'Mot de passe',
+                            suffixIcon: IconButton(
+                              icon: const Icon(
+                                Icons.visibility,
+                                color: Colors.black,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _obscureText = !_obscureText;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 45),
                 DelayedAnimation(
@@ -131,20 +137,26 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: const Text('CONNEXION'),
                     onPressed: () async {
-                      final response = await userData.loginUser(email.text, password.text);
-                      if (response.statusCode == 200){
+                      final response =
+                          await userData.loginUser(email.text, password.text);
+                      if (response.statusCode == 200) {
                         str = json.decode(response.body);
                         token = str['data']['token'];
-                        if (token != null){Navigator.of(context).push(BottomNavigation());
-                          /*{
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                              '/mainPage', (Route<dynamic> route) => false);
-                        }*/}
-                        else {
+                        if (token != null) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  ChangeNotifierProvider(
+                                create: (context) => DeviceData(),
+                                builder: (context, child) => BottomNavigation(),
+                              ),
+                            ),
+                            (Route<dynamic> route) => false,
+                          );
+                        } else {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content:
-                              Text('Connexion impossible'),
+                              content: Text('Connexion impossible'),
                             ),
                           );
                         }
