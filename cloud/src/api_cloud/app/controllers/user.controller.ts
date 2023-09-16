@@ -124,6 +124,9 @@ export const getUsers = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching users`);
   try {
     const results: Array<User> = await processDatas(QUERY.SELECT_USERS, database);
+    for (const user of results) {
+      delete user.password
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Users retrieved`, { users: results }));
   } catch (err) {
@@ -140,6 +143,7 @@ export const getUser = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching user`);
   try {
     const results: User = await processData(QUERY.SELECT_USER, req.params.id);
+    delete results.password
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Users retrieved`, { users: results }));
   } catch (err) {

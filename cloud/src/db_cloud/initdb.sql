@@ -14,7 +14,7 @@ CREATE TABLE user (
   forename        VARCHAR(255) DEFAULT NULL,
   email           VARCHAR(255) DEFAULT NULL,
   password        VARCHAR(255) DEFAULT NULL,
-  is_admin        BOOLEAN,
+  is_admin        BOOLEAN DEFAULT true,
   PRIMARY KEY (user_id)
 );
 
