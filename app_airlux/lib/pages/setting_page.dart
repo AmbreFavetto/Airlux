@@ -1,3 +1,4 @@
+import 'package:app_airlux/pages/cgu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:app_airlux/constants.dart';
 
@@ -14,16 +15,21 @@ class SettingPage extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/login');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CguPage(),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 shape: const StadiumBorder(),
                 padding: const EdgeInsets.all(13),
                 backgroundColor: kOrange,
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   SizedBox(width: 10),
                   Text(
                     'BLUETOOTH',
@@ -35,19 +41,24 @@ class SettingPage extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamed('/cgu');
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CguPage(),
+                  ),
+                );
               },
               style: ElevatedButton.styleFrom(
                 shape: const StadiumBorder(),
                 padding: const EdgeInsets.all(13),
                 backgroundColor: kOrange,
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   SizedBox(width: 10),
                   Text(
                     'CGU',

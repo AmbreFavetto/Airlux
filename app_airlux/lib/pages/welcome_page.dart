@@ -37,8 +37,8 @@ class WelcomePage extends StatelessWidget {
                   vertical: 70,
                   horizontal: 30,
                 ),
-                child: Column(
-                  children: const [
+                child: const Column(
+                  children: [
                     Text(
                       "Bienvenue dans Airlux",
                       style: TextStyle(
@@ -59,42 +59,46 @@ class WelcomePage extends StatelessWidget {
                 ),
                 child: Column(
                   children: [
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     Navigator.of(context).pushNamed('/login');
-                    //   },
-                    //   style: ElevatedButton.styleFrom(
-                    //     shape: const StadiumBorder(),
-                    //     padding: const EdgeInsets.all(13),
-                    //     backgroundColor: kDarkPurple,
-                    //   ),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: const [
-                    //       SizedBox(width: 10),
-                    //       Text(
-                    //         'CONNEXION',
-                    //       )
-                    //     ],
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.of(context).pushNamedAndRemoveUntil(
-                            '/mainPage', (Route<dynamic> route) => false);
+                        Navigator.of(context).pushNamed('/login');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: const StadiumBorder(),
+                        padding: const EdgeInsets.all(13),
+                        backgroundColor: kDarkPurple,
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(width: 10),
+                          Text(
+                            'CONNEXION',
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SignupPage(),
+                          ),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),
                         padding: const EdgeInsets.all(13),
                         backgroundColor: Colors.white24,
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           SizedBox(width: 10),
                           Text(
-                            'COMMENCER',
+                            'INSCRIPTION',
                             style: TextStyle(
                               color: kDarkPurple,
                             ),

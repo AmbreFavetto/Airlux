@@ -24,7 +24,7 @@ class CguPage extends StatelessWidget {
       body: SingleChildScrollView(
         child: Container(
           padding: const EdgeInsets.all(12.0),
-          child: Column(children: const [
+          child: const Column(children: [
             Text(
               'Conditions Générales d\’Utilisation de l\'application mobile Airlux',
               style: TextStyle(
