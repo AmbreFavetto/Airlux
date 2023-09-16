@@ -2,7 +2,7 @@ import database from '../config/db_local.config.js';
 import ResponseFormat from '../domain/responseFormat';
 import logger from '../util/logger.js';
 import { Request, Response } from 'express';
-import userBuildingCreateSchema, { userBuildingUpdateSchema } from '../models/userBuilding.model.js';
+import userBuildingCreateSchema from '../models/userBuilding.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { deleteElt } from '../util/devTools';
 import UserBuilding from '../interfaces/userBuilding.interface.js';
