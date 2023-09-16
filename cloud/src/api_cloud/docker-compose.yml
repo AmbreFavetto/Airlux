@@ -64,8 +64,8 @@ services:
     restart: always
     volumes:
       - ../grafana/provisioning:/etc/grafana/provisioning/datasources
-      # - ../grafana/grafana-config.yml:/etc/grafana/provisioning/dashboards/grafana-config.yml
-      - ../grafana/dashboards/dashboard.json:/var/lib/grafana/dashboards/dashboard.json
+      - ../grafana/grafana-config.yml:/etc/grafana/provisioning/dashboards/grafana-config.yml
+      - ../grafana/dashboards:/var/lib/grafana/dashboards
     ports:
       - 3000:3000
     networks:
