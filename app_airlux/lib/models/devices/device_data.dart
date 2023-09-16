@@ -85,7 +85,7 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  //TODO -> to check (renamed)
+  //TODO synchro OK
   // Check if the current device action is based on local room
   Future<bool> checkIfLocalDevice(String deviceId) async {
     final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${deviceId}'));
@@ -96,7 +96,7 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  //TODO -> to check (renamed)
+  //TODO synchro OK
   Future<bool> synchronizeLocalDeviceAdd(String name, String roomId,String category, String deviceIdFromCloud) async {
     if (await checkIfLocalRoom(roomId) == true){
       final response = await http.post(
@@ -116,7 +116,7 @@ class DeviceData extends ChangeNotifier {
     return true;
   }
 
-  //TODO synchro OK -> attendre correction local ambre et confirmer
+  //TODO synchro OK
   Future<http.Response> addDevice(String name,String category, String roomId) async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
@@ -162,7 +162,7 @@ class DeviceData extends ChangeNotifier {
     );
   }*/
 
-  //TODO synchro OK -> attendre correction local ambre et confirmer
+  //TODO synchro OK
   Future<http.Response> updateDevice(String deviceName, Device device) async {
     if (await checkApiOnline() == false) port = portLocal;
     else {
@@ -175,7 +175,7 @@ class DeviceData extends ChangeNotifier {
           },
           body: jsonEncode(<String, String>{
             'name': deviceName,
-          }),
+          })
         );
         if (await response.statusCode != 201) throw Exception('Failed to load data');
       }
@@ -207,8 +207,36 @@ class DeviceData extends ChangeNotifier {
     );
   }*/
 
-  //TODO
+  //TODO synchro
   Future<http.Response> updateDeviceValue(String value, Device device) async {
+    if (await checkApiOnline() == false) port = portLocal;
+    else {
+      port = portCloud;
+      if (await checkIfLocalDevice(device.id!) == true){
+        final response = await http.put(
+            Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'),
+            headers: <String, String>{
+              'Content-Type': 'application/json; charset=UTF-8',
+            },
+            body: jsonEncode(<String, String>{
+              'value': value,
+            })
+        );
+        if (await response.statusCode != 201) throw Exception('Failed to load data');
+      }
+    }
+    return await http.put(
+      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'value': value,
+      }),
+    );
+  }
+
+/*  Future<http.Response> updateDeviceValue(String value, Device device) async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
     return http.put(
@@ -220,9 +248,9 @@ class DeviceData extends ChangeNotifier {
         'value': value,
       }),
     );
-  }
+  }*/
 
-  //TODO
+  //TODO synchro OK
   Future<http.Response> deleteDevice(Device device) async {
     if (await checkApiOnline() == false) port = portLocal;
     else {

@@ -37,7 +37,7 @@ class WelcomePage extends StatelessWidget {
                   vertical: 70,
                   horizontal: 30,
                 ),
-                child: const Column(
+                child: Column(
                   children: [
                     Text(
                       "Bienvenue dans Airlux",
@@ -68,7 +68,7 @@ class WelcomePage extends StatelessWidget {
                         padding: const EdgeInsets.all(13),
                         backgroundColor: kDarkPurple,
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(width: 10),
@@ -93,7 +93,7 @@ class WelcomePage extends StatelessWidget {
                         padding: const EdgeInsets.all(13),
                         backgroundColor: Colors.white24,
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           SizedBox(width: 10),

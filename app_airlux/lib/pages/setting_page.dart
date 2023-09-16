@@ -27,7 +27,7 @@ class SettingPage extends StatelessWidget {
                 padding: const EdgeInsets.all(13),
                 backgroundColor: kOrange,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(width: 10),
@@ -56,7 +56,7 @@ class SettingPage extends StatelessWidget {
                 padding: const EdgeInsets.all(13),
                 backgroundColor: kOrange,
               ),
-              child: const Row(
+              child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   SizedBox(width: 10),
