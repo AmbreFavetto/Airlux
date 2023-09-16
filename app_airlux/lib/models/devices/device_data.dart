@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_airlux/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'device.dart';
 import 'package:http/http.dart' as http;
@@ -53,8 +54,12 @@ class DeviceData extends ChangeNotifier {
   void getDevicesByState(String state) async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
-
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'));
+    Map<String, String> requestHeader = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': token,
+    };
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: requestHeader);
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];

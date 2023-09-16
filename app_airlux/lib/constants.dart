@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+late var token;
 
 const kLightRed = Color(0xFFFD919E);
 const kDarkRed = Color(0xFFE8647C);

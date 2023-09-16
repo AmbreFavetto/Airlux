@@ -4,6 +4,7 @@ import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/buildings/rooms/addRoom_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
+import 'package:app_airlux/models/user/user_data.dart';
 import 'package:app_airlux/pages/home_page.dart';
 import 'package:app_airlux/pages/login_page.dart';
 import 'package:app_airlux/pages/welcome_page.dart';
@@ -34,7 +35,12 @@ class MyApp extends StatelessWidget {
           ),
         ),
         '/welcome': (BuildContext context) => WelcomePage(),
-        '/login': (BuildContext context) => LoginPage(),
+        '/login': (BuildContext context) => ChangeNotifierProvider(
+          create: (BuildContext context) => UserData(),
+          child: MaterialApp(
+            home: LoginPage(),
+          ),
+        ),
         '/cgu': (BuildContext context) => CguPage(),
         '/addBuilding': (BuildContext context) => AddBuildingPage(),
         '/addFloor': (BuildContext context) => AddFloorPage(building_id: '', building_name: '',),
