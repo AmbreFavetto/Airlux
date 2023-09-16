@@ -194,7 +194,7 @@ class RoomData extends ChangeNotifier {
     );
   }*/
 
-  //TODO -> to implement synchro
+  //TODO synchro OK
   Future<http.Response> deleteRoom(Room room) async{
     if (await checkApiOnline() == false) port = portLocal;
     else {
@@ -204,7 +204,7 @@ class RoomData extends ChangeNotifier {
         throw Exception('Failed to load data');
       }
     }
-
     return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/room/' + room.id.toString()));
   }
+
 }
