@@ -16,6 +16,7 @@ async function setData(req: Request) {
     forename: req.body.forename,
     email: req.body.email,
     password: await argon2.hash(req.body.password),
+    user_id: req.body.user_id
   };
   req.body.is_admin ? data.is_admin = req.body.is_admin : null;
   return data;
@@ -85,10 +86,12 @@ export const login = async (req: Request, res: Response) => {
     }));
     let password;
     let isadmin;
+    let user_id;
     for (const user of data) {
       if (user.email === req.body.email) {
         password = user.password
         isadmin = user.isadmin
+        user_id = user.user_id
       }
     }
     if (!password) {
@@ -101,9 +104,9 @@ export const login = async (req: Request, res: Response) => {
         email: req.body.email,
         isadmin: isadmin
       }, secretKey, { expiresIn: '3 hours' })
-
+      logger.info(user_id)
       res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token }));
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token, user_id }));
     } else {
       return res.status(HttpStatus.NOT_FOUND.code)
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Password given for the ${req.body.email} email is wrong`));

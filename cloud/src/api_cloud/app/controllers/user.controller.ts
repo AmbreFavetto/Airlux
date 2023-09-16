@@ -16,9 +16,9 @@ async function setData(req: Request, id: string) {
     forename: req.body.forename,
     email: req.body.email,
     password: await argon2.hash(req.body.password),
-    is_admin: req.body.is_admin,
-    user_id: id
   };
+  req.body.is_admin != null ? data.is_admin = req.body.is_admin : data.is_admin = true
+  data.user_id = id
   return data;
 }
 
@@ -78,7 +78,7 @@ export const createUser = async (req: Request, res: Response) => {
   } catch (err) {
     if ((err as Error).message === "already_exists") {
       return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by email ${req.body.email} was not found`));
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by email ${req.body.email} already exists`));
     }
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
@@ -104,7 +104,7 @@ export const login = async (req: Request, res: Response) => {
       }, secretKey, { expiresIn: '3 hours' })
 
       res.status(HttpStatus.OK.code)
-        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token }));
+        .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token, user_id: result.user_id }));
     } else {
       res.status(401)
         .send(new ResponseFormat(401, "Unauthorized", "Authentication failed"));
@@ -124,6 +124,9 @@ export const getUsers = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching users`);
   try {
     const results: Array<User> = await processDatas(QUERY.SELECT_USERS, database);
+    for (const user of results) {
+      delete user.password
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Users retrieved`, { users: results }));
   } catch (err) {
@@ -140,6 +143,7 @@ export const getUser = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, fetching user`);
   try {
     const results: User = await processData(QUERY.SELECT_USER, req.params.id);
+    delete results.password
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Users retrieved`, { users: results }));
   } catch (err) {
