@@ -1,14 +1,15 @@
 import express from 'express';
 import { getSousScenarios, createSousScenario, getSousScenario, deleteSousScenario } from '../controllers/sousScenario.controller';
+import { authenticateToken } from '../util/token';
 
 const scenarioRoutes = express.Router();
 
 scenarioRoutes.route('/')
-  .get(getSousScenarios)
-  .post(createSousScenario);
+  .get(authenticateToken, getSousScenarios)
+  .post(authenticateToken, createSousScenario);
 
 scenarioRoutes.route('/:id')
-  .get(getSousScenario)
-  .delete(deleteSousScenario);
+  .get(authenticateToken, getSousScenario)
+  .delete(authenticateToken, deleteSousScenario);
 
 export default scenarioRoutes;
