@@ -19,5 +19,10 @@ const userUpdateSchema = Joi.object().keys({
   building_id: Joi.array().items(Joi.string()).optional()
 });
 
+const userLoginSchema = Joi.object().keys({
+  email: Joi.string().required(),
+  password: Joi.string().required()
+})
+
 export default userCreateSchema;
-export { userUpdateSchema };
+export { userUpdateSchema, userLoginSchema };

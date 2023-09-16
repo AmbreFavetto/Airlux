@@ -5,6 +5,7 @@ interface User {
     password?: string
     is_admin?: string
     user_id?: string
+    token?: string
 }
 
 export default User
