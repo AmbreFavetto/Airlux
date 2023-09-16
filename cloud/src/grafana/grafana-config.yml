@@ -3,6 +3,7 @@ apiVersion: 1
 providers:
   - name: 'prometheus'
     orgId: 1
-    folder: 'MySQL Metrics'
+    folder: 'MySQL Metrics folder'
     type: file
-    path: '/var/lib/grafana/dashboards'
+    options:
+      path: '/var/lib/grafana/dashboards'

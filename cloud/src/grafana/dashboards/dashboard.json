@@ -118,7 +118,7 @@
             "refId": "A"
           }
         ],
-        "title": "New Panel",
+        "title": "mysql_up",
         "type": "timeseries"
       }
     ],
