@@ -88,7 +88,6 @@ export const login = async (req: Request, res: Response) => {
     let isadmin;
     let user_id;
     for (const user of data) {
-      logger.info(user)
       if (user.email === req.body.email) {
         password = user.password
         isadmin = user.isadmin

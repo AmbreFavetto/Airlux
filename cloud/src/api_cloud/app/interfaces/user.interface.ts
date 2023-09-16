@@ -3,7 +3,7 @@ interface User {
     forename?: string
     email?: string
     password?: string
-    is_admin?: string
+    is_admin?: boolean
     user_id?: string
 }
 

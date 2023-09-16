@@ -16,9 +16,9 @@ async function setData(req: Request, id: string) {
     forename: req.body.forename,
     email: req.body.email,
     password: await argon2.hash(req.body.password),
-    is_admin: req.body.is_admin,
-    user_id: id
   };
+  req.body.is_admin != null ? data.is_admin = req.body.is_admin : data.is_admin = true
+  data.user_id = id
   return data;
 }
 
@@ -78,7 +78,7 @@ export const createUser = async (req: Request, res: Response) => {
   } catch (err) {
     if ((err as Error).message === "already_exists") {
       return res.status(HttpStatus.NOT_FOUND.code)
-        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by email ${req.body.email} was not found`));
+        .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `User by email ${req.body.email} already exists`));
     }
     res.status(HttpStatus.INTERNAL_SERVER_ERROR.code)
       .send(new ResponseFormat(HttpStatus.INTERNAL_SERVER_ERROR.code, HttpStatus.INTERNAL_SERVER_ERROR.status, `Error occurred`));
