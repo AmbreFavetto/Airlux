@@ -1,5 +1,11 @@
+import 'dart:convert';
+
+import 'package:app_airlux/models/devices/device_data.dart';
+import 'package:app_airlux/models/signup/signup_data.dart';
 import 'package:app_airlux/pages/login_page.dart';
+import 'package:app_airlux/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../widget/delayed_animation.dart';
 
@@ -7,10 +13,18 @@ class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<SignupPage> createState() => SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class SignupPageState extends State<SignupPage> {
+  var _obscureText = true;
+  var str;
+  TextEditingController mail = TextEditingController();
+  TextEditingController password = TextEditingController();
+  TextEditingController confirmPassword = TextEditingController();
+  TextEditingController name = TextEditingController();
+  TextEditingController forename = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +43,9 @@ class _SignupPageState extends State<SignupPage> {
         ),
       ),
       body: SingleChildScrollView(
-        child: Column(
+    child: Consumer<SignupData>(
+    builder: (context, signupData, child) {
+        return Column(
           children: [
             Container(
               child: Column(
@@ -60,7 +76,113 @@ class _SignupPageState extends State<SignupPage> {
                 ],
               ),
             ),
-            LoginForm(),
+            Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 30,
+              ),
+              child: Column(
+                children: [
+                  DelayedAnimation(
+                    delay: 100,
+                    child: TextField(
+                      cursorColor: kDarkPurple,
+                      controller: name,
+                      decoration: InputDecoration(
+                        labelText: 'Nom',
+                        labelStyle: TextStyle(
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  DelayedAnimation(
+                    delay: 100,
+                    child: TextField(
+                      cursorColor: kDarkPurple,
+                      controller: forename,
+                      decoration: InputDecoration(
+                        labelText: 'Prénom',
+                        labelStyle: TextStyle(
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  DelayedAnimation(
+                    delay: 100,
+                    child: TextField(
+                      cursorColor: kDarkPurple,
+                      controller: mail,
+                      decoration: InputDecoration(
+                        labelText: 'Adresse mail',
+                        labelStyle: TextStyle(
+                          color: Colors.grey[400],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  DelayedAnimation(
+                    delay: 100,
+                    child: TextField(
+                      cursorColor: kDarkPurple,
+                      controller: password,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        labelStyle: TextStyle(
+                          color: Colors.grey[400],
+                        ),
+                        labelText: 'Mot de passe',
+                        suffixIcon: IconButton(
+                          icon: const Icon(
+                            Icons.visibility,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  DelayedAnimation(
+                    delay: 100,
+                    child: TextField(
+                      // validator: (val) {
+                      //   if (val != password.text) {
+                      //     return 'Les mots de passes ne correspondent pas.';
+                      //   }
+                      // },
+                      cursorColor: kDarkPurple,
+                      controller: confirmPassword,
+                      obscureText: _obscureText,
+                      decoration: InputDecoration(
+                        labelStyle: TextStyle(
+                          color: Colors.grey[400],
+                        ),
+                        labelText: 'Confirmation du mot de passe',
+                        suffixIcon: IconButton(
+                          icon: const Icon(
+                            Icons.visibility,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _obscureText = !_obscureText;
+                            });
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             const SizedBox(height: 45),
             DelayedAnimation(
               delay: 50,
@@ -74,9 +196,32 @@ class _SignupPageState extends State<SignupPage> {
                   backgroundColor: kDarkPurple,
                 ),
                 child: const Text('Inscription'),
-                onPressed: () {
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/mainPage', (Route<dynamic> route) => false);
+                onPressed: () async {
+                  final response = await signupData.signupUser(mail.text, password.text,name.text, forename.text);
+                  if (response.statusCode == 201) {
+                    str = json.decode(response.body);
+                    token = str['data']['token'];
+                    if (token != null) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                              ChangeNotifierProvider(
+                                create: (context) => DeviceData(),
+                                builder: (context, child) => BottomNavigation(),
+                              ),
+                        ),
+                            (Route<dynamic> route) => false,
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Connexion impossible'),
+                        ),
+                      );
+                    }
+                  } else if (response.statusCode == 200) {
+                    throw Exception('Failed to load data');
+                  }
                 },
               ),
             ),
@@ -103,133 +248,8 @@ class _SignupPageState extends State<SignupPage> {
               ),
             ),
           ],
-        ),
+        );}
       ),
-    );
-  }
-}
-
-class LoginForm extends StatefulWidget {
-  @override
-  _LoginFormState createState() => _LoginFormState();
-}
-
-class _LoginFormState extends State<LoginForm> {
-  var _obscureText = true;
-  TextEditingController mail = TextEditingController();
-  TextEditingController password = TextEditingController();
-  TextEditingController confirmPassword = TextEditingController();
-  TextEditingController name = TextEditingController();
-  TextEditingController forename = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(
-        horizontal: 30,
-      ),
-      child: Column(
-        children: [
-          DelayedAnimation(
-            delay: 100,
-            child: TextField(
-              cursorColor: kDarkPurple,
-              controller: name,
-              decoration: InputDecoration(
-                labelText: 'Nom',
-                labelStyle: TextStyle(
-                  color: Colors.grey[400],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          DelayedAnimation(
-            delay: 100,
-            child: TextField(
-              cursorColor: kDarkPurple,
-              controller: forename,
-              decoration: InputDecoration(
-                labelText: 'Prénom',
-                labelStyle: TextStyle(
-                  color: Colors.grey[400],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          DelayedAnimation(
-            delay: 100,
-            child: TextField(
-              cursorColor: kDarkPurple,
-              controller: mail,
-              decoration: InputDecoration(
-                labelText: 'Adresse mail',
-                labelStyle: TextStyle(
-                  color: Colors.grey[400],
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          DelayedAnimation(
-            delay: 100,
-            child: TextField(
-              cursorColor: kDarkPurple,
-              controller: password,
-              obscureText: _obscureText,
-              decoration: InputDecoration(
-                labelStyle: TextStyle(
-                  color: Colors.grey[400],
-                ),
-                labelText: 'Mot de passe',
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.visibility,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 30),
-          DelayedAnimation(
-            delay: 100,
-            child: TextField(
-              // validator: (val) {
-              //   if (val != password.text) {
-              //     return 'Les mots de passes ne correspondent pas.';
-              //   }
-              // },
-              cursorColor: kDarkPurple,
-              controller: confirmPassword,
-              obscureText: _obscureText,
-              decoration: InputDecoration(
-                labelStyle: TextStyle(
-                  color: Colors.grey[400],
-                ),
-                labelText: 'Confirmation du mot de passe',
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.visibility,
-                    color: Colors.black,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
+    ),);
   }
 }

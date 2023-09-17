@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_airlux/constants.dart';
 import 'package:flutter/cupertino.dart';
 import 'building.dart';
 import 'package:http/http.dart' as http;
@@ -23,7 +24,7 @@ class BuildingData extends ChangeNotifier {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
     print('${prefixUrl} : ${port.toString()} /building');
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['buildings'];
@@ -38,7 +39,7 @@ class BuildingData extends ChangeNotifier {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building', id));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building', id), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final dynamic result = str['data']['buildings'];
@@ -50,14 +51,15 @@ class BuildingData extends ChangeNotifier {
   }
 
   Future<http.Response> addBuilding(String name) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else port = portCloud;
 
     return http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/building'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header(sync),
       body: jsonEncode({
         'name': name,
       }),
@@ -65,14 +67,15 @@ class BuildingData extends ChangeNotifier {
   }
 
   Future<http.Response> updateBuilding(String buildingName, Building building) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else port = portCloud;
 
     return http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'), headers: header(sync),
       body: jsonEncode(<String, String>{
         'name': buildingName,
       }),
@@ -80,10 +83,14 @@ class BuildingData extends ChangeNotifier {
   }
 
   void deleteBuilding(Building building) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else port = portCloud;
 
-    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'));
+    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'), headers: headerLessToken(sync));
     if (response.statusCode == 200) {
       getAllBuildings();
     } else {

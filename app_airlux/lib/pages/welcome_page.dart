@@ -81,12 +81,7 @@ class WelcomePage extends StatelessWidget {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const SignupPage(),
-                          ),
-                        );
+                        Navigator.of(context).pushNamed('/signup');
                       },
                       style: ElevatedButton.styleFrom(
                         shape: const StadiumBorder(),

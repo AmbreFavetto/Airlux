@@ -10,6 +10,7 @@ class User{
     forename = json['forename'];
     email = json['email'];
     password = json['password'];
+
   }
 
   Map<String, dynamic> toJson() {

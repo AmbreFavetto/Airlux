@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/rooms/room.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
@@ -16,6 +17,7 @@ class RoomData extends ChangeNotifier {
   Room room = Room(name: 'room', id: '1', floor_id: '1');
 
   Future<bool> checkApiOnline() async {
+    var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
     return await response.statusCode == 200 ? true : false ;
   }
@@ -24,7 +26,7 @@ class RoomData extends ChangeNotifier {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/room'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/room'), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['rooms'];
@@ -39,7 +41,7 @@ class RoomData extends ChangeNotifier {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/room'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/room'), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['rooms'];
@@ -55,7 +57,7 @@ class RoomData extends ChangeNotifier {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/room', id));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/room', id), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final dynamic result = str['data']['rooms'];
@@ -66,10 +68,10 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  //TODO -> to check (renamed)
+  //TODO -> OK
   // Check if the current added room is based on local building
   Future<bool> checkIfLocalFloor(String floorId) async {
-    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floorId}'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floorId}'), headers: header("0"));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -77,10 +79,10 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  //TODO -> to check (renamed)
+  //TODO -> OK
   // Check if the current room action is based on local floor
   Future<bool> checkIfLocalRoom(String roomId) async {
-    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${roomId}'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${roomId}'), headers: header("0"));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -88,14 +90,11 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  //TODO -> to check (renamed)
+  //TODO -> OK
   Future<bool> synchronizeLocalRoomAdd(String name, String floorId, String roomIdFromCloud) async {
     if (await checkIfLocalFloor(floorId) == true){
       final response = await http.post(
-        Uri.parse('${prefixUrl}:${portLocal.toString()}/room'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        Uri.parse('${prefixUrl}:${portLocal.toString()}/room'), headers: header("0"),
         body: jsonEncode({
           'floor_id': floorId,
           'room_id': roomIdFromCloud,
@@ -106,17 +105,16 @@ class RoomData extends ChangeNotifier {
     }
     return true;
   }
-
-  //TODO synchro OK -> attendre correction local ambre et confirmer
+  
   Future<http.Response> addRoom(String name, String floorId) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else port = portCloud;
-
     final response = await http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/room'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/room'), headers: header(sync),
       body: jsonEncode({
         'name': name,
         'floor_id': floorId
@@ -134,33 +132,18 @@ class RoomData extends ChangeNotifier {
     return response;
   }
 
-/*  Future<http.Response> addRoom(String name, String floorId) async{
-    if (await checkApiOnline() == false) port = portLocal;
-    else port = portCloud;
-
-    return http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/room'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'name': name,
-        'floor_id': floorId
-      }),
-    );
-  }*/
-
-  //TODO synchro OK -> attendre correction local ambre et confirmer
+  //TODO synchro OK 
   Future<http.Response> updateRoom(String roomName, Room room) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else {
       port = portCloud;
       if (await checkIfLocalRoom(room.id!) == true){
         final response = await http.put(
-          Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${room.id.toString()}'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
+          Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${room.id.toString()}'), headers: header(sync),
           body: jsonEncode(<String, String>{
             'name': roomName,
           }),
@@ -169,42 +152,28 @@ class RoomData extends ChangeNotifier {
       }
     }
     return await http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/room/${room.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/room/${room.id.toString()}'), headers: header(sync),
       body: jsonEncode(<String, String>{
         'name': roomName,
       }),
     );
   }
 
- /* Future<http.Response> updateRoom(String roomName, Room room) async {
-    if (await checkApiOnline() == false) port = portLocal;
-    else port = portCloud;
-
-    return http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/room/${room.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'name': roomName,
-      }),
-    );
-  }*/
-
   //TODO synchro OK
   Future<http.Response> deleteRoom(Room room) async{
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else {
       port = portCloud;
-      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${room.id.toString()}'));
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${room.id.toString()}'), headers: header(sync));
       if (response.statusCode != 200) {
         throw Exception('Failed to load data');
       }
     }
-    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/room/' + room.id.toString()));
+    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/room/' + room.id.toString()), headers: header(sync));
   }
 
 }

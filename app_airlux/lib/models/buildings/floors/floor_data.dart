@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/building.dart';
 import 'package:flutter/cupertino.dart';
 import 'floor.dart';
@@ -22,10 +23,11 @@ class FloorData extends ChangeNotifier {
   }
 
   void getAllFloors() async {
+    String sync = "0";
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/floor'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/floor'), headers: header(sync));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['floors'];
@@ -37,10 +39,11 @@ class FloorData extends ChangeNotifier {
   }
 
   void getFloorsByBuildingId(String id) async{
+    String sync = "0";
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 print ('${prefixUrl}:${port.toString()}/floor');
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/floor'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/floor'), headers: header(sync));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['floors'];
@@ -54,10 +57,11 @@ print ('${prefixUrl}:${port.toString()}/floor');
   }
 
   void getFloorById(int id) async {
+    String sync = "0";
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/floor', id));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/floor', id), headers: header(sync));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final dynamic result = str['data']['floors'];
@@ -69,7 +73,8 @@ print ('${prefixUrl}:${port.toString()}/floor');
   }
  // Check if the current added floor is based on local building
   Future<bool> checkIfLocalBuilding(String buildingId) async {
-    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${buildingId}'));
+    String sync = "0";
+    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${buildingId}'), headers: header(sync));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -78,7 +83,8 @@ print ('${prefixUrl}:${port.toString()}/floor');
   }
   // Check if the current floor action is based on local floor
   Future<bool> checkIfLocalFloor(String floorId) async {
-    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floorId}'));
+    String sync = "0";
+    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floorId}'), headers: header(sync));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -87,12 +93,10 @@ print ('${prefixUrl}:${port.toString()}/floor');
   }
 
   Future<bool> synchronizeLocalFloorAdd(String name, String buildingId, String floorIdFromCloud) async {
+    String sync = "0";
     if (await checkIfLocalBuilding(buildingId) == true){
     final response = await http.post(
-      Uri.parse('${prefixUrl}:${portLocal.toString()}/floor'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${portLocal.toString()}/floor'), headers: header(sync),
       body: jsonEncode({
         'building_id': buildingId,
         'floor_id': floorIdFromCloud,
@@ -106,14 +110,15 @@ print ('${prefixUrl}:${port.toString()}/floor');
 
   //TODO synchro OK
   Future<http.Response> addFloor(String name, String buildingId) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else port = portCloud;
 
     final response = await http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/floor'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/floor'), headers: header(sync),
       body: jsonEncode({
         'name': name,
         'building_id': buildingId
@@ -132,15 +137,16 @@ print ('${prefixUrl}:${port.toString()}/floor');
 
   //TODO synchro OK
   Future<http.Response> updateFloor(String floorName, Floor floor) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else {
       port = portCloud;
       if (await checkIfLocalFloor(floor.id!) == true){
         final response = await http.put(
-          Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floor.id.toString()}'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
+          Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floor.id.toString()}'), headers: header(sync),
           body: jsonEncode(<String, String>{
             'name': floorName,
           }),
@@ -149,10 +155,7 @@ print ('${prefixUrl}:${port.toString()}/floor');
       }
     }
     return await http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/floor/${floor.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/floor/${floor.id.toString()}'), headers: header(sync),
       body: jsonEncode(<String, String>{
         'name': floorName,
       }),
@@ -161,15 +164,19 @@ print ('${prefixUrl}:${port.toString()}/floor');
 
   //TODO synchro OK
   Future<http.Response> deleteFloor(Floor floor) async{
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else {
       port = portCloud;
-      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floor.id.toString()}'));
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floor.id.toString()}'), headers: header(sync));
       if (response.statusCode != 200) {
         throw Exception('Failed to load data');
       }
     }
-    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/floor/' + floor.id.toString()));
+    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/floor/' + floor.id.toString()), headers: header(sync));
   }
 
 }

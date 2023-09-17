@@ -1,6 +1,41 @@
 import 'package:flutter/material.dart';
 late var token;
 
+Map<String, String> headerLessToken (String sync){
+  Map<String, String> requestHeader = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+  if (sync == "1"){
+    requestHeader = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'sync': '1',
+    };
+  }
+  return requestHeader;
+}
+
+Map<String, String> header (String sync){
+  Map<String, String> requestHeader = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'Authorization': token,
+  };
+  if (sync == "1"){
+    print ("1234567890");
+    requestHeader = {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+      'Authorization': token,
+      'sync': '1',
+    };
+  }
+  print ("test"+ requestHeader.toString());
+  return requestHeader;
+}
+
+
 const kLightRed = Color(0xFFFD919E);
 const kDarkRed = Color(0xFFE8647C);
 const kDarkPurple = Color(0xFF4F4674);

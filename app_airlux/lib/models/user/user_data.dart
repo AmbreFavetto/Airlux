@@ -34,22 +34,4 @@ class UserData extends ChangeNotifier {
     );
   }
 
-
-
-
-
-  void getAllDevices() async {
-    if (await checkApiOnline() == false) port = portLocal;
-    else port = portCloud;
-
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'));
-    if (response.statusCode == 200) {
-      str = json.decode(response.body);
-      final List<dynamic> results = str['data']['devices'];
-      user = results.map((e) => User.fromJson(e)).toList();
-      notifyListeners();
-    } else {
-      throw Exception('Failed to load data');
-    }
-  }
 }

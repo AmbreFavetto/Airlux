@@ -23,7 +23,7 @@ class DeviceData extends ChangeNotifier {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -38,7 +38,7 @@ class DeviceData extends ChangeNotifier {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -54,12 +54,7 @@ class DeviceData extends ChangeNotifier {
   void getDevicesByState(String state) async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
-    Map<String, String> requestHeader = {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'Authorization': token,
-    };
-    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: requestHeader);
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: header("0"));
     if (response.statusCode == 200) {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['devices'];
@@ -79,10 +74,10 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  //TODO -> to check (renamed)
+  //TODO -> OK
   // Check if the current added device is based on local room
   Future<bool> checkIfLocalRoom(String roomId) async {
-    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${roomId}'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${roomId}'), headers: header("0"));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -93,7 +88,7 @@ class DeviceData extends ChangeNotifier {
   //TODO synchro OK
   // Check if the current device action is based on local room
   Future<bool> checkIfLocalDevice(String deviceId) async {
-    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${deviceId}'));
+    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${deviceId}'), headers: header("0"));
     if (response.statusCode == 200) {
       return true;
     } else {
@@ -105,10 +100,7 @@ class DeviceData extends ChangeNotifier {
   Future<bool> synchronizeLocalDeviceAdd(String name, String roomId,String category, String deviceIdFromCloud) async {
     if (await checkIfLocalRoom(roomId) == true){
       final response = await http.post(
-        Uri.parse('${prefixUrl}:${portLocal.toString()}/device'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
+        Uri.parse('${prefixUrl}:${portLocal.toString()}/device'), headers: header("0"),
         body: jsonEncode({
           'room_id': roomId,
           'device_id': deviceIdFromCloud,
@@ -123,14 +115,15 @@ class DeviceData extends ChangeNotifier {
 
   //TODO synchro OK
   Future<http.Response> addDevice(String name,String category, String roomId) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else port = portCloud;
 
     final response = await http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/device'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: header(sync),
       body: jsonEncode({
         'name': name,
         'category': category,
@@ -149,35 +142,18 @@ class DeviceData extends ChangeNotifier {
     return response;
   }
 
-/*  Future<http.Response> addDevice(String name, String category, String room_id) async {
-    if (await checkApiOnline() == false) port = portLocal;
-    else port = portCloud;
-
-    return http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/device'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode({
-        'name': name,
-        'category': category,
-        'room_id': room_id,
-
-      }),
-    );
-  }*/
-
   //TODO synchro OK
   Future<http.Response> updateDevice(String deviceName, Device device) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else {
       port = portCloud;
       if (await checkIfLocalDevice(device.id!) == true){
         final response = await http.put(
-          Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'),
-          headers: <String, String>{
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
+          Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'), headers: header(sync),
           body: jsonEncode(<String, String>{
             'name': deviceName,
           })
@@ -186,43 +162,25 @@ class DeviceData extends ChangeNotifier {
       }
     }
     return await http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'), headers: header(sync),
       body: jsonEncode(<String, String>{
         'name': deviceName,
       }),
     );
   }
 
-
-/*  Future<http.Response> updateDevice(String deviceName, Device device) async {
-    if (await checkApiOnline() == false) port = portLocal;
-    else port = portCloud;
-
-    return http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'name': deviceName,
-      }),
-    );
-  }*/
-
-  //TODO synchro
+  //TODO synchro TESTER BORDEL
   Future<http.Response> updateDeviceValue(String value, Device device) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else {
       port = portCloud;
       if (await checkIfLocalDevice(device.id!) == true){
         final response = await http.put(
-            Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'),
-            headers: <String, String>{
-              'Content-Type': 'application/json; charset=UTF-8',
-            },
+            Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'), headers: header(sync),
             body: jsonEncode(<String, String>{
               'value': value,
             })
@@ -231,41 +189,28 @@ class DeviceData extends ChangeNotifier {
       }
     }
     return await http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'), headers: header(sync),
       body: jsonEncode(<String, String>{
         'value': value,
       }),
     );
   }
 
-/*  Future<http.Response> updateDeviceValue(String value, Device device) async {
-    if (await checkApiOnline() == false) port = portLocal;
-    else port = portCloud;
-    return http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'value': value,
-      }),
-    );
-  }*/
-
   //TODO synchro OK
   Future<http.Response> deleteDevice(Device device) async {
-    if (await checkApiOnline() == false) port = portLocal;
+    String sync ="0";
+    if (await checkApiOnline() == false) {
+      port = portLocal;
+      sync = "1";
+    }
     else {
       port = portCloud;
-      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'));
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'), headers: header(sync));
       if (response.statusCode != 200) {
         throw Exception('Failed to load data');
       }
     }
 
-    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/device/' + device.id.toString()));
+    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/device/' + device.id.toString()), headers: header(sync));
   }
 }
