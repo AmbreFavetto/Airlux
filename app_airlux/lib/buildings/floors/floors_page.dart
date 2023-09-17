@@ -56,7 +56,7 @@ class _FloorsPageState extends State<FloorsPage> {
                   builder: (context) {
                     return ChangeNotifierProvider(
                       create: (BuildContext context) => RoomData(),
-                      child: const MaterialApp(
+                      child: MaterialApp(
                         home: BuildingsPage(),
                       ),
                     );

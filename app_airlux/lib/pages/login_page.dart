@@ -142,6 +142,7 @@ class _LoginPageState extends State<LoginPage> {
                       if (response.statusCode == 200) {
                         str = json.decode(response.body);
                         token = str['data']['token'];
+                        userId = str['data']['user_id'];
                         if (token != null) {
                           Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(

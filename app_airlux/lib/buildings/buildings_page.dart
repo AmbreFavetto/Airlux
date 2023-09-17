@@ -13,8 +13,7 @@ import 'package:http/http.dart' as http;
 import '../shared/addButton.dart';
 
 class BuildingsPage extends StatefulWidget {
-  const BuildingsPage({super.key});
-
+  BuildingsPage({super.key});
   @override
   State<BuildingsPage> createState() => _BuildingsPageState();
 }
@@ -26,7 +25,9 @@ class _BuildingsPageState extends State<BuildingsPage> {
     //  super.initState();
     //  socket = initSocket();
     //  connectSocket(socket);
-    Provider.of<BuildingData>(context, listen: false).getAllBuildings();
+    //Provider.of<BuildingData>(context, listen: false).getAllBuildings();
+    Provider.of<BuildingData>(context, listen: false).getBuildingsByUser();
+
   }
 
   //@override
@@ -125,7 +126,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                       _editBuildingNameController.text, building);
                   if (response.statusCode == 200) {
                     Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => const BuildingsPage()));
+                        builder: (context) => BuildingsPage()));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(

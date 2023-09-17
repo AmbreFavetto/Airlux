@@ -57,7 +57,7 @@ class AddBuildingPageState extends State<AddBuildingPage> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const BuildingsPage()), //add ConfigureScenarioPage() when ready
+                                              BuildingsPage()), //add ConfigureScenarioPage() when ready
                                     );
                                   } else {
                                     ScaffoldMessenger.of(context).showSnackBar(

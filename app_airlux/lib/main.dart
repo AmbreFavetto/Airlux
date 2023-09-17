@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => HomePage(),
         '/mainPage': (BuildContext context) => ChangeNotifierProvider(
           create: (BuildContext context) => DeviceData(),
-          child: const MaterialApp(
+          child: MaterialApp(
             home: BottomNavigation(),
           ),
         ),
@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         '/addRoom': (BuildContext context) => AddRoomPage(floor_name: '',floor_id: '',),
         '/buildings': (BuildContext context) => ChangeNotifierProvider(
               create: (BuildContext context) => BuildingData(),
-              child: const MaterialApp(
+              child: MaterialApp(
                 home: BuildingsPage(),
               ),
             ),

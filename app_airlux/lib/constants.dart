@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 late var token;
+late String userId;
 
 Map<String, String> headerLessToken (String sync){
   Map<String, String> requestHeader = {

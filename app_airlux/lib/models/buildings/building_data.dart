@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app_airlux/constants.dart';
+import 'package:app_airlux/models/buildings/userBuilding.dart';
 import 'package:flutter/cupertino.dart';
 import 'building.dart';
 import 'package:http/http.dart' as http;
@@ -14,6 +15,9 @@ class BuildingData extends ChangeNotifier {
   var port = 3010;
   List<Building> buildings = [Building(name: ' ', id: '1'), Building(name: ' ', id: '2')];
   Building building = Building(name: 'building', id: '1');
+  List<UserBuilding> userBuildings = [UserBuilding(building_id: '', user_id: '', id: ''), UserBuilding(building_id: '', user_id: '', id: '')];
+  UserBuilding userBuilding = UserBuilding(building_id: '', user_id: '', id: '');
+  List<String> building_IDs = [];
 
   Future<bool> checkApiOnline() async {
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
@@ -33,6 +37,34 @@ class BuildingData extends ChangeNotifier {
     } else {
       throw Exception('Failed to load data');
     }
+  }
+
+  void getBuildingsByUser() async{
+    if (await checkApiOnline() == false) port = portLocal;
+    else port = portCloud;
+
+    final responseUserBuildings = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/user-building'), headers: header("0"));
+    if (responseUserBuildings.statusCode == 200) {
+      str = json.decode(responseUserBuildings.body);
+      final List<dynamic> results = str['data']['usersBuildings'];
+      results.removeWhere((item) => item["user_id"]!=userId);
+      userBuildings = results.map((e) => UserBuilding.fromJson(e)).toList();
+      print(userBuildings);
+      userBuildings.forEach((element) { //Recover building IDs, related to the userID
+        building_IDs.add(element.building_id);
+      });
+      final responseBuildings = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header("0"));
+      if (responseBuildings.statusCode == 200) {
+        str = json.decode(responseBuildings.body);
+        final List<dynamic> resultsBuildings = str['data']['buildings'];
+        resultsBuildings.removeWhere((element) => !building_IDs.contains(element['building_id']));
+        buildings = resultsBuildings.map((e) => Building.fromJson(e)).toList();
+
+      notifyListeners();
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
   }
 
   void getBuilding(int id) async {

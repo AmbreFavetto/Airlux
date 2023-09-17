@@ -9,8 +9,7 @@ import '../models/devices/device_data.dart';
 import '../pages/setting_page.dart';
 
 class BottomNavigation extends StatefulWidget {
-  const BottomNavigation({super.key});
-
+  BottomNavigation({super.key});
   @override
   State<BottomNavigation> createState() => _BottomNavigationState();
 }
@@ -22,7 +21,6 @@ class _BottomNavigationState extends State<BottomNavigation> {
     Icons.cottage,
     color: kDarkPurple,
   );
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,7 +131,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 : (currentIndex == 1) //Bâtiments
                     ? ChangeNotifierProvider(
                         create: (BuildContext context) => BuildingData(),
-                        child: const MaterialApp(
+                        child: MaterialApp(
                           home: BuildingsPage(),
                         ),
                       )
