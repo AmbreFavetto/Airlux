@@ -5,7 +5,7 @@ const userCreateSchema = Joi.object().keys({
   forename: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
-  is_admin: Joi.bool().default(false),
+  is_admin: Joi.bool().default(true),
   user_id: Joi.string().optional()
 });
 

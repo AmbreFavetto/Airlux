@@ -143,7 +143,7 @@ export const updateDevice = async (req: Request, res: Response) => {
   }
   try {
     const results: Device = await processData(QUERY.SELECT_DEVICE, req.params.id)
-    if (!matchRegex(req.body.value, results.category!)) {
+    if (req.body.value && !matchRegex(req.body.value, results.category!)) {
       return res.status(HttpStatus.BAD_REQUEST.code)
         .send(new ResponseFormat(HttpStatus.BAD_REQUEST.code, HttpStatus.BAD_REQUEST.status, "Bad value. Try again."));
     }

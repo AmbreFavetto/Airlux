@@ -133,7 +133,7 @@ export const getDevice = async (req: Request, res: Response) => {
 };
 
 export const updateDevice = async (req: Request, res: Response) => {
-  logger.info(`${req.method} ${req.originalUrl}, fetching device`);
+  logger.info(`${req.method} ${req.originalUrl}, updating device`);
   const { error } = deviceUpdateSchema.validate(req.body);
   if (error) {
     res.status(HttpStatus.BAD_REQUEST.code)
