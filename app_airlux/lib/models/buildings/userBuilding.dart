@@ -1,8 +1,8 @@
 class UserBuilding {
-  UserBuilding({required this.building_id,  required this.user_id, required this.id});
+  UserBuilding({required this.building_id,  required this.user_id, this.id});
   String user_id = 'user_id';
   String building_id = 'building_id';
-  String id = 'id';
+  String? id = 'id';
 
   UserBuilding.fromJson(Map<String, dynamic> json) {
     user_id = json['user_id'];
