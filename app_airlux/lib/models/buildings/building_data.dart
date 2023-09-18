@@ -113,8 +113,7 @@ class BuildingData extends ChangeNotifier {
       Uri.parse('${prefixUrl}:${portLocal.toString()}/user-building'), headers: header(sync),
       body: jsonEncode({
         'building_id': buildingIdFromCloud,
-        'user_id': userId,
-        'userBuilding_id': userBuildingCreatedId
+        'user_id': userId
       }),
     );
     if (await response.statusCode == 400) return true;
@@ -127,8 +126,6 @@ class BuildingData extends ChangeNotifier {
     if (await checkApiOnline() == false) {
       port = portLocal;
       sync = "1";
-      final checkLocalBuildingExist= await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header("0"));
-      if (checkLocalBuildingExist.statusCode == 400) return checkLocalBuildingExist ;
     }
     else port = portCloud;
 
@@ -137,6 +134,7 @@ class BuildingData extends ChangeNotifier {
         Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header(sync),
         body: jsonEncode({
           'name': name,
+          'building_id':"ytghbvg-108656YHBY-5"
         }),
     );
     if ((await responseBuilding.statusCode == 201) && (await responseBuilding.statusCode != 400)) {
@@ -187,11 +185,17 @@ class BuildingData extends ChangeNotifier {
       port = portLocal;
       sync = "1";
     }
-    else port = portCloud;
+    else {
+      port = portCloud;
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${building.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
+    }
 
-    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'), headers: headerLessToken(sync));
+    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'), headers: header(sync));
     if (response.statusCode == 200) {
-      getAllBuildings();
+      getBuildingsByUser();
     } else {
       throw Exception('Failed to load data');
     }
