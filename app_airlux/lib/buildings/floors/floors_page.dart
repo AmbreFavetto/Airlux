@@ -159,7 +159,8 @@ class _FloorsPageState extends State<FloorsPage> {
                 onPressed: () async {
                   http.Response response = await floorData.updateFloor(
                       _editFloorNameController.text, floor);
-                  if (response.statusCode == 200) {
+                  print(response.statusCode);
+                  if ((response.statusCode == 201) || (response.statusCode == 200)) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => FloorsPage(
                           buildingId: widget.buildingId,

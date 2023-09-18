@@ -20,8 +20,14 @@ class BuildingData extends ChangeNotifier {
   List<String> building_IDs = [];
 
   Future<bool> checkApiOnline() async {
+    var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
-    return await response.statusCode == 200 ? true : false ;
+    if (await response.statusCode == 200) {
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      print("coucou");
+      return true;
+    }
+    else return false;
   }
 
   void getAllBuildings() async {

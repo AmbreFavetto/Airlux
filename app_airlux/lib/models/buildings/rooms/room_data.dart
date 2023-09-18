@@ -13,13 +13,18 @@ class RoomData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
-  List<Room> rooms = [Room(name: 'firstRoom', id: '1', floor_id: '1'), Room(name: 'secondRoom', id: '2', floor_id: '2')];
+  List<Room> rooms = [Room(name: '', id: '1', floor_id: '1'), Room(name: '', id: '2', floor_id: '2')];
   Room room = Room(name: 'room', id: '1', floor_id: '1');
 
   Future<bool> checkApiOnline() async {
     var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
-    return await response.statusCode == 200 ? true : false ;
+    if (await response.statusCode == 200) {
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${port.toString()}/send'));
+      print("coucou");
+      return true;
+    }
+    else return false;
   }
 
   void getAllRooms() async {

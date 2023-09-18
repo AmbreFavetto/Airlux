@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/models/signup/signup_data.dart';
+import 'package:app_airlux/models/user/user_data.dart';
 import 'package:app_airlux/pages/login_page.dart';
 import 'package:app_airlux/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
@@ -206,8 +207,8 @@ class SignupPageState extends State<SignupPage> {
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
                               ChangeNotifierProvider(
-                                create: (context) => DeviceData(),
-                                builder: (context, child) => BottomNavigation(),
+                                create: (context) => UserData(),
+                                builder: (context, child) => LoginPage(),
                               ),
                         ),
                             (Route<dynamic> route) => false,
