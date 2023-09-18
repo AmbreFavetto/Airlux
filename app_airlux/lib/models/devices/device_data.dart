@@ -15,8 +15,13 @@ class DeviceData extends ChangeNotifier {
   List<Device> devices = [];
 
   Future<bool> checkApiOnline() async {
+    var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
-    return await response.statusCode == 200 ? true : false ;
+    if (await response.statusCode == 200) {
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      return true;
+    }
+    else return false;
   }
 
   void getAllDevices() async {

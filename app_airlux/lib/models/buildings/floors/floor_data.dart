@@ -18,8 +18,13 @@ class FloorData extends ChangeNotifier {
   Building building = Building(name: '', id: '1');
 
   Future<bool> checkApiOnline() async {
-    final response = await http.get(Uri.parse('${prefixUrl}:${portCloud.toString()}/health'));
-    return await response.statusCode == 200 ? true : false ;
+    var port = 3010;
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
+    if (await response.statusCode == 200) {
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      return true;
+    }
+    else return false;
   }
 
   void getAllFloors() async {

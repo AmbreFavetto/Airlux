@@ -18,9 +18,13 @@ class SignupData extends ChangeNotifier {
   List<Signup> user = [];
 
   Future<bool> checkApiOnline() async {
-    final response =
-        await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
-    return await response.statusCode == 200 ? true : false;
+    var port = 3010;
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
+    if (await response.statusCode == 200) {
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      return true;
+    }
+    else return false;
   }
 
   //TODO synchro OK
