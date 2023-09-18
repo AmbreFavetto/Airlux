@@ -18,7 +18,7 @@ class SignupData extends ChangeNotifier {
     var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
     if (await response.statusCode == 200) {
-      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
       return true;
     }
     else return false;

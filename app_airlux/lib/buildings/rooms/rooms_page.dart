@@ -53,7 +53,7 @@ class _RoomsPageState extends State<RoomsPage> {
           const SizedBox(width: 10.0, height: 20.0),
           const TitlePageStyle(text: "Salles"),
           const SizedBox(height: 15),
-          TextInformationStyle(text: 'Numéro étage : ${widget.floorNumber}'),
+          TextInformationStyle(text: 'Etage : ${widget.floorNumber}'),
           Expanded(
             child: Consumer<RoomData>(
               builder: (context, roomData, child) => GridView.builder(
