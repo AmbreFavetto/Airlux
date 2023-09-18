@@ -9,14 +9,14 @@ typedef void StringCallback(String newValue);
 class DeviceContainer extends StatefulWidget {
   const DeviceContainer(
       {Key? key,
-      required this.onDelete,
-      required this.onEdit,
-      required this.onTap,
-      required this.title,
-      required this.id,
-      required this.category,
-      required this.result,
-      required this.newValue})
+        required this.onDelete,
+        required this.onEdit,
+        required this.onTap,
+        required this.title,
+        required this.id,
+        required this.category,
+        required this.result,
+        required this.newValue})
       : super(key: key);
 
   final void Function() onDelete;
@@ -99,460 +99,354 @@ class _DeviceContainerState extends State<DeviceContainer> {
       children: [
         InkWell(
           onLongPress: () {
-            switch (widget.category) {
-              case kLamp:
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
-                    ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Lampe'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                  if (!_isActive) {
-                                    _lampIntensity = 0.0;
-                                    widget.newValue('0,0');
-                                  } else {
-                                    _lampIntensity = 20.0;
-                                    widget.newValue('1,20');
-                                  }
-                                });
-                              },
-                            ),
-                            const Text('Intensité'),
-                            LampIntensitySlider(
-                              currentValue: _lampIntensity,
-                              onIntensityChanged: (double newIntensity) {
-                                setState(() {
-                                  _lampIntensity = newIntensity;
-                                  widget
-                                      .newValue('1,${_lampIntensity.toInt()}');
-
-                                  // si intensité à 0 alors on éteint
-                                  if (newIntensity == 0) {
-                                    _isActive = false;
-                                    widget.newValue('0,0');
-                                  } else if (newIntensity > 0 && !_isActive) {
-                                    // sinon on allume
-                                    _isActive = true;
-                                    widget.newValue('1,$newIntensity');
-                                  }
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
-                        ),
+            if (_isActive) {
+              switch (widget.category) {
+                case kLamp:
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              case kLampRgb:
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
                     ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Lampe RGB'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                  if (!_isActive) {
-                                    // if on/off éteint alors on éteint tout
-                                    _lampRgbIntensity = 0.0;
-                                    _currentColor = Colors.white;
-                                    widget.newValue('0,0,0,0,0');
-                                  } else {
-                                    // sinon on allume tout
-                                    _lampRgbIntensity = 20.0;
-                                    _currentColor =
-                                        Color.fromRGBO(244, 67, 54, 1);
-                                    widget.newValue('1,20,244,67,54');
-                                  }
-                                });
-                              },
-                            ),
-                            const Text('Intensité'),
-                            LampIntensitySlider(
-                              currentValue: _lampRgbIntensity,
-                              onIntensityChanged: (double newIntensity) {
-                                setState(() {
-                                  _lampRgbIntensity = newIntensity;
-                                  int intColor = int.parse('0x' +
-                                      _currentColor.value.toRadixString(16));
-                                  int red = (intColor >> 16) & 0xff;
-                                  int green = (intColor >> 8) & 0xff;
-                                  int blue = (intColor >> 0) & 0xff;
-                                  widget.newValue(
-                                      '1,${_lampRgbIntensity.toInt()},${red},${green},${blue}');
-
-                                  // if on slide intensity jusqu'à 0 alors ça éteint tout
-                                  if (newIntensity == 0) {
-                                    _isActive = false;
-                                    _currentColor = Colors.white;
-                                    widget.newValue('0,0,0,0,0');
-                                  } else if (newIntensity > 0 && !_isActive) {
-                                    // if le on/off est à éteint et qu'on bouge l'intensité alors ça allume tout
-                                    _isActive = true;
-                                    _currentColor =
-                                        Color.fromRGBO(244, 67, 54, 1);
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Lampe'),
+                              const Text('Intensité'),
+                              LampIntensitySlider(
+                                currentValue: _lampIntensity,
+                                onIntensityChanged: (double newIntensity) {
+                                  setState(() {
+                                    _lampIntensity = newIntensity;
                                     widget.newValue(
-                                        '1,${newIntensity},244,67,54');
-                                  }
-                                });
-                              },
-                            ),
-                            BlockPicker(
-                              availableColors: colors,
-                              pickerColor: _currentColor,
-                              onColorChanged: (Color color) {
-                                setState(() {
-                                  _currentColor = color;
-                                  int intColor = int.parse('0x' +
-                                      _currentColor.value.toRadixString(16));
-                                  int red = (intColor >> 16) & 0xff;
-                                  int green = (intColor >> 8) & 0xff;
-                                  int blue = (intColor >> 0) & 0xff;
-                                  widget.newValue(
-                                      '1,${_lampRgbIntensity.toInt()},${red},${green},${blue}');
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
+                                        '1,${_lampIntensity.toInt()}');
+
+                                    // si intensité à 0 alors on éteint
+                                    if (newIntensity == 0) {
+                                      _isActive = false;
+                                      widget.newValue('0,0');
+                                    } else if (newIntensity > 0 && !_isActive) {
+                                      // sinon on allume
+                                      _isActive = true;
+                                      widget.newValue('1,$newIntensity');
+                                    }
+                                  });
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    },
+                  );
+                  break;
+                case kLampRgb:
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              case kBlind:
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
                     ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Volets'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                });
-                                if (!_isActive) {
-                                  widget.newValue('0');
-                                } else {
-                                  widget.newValue('1');
-                                }
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Lampe RGB'),
+                              const Text('Intensité'),
+                              LampIntensitySlider(
+                                currentValue: _lampRgbIntensity,
+                                onIntensityChanged: (double newIntensity) {
+                                  setState(() {
+                                    _lampRgbIntensity = newIntensity;
+                                    int intColor = int.parse('0x' +
+                                        _currentColor.value.toRadixString(16));
+                                    int red = (intColor >> 16) & 0xff;
+                                    int green = (intColor >> 8) & 0xff;
+                                    int blue = (intColor >> 0) & 0xff;
+                                    widget.newValue(
+                                        '1,${_lampRgbIntensity.toInt()},${red},${green},${blue}');
+
+                                    // if on slide intensity jusqu'à 0 alors ça éteint tout
+                                    if (newIntensity == 0) {
+                                      _isActive = false;
+                                      _currentColor = Colors.white;
+                                      widget.newValue('0,0,0,0,0');
+                                    } else if (newIntensity > 0 && !_isActive) {
+                                      // if le on/off est à éteint et qu'on bouge l'intensité alors ça allume tout
+                                      _isActive = true;
+                                      _currentColor =
+                                          Color.fromRGBO(244, 67, 54, 1);
+                                      widget.newValue(
+                                          '1,${newIntensity},244,67,54');
+                                    }
+                                  });
+                                },
+                              ),
+                              BlockPicker(
+                                availableColors: colors,
+                                pickerColor: _currentColor,
+                                onColorChanged: (Color color) {
+                                  setState(() {
+                                    _currentColor = color;
+                                    int intColor = int.parse('0x' +
+                                        _currentColor.value.toRadixString(16));
+                                    int red = (intColor >> 16) & 0xff;
+                                    int green = (intColor >> 8) & 0xff;
+                                    int blue = (intColor >> 0) & 0xff;
+                                    widget.newValue(
+                                        '1,${_lampRgbIntensity.toInt()},${red},${green},${blue}');
+                                  });
+                                },
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    },
+                  );
+                  break;
+                case kBlind:
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              case kRadiator:
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
                     ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Radiateur'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                });
-                                if (!_isActive) {
-                                  widget.newValue('0');
-                                } else {
-                                  widget.newValue('1');
-                                }
-                              },
-                            ),
-                            const Text('Température'),
-                            const Thermostat(
-                              minVal: 15,
-                              maxVal: 25,
-                              curVal:
-                                  0, // valeur courante, à remplacer par la valeur qu'on recoit
-                              setPoint: 18.0,
-                              setPointMode: SetPointMode.displayAndEdit,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Volets'),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    },
+                  );
+                  break;
+                case kRadiator:
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              case kAirConditioning:
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
                     ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Climatiseur'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                });
-                                if (!_isActive) {
-                                  widget.newValue('0');
-                                } else {
-                                  widget.newValue('1');
-                                }
-                              },
-                            ),
-                            const Text('Température'),
-                            const Thermostat(
-                              minVal: 10,
-                              maxVal: 30,
-                              curVal:
-                                  0, // valeur courante, à remplacer par la valeur qu'on recoit
-                              setPoint: 18.0,
-                              setPointMode: SetPointMode.displayAndEdit,
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Radiateur'),
+                              const Text('Température'),
+                              const Thermostat(
+                                minVal: 15,
+                                maxVal: 25,
+                                curVal: 0,
+                                // valeur courante, à remplacer par la valeur qu'on recoit
+                                setPoint: 18.0,
+                                setPointMode: SetPointMode.displayAndEdit,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    },
+                  );
+                  break;
+                case kAirConditioning:
+                  showModalBottomSheet(
+                    context: context,
+                    isScrollControlled: true,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              case kHumidity:
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
                     ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Humidité'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Climatiseur'),
+                              const Text('Température'),
+                              const Thermostat(
+                                minVal: 10,
+                                maxVal: 30,
+                                curVal: 0,
+                                // valeur courante, à remplacer par la valeur qu'on recoit
+                                setPoint: 18.0,
+                                setPointMode: SetPointMode.displayAndEdit,
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    },
+                  );
+                  break;
+                case kHumidity:
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              case kTemperature:
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
                     ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Temperature'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Humidité'),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    },
+                  );
+                  break;
+                case kTemperature:
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              case kPressure:
-                showModalBottomSheet(
-                  context: context,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadiusDirectional.only(
-                      topEnd: Radius.circular(25),
-                      topStart: Radius.circular(25),
                     ),
-                  ),
-                  builder: (BuildContext context) {
-                    return SingleChildScrollView(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const TitleModalBottom(text: 'Pression'),
-                            const Text('On/Off'),
-                            Switch(
-                              value: _isActive,
-                              activeColor: kOrange,
-                              onChanged: (bool value) {
-                                setState(() {
-                                  _isActive = value;
-                                });
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.expand_more,
-                                  color: Colors.black26),
-                              tooltip: 'Quitter',
-                              onPressed: () => Navigator.pop(context),
-                              iconSize: 45.0,
-                            ),
-                          ],
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Temperature'),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
                         ),
+                      );
+                    },
+                  );
+                  break;
+                case kPressure:
+                  showModalBottomSheet(
+                    context: context,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadiusDirectional.only(
+                        topEnd: Radius.circular(25),
+                        topStart: Radius.circular(25),
                       ),
-                    );
-                  },
-                );
-                break;
-              default:
-                break;
+                    ),
+                    builder: (BuildContext context) {
+                      return SingleChildScrollView(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              const TitleModalBottom(text: 'Pression'),
+                              IconButton(
+                                icon: const Icon(Icons.expand_more,
+                                    color: Colors.black26),
+                                tooltip: 'Quitter',
+                                onPressed: () => Navigator.pop(context),
+                                iconSize: 45.0,
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                  break;
+                default:
+                  break;
+              }
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text("Veuillez d'abord activer votre device."),
+                ),
+              );
             }
           },
           onTap: () {
@@ -586,58 +480,58 @@ class _DeviceContainerState extends State<DeviceContainer> {
                     padding: const EdgeInsets.only(top: 8),
                     child: widget.category == kLamp
                         ? const Icon(
-                            Icons.light,
-                            color: Colors.black26,
-                            size: 50.0,
-                          )
+                      Icons.light,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
                         : widget.category == kLampRgb
-                            ? const Icon(
-                                Icons.tungsten,
-                                color: Colors.black26,
-                                size: 50.0,
-                              )
-                            : widget.category == kBlind
-                                ? const Icon(
-                                    Icons.blinds,
-                                    color: Colors.black26,
-                                    size: 50.0,
-                                  )
-                                : widget.category == kRadiator
-                                    ? const Icon(
-                                        Icons.thermostat,
-                                        color: Colors.black26,
-                                        size: 50.0,
-                                      )
-                                    : widget.category == kAirConditioning
-                                        ? const Icon(
-                                            Icons.heat_pump,
-                                            color: Colors.black26,
-                                            size: 50.0,
-                                          )
-                                        : widget.category == kHumidity
-                                            ? const Icon(
-                                                Icons.water_drop,
-                                                color: Colors.black26,
-                                                size: 50.0,
-                                              )
-                                            : widget.category == kTemperature
-                                                ? const Icon(
-                                                    Icons.device_thermostat,
-                                                    color: Colors.black26,
-                                                    size: 50.0,
-                                                  )
-                                                : widget.category == kPressure
-                                                    ? const Icon(
-                                                        Icons.tire_repair,
-                                                        color: Colors.black26,
-                                                        size: 50.0,
-                                                      )
-                                                    : const Icon(
-                                                        Icons
-                                                            .dangerous_outlined,
-                                                        color: Colors.black26,
-                                                        size: 50.0,
-                                                      ),
+                        ? const Icon(
+                      Icons.tungsten,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
+                        : widget.category == kBlind
+                        ? const Icon(
+                      Icons.blinds,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
+                        : widget.category == kRadiator
+                        ? const Icon(
+                      Icons.thermostat,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
+                        : widget.category == kAirConditioning
+                        ? const Icon(
+                      Icons.heat_pump,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
+                        : widget.category == kHumidity
+                        ? const Icon(
+                      Icons.water_drop,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
+                        : widget.category == kTemperature
+                        ? const Icon(
+                      Icons.device_thermostat,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
+                        : widget.category == kPressure
+                        ? const Icon(
+                      Icons.tire_repair,
+                      color: Colors.black26,
+                      size: 50.0,
+                    )
+                        : const Icon(
+                      Icons
+                          .dangerous_outlined,
+                      color: Colors.black26,
+                      size: 50.0,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 3),
