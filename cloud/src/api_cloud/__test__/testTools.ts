@@ -1,7 +1,6 @@
 import pool from '../app/config/db.config';
 
 // TEST
-
 const QUERY = {
     CREATE_BUILDING: 'INSERT INTO building(name, building_id) VALUES ("testBuilding", "123")',
     CREATE_OTHER_BUILDING: 'INSERT INTO building(name, building_id) VALUES ("testBuilding", "234")',
@@ -10,7 +9,7 @@ const QUERY = {
     DELETE_FLOORS: 'DELETE FROM floor',
     CREATE_ROOM: 'INSERT INTO room(name, floor_id, room_id) VALUES ("testRoom", "123", "123")',
     DELETE_ROOMS: 'DELETE FROM room',
-    CREATE_DEVICE: 'INSERT INTO device(name, room_id, device_id, category, value) VALUES ("testDevice", "123", "123", "lamp", 0.5)',
+    CREATE_DEVICE: 'INSERT INTO device(name, room_id, type, category, value, device_id) VALUES ("testDevice", , "123", "actuator", "lamp", "0,0", "123")',
     DELETE_DEVICES: 'DELETE FROM device',
     CREATE_SCENARIO: 'INSERT INTO scenario(name, scenario_id) VALUES ("testScenario", "123")',
     CREATE_OTHER_SCENARIO: 'INSERT INTO scenario(name, scenario_id) VALUES ("testScenario", "234")',
