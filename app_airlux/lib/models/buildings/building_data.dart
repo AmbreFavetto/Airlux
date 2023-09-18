@@ -8,8 +8,6 @@ import 'package:http/http.dart' as http;
 
 class BuildingData extends ChangeNotifier {
   var str;
-  //var prefixUrl = 'http://192.168.1.29';
-  var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
@@ -95,6 +93,7 @@ class BuildingData extends ChangeNotifier {
         'name': name
       }),
     );
+    if (await response.statusCode == 400) return true;
     if (await response.statusCode != 201) throw Exception('Failed to load data');
     return true;
   }
@@ -109,6 +108,7 @@ class BuildingData extends ChangeNotifier {
         'userBuilding_id': userBuildingCreatedId
       }),
     );
+    if (await response.statusCode == 400) return true;
     if (await response.statusCode != 201) throw Exception('Failed to load data');
     return true;
   }
@@ -118,6 +118,8 @@ class BuildingData extends ChangeNotifier {
     if (await checkApiOnline() == false) {
       port = portLocal;
       sync = "1";
+      final checkLocalBuildingExist= await http.get(Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header("0"));
+      if (checkLocalBuildingExist.statusCode == 400) return checkLocalBuildingExist ;
     }
     else port = portCloud;
 
@@ -128,7 +130,7 @@ class BuildingData extends ChangeNotifier {
           'name': name,
         }),
     );
-    if (await responseBuilding.statusCode == 201) {
+    if ((await responseBuilding.statusCode == 201) && (await responseBuilding.statusCode != 400)) {
       str = json.decode(responseBuilding.body);
       final String buildingCreatedId = str['data']['id'];
       if (port != portLocal) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 late var token;
+//var prefixUrl = 'http://192.168.1.29';
+var prefixUrl = 'http://10.0.2.2';
 late String userId;
 
 Map<String, String> headerLessToken (String sync){
