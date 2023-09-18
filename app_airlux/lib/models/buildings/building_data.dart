@@ -26,6 +26,17 @@ class BuildingData extends ChangeNotifier {
     else return false;
   }
 
+  // Check if the current added floor is based on local building
+  Future<bool> checkIfLocalBuilding(String buildingId) async {
+    String sync = "0";
+    final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${buildingId}'), headers: header(sync));
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   void getAllBuildings() async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
@@ -123,45 +134,53 @@ class BuildingData extends ChangeNotifier {
 
   Future<http.Response> addBuilding(String name) async {
     String sync ="0";
+    final http.Response responseBuilding;
     if (await checkApiOnline() == false) {
       port = portLocal;
       sync = "1";
-    }
-    else port = portCloud;
-
-    //Add building and synchronize
-    final http.Response responseBuilding = await http.post(
+      responseBuilding = await http.post(
         Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header(sync),
         body: jsonEncode({
           'name': name,
           'building_id':"ytghbvg-108656YHBY-5"
         }),
-    );
-    if ((await responseBuilding.statusCode == 201) && (await responseBuilding.statusCode != 400)) {
-      str = json.decode(responseBuilding.body);
-      final String buildingCreatedId = str['data']['id'];
-      if (port != portLocal) {
-        await synchronizeLocalBuildingAdd(name, buildingCreatedId);
-      }
-
-      //Related building and user
-      final responseUserBuilding = await http.post(
-        Uri.parse('${prefixUrl}:${port.toString()}/user-building'), headers: header(sync),
+      );
+    }
+    else {
+      port = portCloud;
+      responseBuilding = await http.post(
+        Uri.parse('${prefixUrl}:${port.toString()}/building'), headers: header(sync),
         body: jsonEncode({
-          'building_id': buildingCreatedId,
-          'user_id': userId
+          'name': name,
         }),
       );
-      if (await responseUserBuilding.statusCode == 201) {
-        str = json.decode(responseUserBuilding.body);
-        final String userBuildingCreatedId = str['data']['id'];
+    }
+
+      if ((await responseBuilding.statusCode == 201) && (await responseBuilding.statusCode != 400)) {
+        str = json.decode(responseBuilding.body);
+        final String buildingCreatedId = str['data']['id'];
         if (port != portLocal) {
-          await synchronizeLocalUserBuildingAdd(buildingCreatedId, userBuildingCreatedId);
+          await synchronizeLocalBuildingAdd(name, buildingCreatedId);
+        }
+
+        //Related building and user
+        final responseUserBuilding = await http.post(
+          Uri.parse('${prefixUrl}:${port.toString()}/user-building'), headers: header(sync),
+          body: jsonEncode({
+            'building_id': buildingCreatedId,
+            'user_id': userId
+          }),
+        );
+        if (await responseUserBuilding.statusCode == 201) {
+          str = json.decode(responseUserBuilding.body);
+          final String userBuildingCreatedId = str['data']['id'];
+          if (port != portLocal) {
+            await synchronizeLocalUserBuildingAdd(buildingCreatedId, userBuildingCreatedId);
+          }
         }
       }
+      return responseBuilding;
     }
-    return responseBuilding;
-  }
 
   Future<http.Response> updateBuilding(String buildingName, Building building) async {
     String sync ="0";
@@ -169,7 +188,18 @@ class BuildingData extends ChangeNotifier {
       port = portLocal;
       sync = "1";
     }
-    else port = portCloud;
+    else {
+      port = portCloud;
+      if (await checkIfLocalBuilding(building.id!) == true){
+        final response = await http.put(
+          Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${building.id.toString()}'), headers: header(sync),
+          body: jsonEncode(<String, String>{
+            'name': buildingName,
+          }),
+        );
+        if (await response.statusCode != 201) throw Exception('Failed to load data');
+      }
+    }
 
     return http.put(
       Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'), headers: header(sync),
