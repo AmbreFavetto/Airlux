@@ -29,7 +29,7 @@ function setUpdateData(req: Request, previousValues: Device) {
   return data;
 }
 
-function matchRegex(value: string, category: string) {
+export function matchRegex(value: string, category: string) {
   const listCategoryRegex: Record<string, string> =
   {
     "lamp": "^(0|1),(0|[1-9][0-9]?|100)$",
@@ -50,7 +50,7 @@ function matchRegex(value: string, category: string) {
 
 }
 
-function setDefaultValue(category: string) {
+export function setDefaultValue(category: string) {
   const listDefaultValues: Record<string, string> =
   {
     "lamp": "0,0",
