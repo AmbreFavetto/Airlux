@@ -32,23 +32,20 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => HomePage(),
         '/mainPage': (BuildContext context) => ChangeNotifierProvider(
           create: (BuildContext context) => DeviceData(),
-          child: MaterialApp(
-            home: BottomNavigation(),
+          child: BottomNavigation(),
           ),
-        ),
+
         '/welcome': (BuildContext context) => WelcomePage(),
         '/signup': (BuildContext context) => ChangeNotifierProvider(
           create: (BuildContext context) => SignupData(),
-          child: MaterialApp(
-            home: SignupPage(),
+          child: SignupPage(),
           ),
-        ),
+
         '/login': (BuildContext context) => ChangeNotifierProvider(
           create: (BuildContext context) => UserData(),
-          child: MaterialApp(
-            home: LoginPage(),
+          child: LoginPage(),
           ),
-        ),
+
         '/cgu': (BuildContext context) => CguPage(),
         '/addBuilding': (BuildContext context) => AddBuildingPage(),
         '/addFloor': (BuildContext context) => AddFloorPage(building_id: '', building_name: '',),
@@ -56,16 +53,14 @@ class MyApp extends StatelessWidget {
         '/addRoom': (BuildContext context) => AddRoomPage(floor_name: '',floor_id: '',),
         '/buildings': (BuildContext context) => ChangeNotifierProvider(
               create: (BuildContext context) => BuildingData(),
-              child: MaterialApp(
-                home: BuildingsPage(),
+              child: BuildingsPage(),
               ),
-            ),
+
         '/scenarios': (BuildContext context) => ChangeNotifierProvider(
           create: (BuildContext context) => ScenarioData(),
-          child: MaterialApp(
-            home: ScenariosPage(),
+          child: ScenariosPage(),
           ),
-        ),
+
       },
     );
   }

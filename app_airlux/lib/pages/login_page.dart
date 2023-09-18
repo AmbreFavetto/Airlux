@@ -4,6 +4,7 @@ import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/models/user/user.dart';
 import 'package:app_airlux/models/user/user_data.dart';
 import 'package:app_airlux/pages/home_page.dart';
+import 'package:app_airlux/pages/welcome_page.dart';
 import 'package:app_airlux/widget/bottomNavigation.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
