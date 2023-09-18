@@ -9,7 +9,7 @@ const QUERY = {
     DELETE_FLOORS: 'DELETE FROM floor',
     CREATE_ROOM: 'INSERT INTO room(name, floor_id, room_id) VALUES ("testRoom", "123", "123")',
     DELETE_ROOMS: 'DELETE FROM room',
-    CREATE_DEVICE: 'INSERT INTO device(name, room_id, type, category, value, device_id) VALUES ("testDevice", , "123", "actuator", "lamp", "0,0", "123")',
+    CREATE_DEVICE: 'INSERT INTO device(name, room_id, type, category, value, device_id) VALUES ("testDevice", "123", "actuator", "lamp", "0,0", "123")',
     DELETE_DEVICES: 'DELETE FROM device',
     CREATE_SCENARIO: 'INSERT INTO scenario(name, scenario_id) VALUES ("testScenario", "123")',
     CREATE_OTHER_SCENARIO: 'INSERT INTO scenario(name, scenario_id) VALUES ("testScenario", "234")',

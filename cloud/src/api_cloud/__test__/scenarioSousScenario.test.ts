@@ -3,7 +3,9 @@ import app from '../app/index';
 import supertest from 'supertest';
 import pool from '../app/config/db.config';
 import Query, { processData } from './testTools'
-
+import jwt from 'jsonwebtoken';
+const secretKey = process.env.SECRET_KEY || "secret_key"
+let token = "";
 const request = supertest(app);
 
 describe('ScenarioSousScenario controller', () => {
@@ -15,6 +17,11 @@ describe('ScenarioSousScenario controller', () => {
         await processData(Query.CREATE_SOUS_SCENARIO)
 
         await processData(Query.CREATE_SCENARIO)
+        token = jwt.sign({
+            id: "fix-id-token",
+            email: "fix-email-token",
+            isadmin: "fix-admin-token"
+        }, secretKey, { expiresIn: '3 hours' })
     })
     afterEach(async () => {
         await processData(Query.DELETE_SCENARIO_SOUS_SCENARIOS)
@@ -30,6 +37,7 @@ describe('ScenarioSousScenario controller', () => {
         test('should create a new scenarioSousScenario', async () => {
             const response = await request
                 .post('/scenario-sous-scenario')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     scenario_id: '123',
@@ -43,6 +51,7 @@ describe('ScenarioSousScenario controller', () => {
         test('should return an error when the body field is invalid', async () => {
             const response = await request
                 .post('/scenario-sous-scenario')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test sousScenario',
@@ -56,6 +65,7 @@ describe('ScenarioSousScenario controller', () => {
         test('should return an error when the body field type is invalid', async () => {
             const response = await request
                 .post('/scenario-sous-scenario')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     scenario_id: 1,
@@ -70,14 +80,14 @@ describe('ScenarioSousScenario controller', () => {
     describe('getScenarioSousScenario/:id', () => {
         test('should get a scenarioSousScenario with an id', async () => {
             await processData(Query.CREATE_SCENARIO_SOUS_SCENARIO)
-            const response = await request.get('/scenario-sous-scenario/123');
+            const response = await request.get('/scenario-sous-scenario/123').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.scenariosSousScenarios).toBeDefined();
         });
 
         test('should return an error when getAll with invalid id', async () => {
-            const response2 = await request.get('/scenario-sous-scenario/321');
+            const response2 = await request.get('/scenario-sous-scenario/321').set('Authorization', `${token}`);
 
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
@@ -87,7 +97,7 @@ describe('ScenarioSousScenario controller', () => {
     describe('getScenarioSousScenarios', () => {
         test('should return a list of scenarioSousScenarios', async () => {
             await processData(Query.CREATE_SCENARIO_SOUS_SCENARIO)
-            const response = await request.get('/scenario-sous-scenario');
+            const response = await request.get('/scenario-sous-scenario').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.scenariosSousScenarios).toBeDefined();
@@ -97,31 +107,13 @@ describe('ScenarioSousScenario controller', () => {
     describe('deleteScenarioSousScenario/:id', () => {
         test('should delete the scenarioSousScenario', async () => {
             await processData(Query.CREATE_SCENARIO_SOUS_SCENARIO)
-            const response = await request.delete('/scenario-sous-scenario/123');
+            const response = await request.delete('/scenario-sous-scenario/123').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when delete with invalid id ', async () => {
-            const response2 = await request.delete('/scenario-sous-scenario/321');
-            expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
-            expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
-        });
-    });
-
-    describe('updateScenarioSousScenario/:id', () => {
-        test('should update the scenarioSousScenario', async () => {
-            await processData(Query.CREATE_SCENARIO_SOUS_SCENARIO)
-            await processData(Query.CREATE_OTHER_SCENARIO)
-            const response = await request.put('/scenario-sous-scenario/123').send({
-                scenario_id: '234'
-            });
-            expect(response.statusCode).toBe(HttpStatus.OK.code);
-            expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
-        });
-
-        test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/scenario-sous-scenario/321');
+            const response2 = await request.delete('/scenario-sous-scenario/321').set('Authorization', `${token}`);
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });

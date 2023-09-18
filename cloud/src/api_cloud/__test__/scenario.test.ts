@@ -3,10 +3,21 @@ import app from '../app/index';
 import supertest from 'supertest';
 import pool from '../app/config/db.config';
 import Query, { processData } from './testTools'
-
+import jwt from 'jsonwebtoken';
+const secretKey = process.env.SECRET_KEY || "secret_key"
+let token = "";
 const request = supertest(app);
 
 describe('Scenario controller', () => {
+
+    beforeAll(async () => {
+        token = jwt.sign({
+            id: "fix-id-token",
+            email: "fix-email-token",
+            isadmin: "fix-admin-token"
+        }, secretKey, { expiresIn: '3 hours' })
+    });
+
     afterEach(async () => {
         await processData(Query.DELETE_SCENARIOS)
     });
@@ -19,6 +30,7 @@ describe('Scenario controller', () => {
         test('should create a new scenario', async () => {
             const response = await request
                 .post('/scenario')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     name: 'Test scenario'
@@ -31,6 +43,7 @@ describe('Scenario controller', () => {
         test('should return an error when the body field is invalid', async () => {
             const response = await request
                 .post('/scenario')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test scenario',
@@ -44,6 +57,7 @@ describe('Scenario controller', () => {
         test('should return an error when the body field type is invalid', async () => {
             const response = await request
                 .post('/scenario')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     name: 1,
@@ -58,14 +72,14 @@ describe('Scenario controller', () => {
     describe('getScenario/:id', () => {
         test('should get a scenario with an id', async () => {
             await processData(Query.CREATE_SCENARIO)
-            const response = await request.get('/scenario/123');
+            const response = await request.get('/scenario/123').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.scenarios).toBeDefined();
         });
 
         test('should return an error when getAll with invalid id', async () => {
-            const response2 = await request.get('/scenario/321');
+            const response2 = await request.get('/scenario/321').set('Authorization', `${token}`);
 
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
@@ -75,7 +89,7 @@ describe('Scenario controller', () => {
     describe('getScenarios', () => {
         test('should return a list of scenarios', async () => {
             await processData(Query.CREATE_SCENARIO)
-            const response = await request.get('/scenario');
+            const response = await request.get('/scenario').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.scenarios).toBeDefined();
@@ -85,13 +99,13 @@ describe('Scenario controller', () => {
     describe('deleteScenario/:id', () => {
         test('should delete the scenario', async () => {
             await processData(Query.CREATE_SCENARIO)
-            const response = await request.delete('/scenario/123');
+            const response = await request.delete('/scenario/123').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when delete with invalid id ', async () => {
-            const response2 = await request.delete('/scenario/321');
+            const response2 = await request.delete('/scenario/321').set('Authorization', `${token}`);
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
@@ -100,7 +114,10 @@ describe('Scenario controller', () => {
     describe('updateScenario/:id', () => {
         test('should update the scenario', async () => {
             await processData(Query.CREATE_SCENARIO)
-            const response = await request.put('/scenario/123').send({
+            const response = await request
+            .put('/scenario/123')
+            .set('Authorization', `${token}`)
+            .send({
                 name: "TestUpdate"
             });
             expect(response.statusCode).toBe(HttpStatus.OK.code);
@@ -108,7 +125,7 @@ describe('Scenario controller', () => {
         });
 
         test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/scenario/321');
+            const response2 = await request.put('/scenario/321').set('Authorization', `${token}`);
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });

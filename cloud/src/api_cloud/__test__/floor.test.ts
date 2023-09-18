@@ -3,12 +3,19 @@ import app from '../app/index';
 import supertest from 'supertest';
 import pool from '../app/config/db.config';
 import Query, { processData } from './testTools'
-
+import jwt from 'jsonwebtoken';
+const secretKey = process.env.SECRET_KEY || "secret_key"
+let token = "";
 const request = supertest(app);
 
 describe('Floor controller', () => {
     beforeAll(async () => {
         await processData(Query.CREATE_BUILDING)
+        token = jwt.sign({
+            id: "fix-id-token",
+            email: "fix-email-token",
+            isadmin: "fix-admin-token"
+        }, secretKey, { expiresIn: '3 hours' })
     });
 
     afterEach(async () => {
@@ -24,6 +31,7 @@ describe('Floor controller', () => {
         test('should create a new floor', async () => {
             const response = await request
                 .post('/floor')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     name: 'Test floor',
@@ -37,6 +45,7 @@ describe('Floor controller', () => {
         test('should return an error when the body field is invalid', async () => {
             const response = await request
                 .post('/floor')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     invalidField: 'Test',
@@ -49,6 +58,7 @@ describe('Floor controller', () => {
         test('should return an error when the body field type is invalid', async () => {
             const response = await request
                 .post('/floor')
+                .set('Authorization', `${token}`)
                 .expect('Content-Type', /json/)
                 .send({
                     name: 1,
@@ -63,14 +73,14 @@ describe('Floor controller', () => {
     describe('getFloor/:id', () => {
         test('should get a floor with an id', async () => {
             await processData(Query.CREATE_FLOOR)
-            const response = await request.get('/floor/123');
+            const response = await request.get('/floor/123').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.floors).toBeDefined();
         });
 
         test('should return an error when getAll with invalid id', async () => {
-            const response2 = await request.get('/floor/321');
+            const response2 = await request.get('/floor/321').set('Authorization', `${token}`);
 
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
@@ -80,7 +90,7 @@ describe('Floor controller', () => {
     describe('getFloors', () => {
         test('should return a list of floors', async () => {
             await processData(Query.CREATE_FLOOR)
-            const response = await request.get('/floor');
+            const response = await request.get('/floor').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
             expect(response.body.data.floors).toBeDefined();
@@ -90,13 +100,13 @@ describe('Floor controller', () => {
     describe('deleteFloor/:id', () => {
         test('should delete the floor', async () => {
             await processData(Query.CREATE_FLOOR)
-            const response = await request.delete('/floor/123');
+            const response = await request.delete('/floor/123').set('Authorization', `${token}`);
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });
 
         test('should return an error when delete with invalid id ', async () => {
-            const response2 = await request.delete('/floor/321');
+            const response2 = await request.delete('/floor/321').set('Authorization', `${token}`);
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
@@ -105,7 +115,10 @@ describe('Floor controller', () => {
     describe('updateFloor/:id', () => {
         test('should update the floor', async () => {
             await processData(Query.CREATE_FLOOR)
-            const response = await request.put('/floor/123').send({
+            const response = await request
+            .put('/floor/123')
+            .set('Authorization', `${token}`)
+            .send({
                 name: "TestUpdate"
             });
             expect(response.statusCode).toBe(HttpStatus.OK.code);
@@ -113,7 +126,7 @@ describe('Floor controller', () => {
         });
 
         test('should return an error when update with invalid id ', async () => {
-            const response2 = await request.put('/floor/321');
+            const response2 = await request.put('/floor/321').set('Authorization', `${token}`);
             expect(response2.statusCode).toBe(HttpStatus.NOT_FOUND.code);
             expect(response2.body.httpStatus).toBe(HttpStatus.NOT_FOUND.status);
         });
