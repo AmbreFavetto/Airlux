@@ -2,9 +2,22 @@ import ResponseFormat from '../domain/responseFormat';
 import { Request, Response, NextFunction } from 'express';
 import HttpStatus from '../util/devTools';
 import axios from 'axios';
+import jwt from 'jsonwebtoken';
 
 const regex = /"message":"(POST|PUT|DELETE) ([^"]+) ({.*?})"/g;
 const routePfx = 'http://api_cloud:3010';
+
+const secretKey = process.env.SECRET_KEY || "secret_key"
+
+const token = jwt.sign({
+  id: "fix-id-token",
+  email: "fix-email-token",
+  isadmin: "fix-admin-token"
+}, secretKey, { expiresIn: '3 hours' })
+
+const headers = {
+  'Authorization': `${token}`,
+};
 
 export const syncLog = async (req: Request, res: Response) => {
   try {
@@ -19,11 +32,11 @@ export const syncLog = async (req: Request, res: Response) => {
       let body = match[3].replaceAll("\\", "");
 
       if (method === "POST") {
-        await axios.post(route, JSON.parse(body));
+        await axios.post(route, JSON.parse(body), { headers });
       } else if (method === "PUT") {
-        await axios.put(route, JSON.parse(body));
+        await axios.put(route, JSON.parse(body), { headers });
       } else if (method === "DELETE") {
-        await axios.delete(route, JSON.parse(body));
+        await axios.delete(route, { headers });
       }
     })
 
