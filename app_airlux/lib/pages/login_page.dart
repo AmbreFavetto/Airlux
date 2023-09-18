@@ -170,6 +170,11 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           }
                         } else if (response.statusCode != 200) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Connexion impossible'),
+                            ),
+                          );
                           throw Exception('Failed to load data');
                         }
                       }

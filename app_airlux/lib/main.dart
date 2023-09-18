@@ -1,5 +1,4 @@
 import 'package:app_airlux/buildings/addBuilding_page.dart';
-import 'package:app_airlux/buildings/buildingInfo_page.dart';
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/buildings/rooms/addRoom_page.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
@@ -49,7 +48,6 @@ class MyApp extends StatelessWidget {
         '/cgu': (BuildContext context) => CguPage(),
         '/addBuilding': (BuildContext context) => AddBuildingPage(),
         '/addFloor': (BuildContext context) => AddFloorPage(building_id: '', building_name: '',),
-        '/infos': (BuildContext context) => BuildingInfoPage(),
         '/addRoom': (BuildContext context) => AddRoomPage(floor_name: '',floor_id: '',),
         '/buildings': (BuildContext context) => ChangeNotifierProvider(
               create: (BuildContext context) => BuildingData(),

@@ -20,6 +20,7 @@ class SignupPage extends StatefulWidget {
 class SignupPageState extends State<SignupPage> {
   var _obscureText = true;
   var str;
+
   TextEditingController mail = TextEditingController();
   TextEditingController password = TextEditingController();
   TextEditingController confirmPassword = TextEditingController();
@@ -114,19 +115,10 @@ class SignupPageState extends State<SignupPage> {
                   DelayedAnimation(
                     delay: 100,
                     child: TextField(
-                      // validator: (value){
-                      // print(value)
-                      //   if(value!.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)){
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       const SnackBar(
-                      //         content: Text('mail pas ok.'),
-                      //       ),
-                      //     );
-                      //   }
-                      // },
                       cursorColor: kDarkPurple,
                       controller: mail,
                       decoration: InputDecoration(
+                        //errorText: (RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+").hasMatch(mail.text)) == false ? 'Format invalide.' : null,
                         labelText: 'Adresse mail',
                         labelStyle: TextStyle(
                           color: Colors.grey[400],
@@ -137,7 +129,7 @@ class SignupPageState extends State<SignupPage> {
                   const SizedBox(height: 30),
                   DelayedAnimation(
                     delay: 100,
-                    child: TextField(
+                    child: TextFormField(
                       cursorColor: kDarkPurple,
                       controller: password,
                       obscureText: _obscureText,
@@ -164,15 +156,11 @@ class SignupPageState extends State<SignupPage> {
                   DelayedAnimation(
                     delay: 100,
                     child: TextField(
-                      // validator: (val) {
-                      //   if (val != password.text) {
-                      //     return 'Les mots de passes ne correspondent pas.';
-                      //   }
-                      // },
                       cursorColor: kDarkPurple,
                       controller: confirmPassword,
                       obscureText: _obscureText,
                       decoration: InputDecoration(
+                        errorText: confirmPassword.text != password.text ? 'Les mots de passe ne correspondent pas.' : null,
                         labelStyle: TextStyle(
                           color: Colors.grey[400],
                         ),
@@ -233,11 +221,11 @@ class SignupPageState extends State<SignupPage> {
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Connexion impossible'),
+                            content: Text('Inscription impossible'),
                           ),
                         );
                       }
-                    } else if (response.statusCode == 200) {
+                    } else if (response.statusCode != 200) {
                       throw Exception('Failed to load data');
                     }
                   }

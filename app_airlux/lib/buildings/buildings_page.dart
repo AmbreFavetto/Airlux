@@ -98,9 +98,6 @@ class _BuildingsPageState extends State<BuildingsPage> {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (context) => const AddBuildingPage(),
             ));
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const AddBuildingPage(),
-            ));
           },
           title: 'Ajouter un batiment'),
     );
