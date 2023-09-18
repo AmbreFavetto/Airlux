@@ -11,7 +11,7 @@ class BuildingData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
-  List<Building> buildings = [Building(name: ' ', id: '1'), Building(name: ' ', id: '2')];
+  List<Building> buildings = [];
   Building building = Building(name: 'building', id: '1');
   List<UserBuilding> userBuildings = [UserBuilding(building_id: '', user_id: '', id: ''), UserBuilding(building_id: '', user_id: '', id: '')];
   List<String> building_IDs = [];
@@ -35,6 +35,9 @@ class BuildingData extends ChangeNotifier {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['buildings'];
       buildings = results.map((e) => Building.fromJson(e)).toList();
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      buildings = <Building>[];
       notifyListeners();
     } else {
       throw Exception('Failed to load data');
@@ -63,6 +66,9 @@ class BuildingData extends ChangeNotifier {
         buildings = resultsBuildings.map((e) => Building.fromJson(e)).toList();
 
       notifyListeners();
+      } else if (responseBuildings.statusCode == 404) {
+        buildings = <Building>[];
+        notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
@@ -78,6 +84,9 @@ class BuildingData extends ChangeNotifier {
       str = json.decode(response.body);
       final dynamic result = str['data']['buildings'];
       building = result.map((e) => Building.fromJson(e));
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      buildings = <Building>[];
       notifyListeners();
     } else {
       throw Exception('Failed to load data');

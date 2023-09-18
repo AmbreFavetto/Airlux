@@ -11,7 +11,7 @@ class RoomData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
-  List<Room> rooms = [Room(name: '', id: '1', floor_id: '1'), Room(name: '', id: '2', floor_id: '2')];
+  List<Room> rooms = [];
   Room room = Room(name: 'room', id: '1', floor_id: '1');
 
   Future<bool> checkApiOnline() async {
@@ -34,6 +34,9 @@ class RoomData extends ChangeNotifier {
       final List<dynamic> results = str['data']['rooms'];
       rooms = results.map((e) => Room.fromJson(e)).toList();
       notifyListeners();
+    } else if (response.statusCode == 404) {
+      rooms = <Room>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
@@ -50,6 +53,9 @@ class RoomData extends ChangeNotifier {
       results.removeWhere((item) => item["floor_id"]!=id);
       rooms = results.map((e) => Room.fromJson(e)).toList();
       notifyListeners();
+    } else if (response.statusCode == 404) {
+      rooms = <Room>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
@@ -64,6 +70,9 @@ class RoomData extends ChangeNotifier {
       str = json.decode(response.body);
       final dynamic result = str['data']['rooms'];
       room = result.map((e) => Room.fromJson(e));
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      rooms = <Room>[];
       notifyListeners();
     } else {
       throw Exception('Failed to load data');

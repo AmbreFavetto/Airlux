@@ -32,6 +32,9 @@ class DeviceData extends ChangeNotifier {
       final List<dynamic> results = str['data']['devices'];
       devices = results.map((e) => Device.fromJson(e)).toList();
       notifyListeners();
+    } else if (response.statusCode == 404) {
+      devices = <Device>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
@@ -47,6 +50,9 @@ class DeviceData extends ChangeNotifier {
       final List<dynamic> results = str['data']['devices'];
       results.removeWhere((item) => (item["room_id"]).toString()!=id);
       devices = results.map((e) => Device.fromJson(e)).toList();
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      devices = <Device>[];
       notifyListeners();
     } else {
       throw Exception('Failed to load data');
@@ -72,6 +78,9 @@ class DeviceData extends ChangeNotifier {
         notifyListeners();
       }
       else throw Exception('Unvalid State');
+    } else if (response.statusCode == 404) {
+      devices = <Device>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
