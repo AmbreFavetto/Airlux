@@ -70,6 +70,33 @@ class SettingPage extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: 300),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushNamedAndRemoveUntil('/welcome', (route) => false);
+                token = '';
+                userId = '';
+              },
+              style: ElevatedButton.styleFrom(
+                shape: const StadiumBorder(),
+                padding: const EdgeInsets.all(13),
+                backgroundColor: Colors.white,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(width: 10),
+                  Text(
+                    'DECONNEXION',
+                    style: TextStyle(
+                      color: kDarkPurple,
+                      fontWeight: FontWeight.w800,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ]),
         ),
       ),
