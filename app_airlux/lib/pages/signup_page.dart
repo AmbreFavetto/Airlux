@@ -114,6 +114,16 @@ class SignupPageState extends State<SignupPage> {
                   DelayedAnimation(
                     delay: 100,
                     child: TextField(
+                      // validator: (value){
+                      // print(value)
+                      //   if(value!.isEmpty || !RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value!)){
+                      //     ScaffoldMessenger.of(context).showSnackBar(
+                      //       const SnackBar(
+                      //         content: Text('mail pas ok.'),
+                      //       ),
+                      //     );
+                      //   }
+                      // },
                       cursorColor: kDarkPurple,
                       controller: mail,
                       decoration: InputDecoration(
@@ -198,30 +208,38 @@ class SignupPageState extends State<SignupPage> {
                 ),
                 child: const Text('Inscription'),
                 onPressed: () async {
-                  final response = await signupData.signupUser(mail.text, password.text,name.text, forename.text);
-                  if (response.statusCode == 201) {
-                    str = json.decode(response.body);
-                    token = str['data']['token'];
-                    if (token != null) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (BuildContext context) =>
-                              ChangeNotifierProvider(
-                                create: (context) => UserData(),
-                                builder: (context, child) => LoginPage(),
-                              ),
-                        ),
-                            (Route<dynamic> route) => false,
-                      );
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Connexion impossible'),
-                        ),
-                      );
+                  if(mail.text.isEmpty || password.text.isEmpty || name.text.isEmpty || forename.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Formulaire invalide.'),
+                      ),
+                    );
+                  } else {
+                    final response = await signupData.signupUser(mail.text, password.text,name.text, forename.text);
+                    if (response.statusCode == 201) {
+                      str = json.decode(response.body);
+                      token = str['data']['token'];
+                      if (token != null) {
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (BuildContext context) =>
+                                ChangeNotifierProvider(
+                                  create: (context) => UserData(),
+                                  builder: (context, child) => LoginPage(),
+                                ),
+                          ),
+                              (Route<dynamic> route) => false,
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Connexion impossible'),
+                          ),
+                        );
+                      }
+                    } else if (response.statusCode == 200) {
+                      throw Exception('Failed to load data');
                     }
-                  } else if (response.statusCode == 200) {
-                    throw Exception('Failed to load data');
                   }
                 },
               ),

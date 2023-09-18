@@ -4,6 +4,8 @@ import 'package:thermostat/thermostat.dart';
 
 import '../constants.dart';
 
+typedef void StringCallback(String newValue);
+
 class DeviceContainer extends StatefulWidget {
   const DeviceContainer(
       {Key? key,
@@ -13,7 +15,8 @@ class DeviceContainer extends StatefulWidget {
       required this.title,
       required this.id,
       required this.category,
-      required this.result})
+      required this.result,
+      required this.newValue})
       : super(key: key);
 
   final void Function() onDelete;
@@ -23,6 +26,7 @@ class DeviceContainer extends StatefulWidget {
   final String id;
   final String category;
   final String result;
+  final StringCallback newValue;
 
   @override
   State<DeviceContainer> createState() => _DeviceContainerState();
@@ -38,34 +42,54 @@ class _DeviceContainerState extends State<DeviceContainer> {
   @override
   void initState() {
     super.initState();
+
     resultSplitted = widget.result.split(',');
 
-    if (int.parse(resultSplitted[0]) == 1){
+    if (int.parse(resultSplitted[0]) == 1) {
       _isActive = true;
     } else {
       _isActive = false;
     }
 
-    if(widget.category == kLamp) {
+    if (widget.category == kLamp) {
       _lampIntensity = double.parse(resultSplitted[1]);
     } else {
       _lampIntensity = 20;
     }
 
-    if(widget.category == kLampRgb) {
+    if (widget.category == kLampRgb) {
       _lampRgbIntensity = double.parse(resultSplitted[1]);
     } else {
       _lampRgbIntensity = 20;
     }
 
-    if(widget.category == kLampRgb) {
-      _currentColor = Color.fromRGBO(int.parse(resultSplitted[2]), int.parse(resultSplitted[3]), int.parse(resultSplitted[4]), 1);
+    if (widget.category == kLampRgb) {
+      _currentColor = Color.fromRGBO(int.parse(resultSplitted[2]),
+          int.parse(resultSplitted[3]), int.parse(resultSplitted[4]), 1);
     } else {
       _currentColor = Colors.white;
     }
-
   }
-  List<Color> colors = [Colors.white, Colors.red, Colors.pink, Colors.purple, Colors.blue, Colors.green, Colors.amber, Colors.orange, Colors.grey];
+
+  List<Color> colors = [
+    Colors.white,
+    //Colors.red,
+    Color.fromRGBO(244, 67, 54, 1),
+    //Colors.pink,
+    Color.fromRGBO(233, 30, 99, 1),
+    // Colors.purple,
+    Color.fromRGBO(156, 39, 176, 1),
+    //Colors.blue,
+    Color.fromRGBO(33, 150, 243, 1),
+    //Colors.green,
+    Color.fromRGBO(76, 175, 80, 1),
+    //Colors.amber,
+    Color.fromRGBO(255, 193, 7, 1),
+    // Colors.orange,
+    Color.fromRGBO(255, 152, 0, 1),
+    //Colors.grey
+    Color.fromRGBO(158, 158, 158, 1),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -101,11 +125,37 @@ class _DeviceContainerState extends State<DeviceContainer> {
                               onChanged: (bool value) {
                                 setState(() {
                                   _isActive = value;
+                                  if (!_isActive) {
+                                    _lampIntensity = 0.0;
+                                    widget.newValue('0,0');
+                                  } else {
+                                    _lampIntensity = 20.0;
+                                    widget.newValue('1,20');
+                                  }
                                 });
                               },
                             ),
                             const Text('Intensité'),
-                            LampIntensitySlider(currentValue: _lampIntensity),
+                            LampIntensitySlider(
+                              currentValue: _lampIntensity,
+                              onIntensityChanged: (double newIntensity) {
+                                setState(() {
+                                  _lampIntensity = newIntensity;
+                                  widget
+                                      .newValue('1,${_lampIntensity.toInt()}');
+
+                                  // si intensité à 0 alors on éteint
+                                  if (newIntensity == 0) {
+                                    _isActive = false;
+                                    widget.newValue('0,0');
+                                  } else if (newIntensity > 0 && !_isActive) {
+                                    // sinon on allume
+                                    _isActive = true;
+                                    widget.newValue('1,$newIntensity');
+                                  }
+                                });
+                              },
+                            ),
                             IconButton(
                               icon: const Icon(Icons.expand_more,
                                   color: Colors.black26),
@@ -145,18 +195,64 @@ class _DeviceContainerState extends State<DeviceContainer> {
                               onChanged: (bool value) {
                                 setState(() {
                                   _isActive = value;
+                                  if (!_isActive) {
+                                    // if on/off éteint alors on éteint tout
+                                    _lampRgbIntensity = 0.0;
+                                    _currentColor = Colors.white;
+                                    widget.newValue('0,0,0,0,0');
+                                  } else {
+                                    // sinon on allume tout
+                                    _lampRgbIntensity = 20.0;
+                                    _currentColor =
+                                        Color.fromRGBO(244, 67, 54, 1);
+                                    widget.newValue('1,20,244,67,54');
+                                  }
                                 });
                               },
                             ),
                             const Text('Intensité'),
                             LampIntensitySlider(
-                                currentValue: _lampRgbIntensity,),
+                              currentValue: _lampRgbIntensity,
+                              onIntensityChanged: (double newIntensity) {
+                                setState(() {
+                                  _lampRgbIntensity = newIntensity;
+                                  int intColor = int.parse('0x' +
+                                      _currentColor.value.toRadixString(16));
+                                  int red = (intColor >> 16) & 0xff;
+                                  int green = (intColor >> 8) & 0xff;
+                                  int blue = (intColor >> 0) & 0xff;
+                                  widget.newValue(
+                                      '1,${_lampRgbIntensity.toInt()},${red},${green},${blue}');
+
+                                  // if on slide intensity jusqu'à 0 alors ça éteint tout
+                                  if (newIntensity == 0) {
+                                    _isActive = false;
+                                    _currentColor = Colors.white;
+                                    widget.newValue('0,0,0,0,0');
+                                  } else if (newIntensity > 0 && !_isActive) {
+                                    // if le on/off est à éteint et qu'on bouge l'intensité alors ça allume tout
+                                    _isActive = true;
+                                    _currentColor =
+                                        Color.fromRGBO(244, 67, 54, 1);
+                                    widget.newValue(
+                                        '1,${newIntensity},244,67,54');
+                                  }
+                                });
+                              },
+                            ),
                             BlockPicker(
                               availableColors: colors,
                               pickerColor: _currentColor,
                               onColorChanged: (Color color) {
                                 setState(() {
                                   _currentColor = color;
+                                  int intColor = int.parse('0x' +
+                                      _currentColor.value.toRadixString(16));
+                                  int red = (intColor >> 16) & 0xff;
+                                  int green = (intColor >> 8) & 0xff;
+                                  int blue = (intColor >> 0) & 0xff;
+                                  widget.newValue(
+                                      '1,${_lampRgbIntensity.toInt()},${red},${green},${blue}');
                                 });
                               },
                             ),
@@ -199,6 +295,11 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                 setState(() {
                                   _isActive = value;
                                 });
+                                if (!_isActive) {
+                                  widget.newValue('0');
+                                } else {
+                                  widget.newValue('1');
+                                }
                               },
                             ),
                             IconButton(
@@ -241,6 +342,11 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                 setState(() {
                                   _isActive = value;
                                 });
+                                if (!_isActive) {
+                                  widget.newValue('0');
+                                } else {
+                                  widget.newValue('1');
+                                }
                               },
                             ),
                             const Text('Température'),
@@ -292,6 +398,11 @@ class _DeviceContainerState extends State<DeviceContainer> {
                                 setState(() {
                                   _isActive = value;
                                 });
+                                if (!_isActive) {
+                                  widget.newValue('0');
+                                } else {
+                                  widget.newValue('1');
+                                }
                               },
                             ),
                             const Text('Température'),
@@ -590,14 +701,18 @@ class TitleModalBottom extends StatelessWidget {
   }
 }
 
+typedef void IntensityCallback(double intensity);
+
 class LampIntensitySlider extends StatelessWidget {
   LampIntensitySlider({
     Key? key,
     required this.currentValue,
+    required this.onIntensityChanged,
   }) : super(key: key);
 
   double currentValue;
   final List<double> sliderValues = [0.5, 20.0, 40.0, 60.0, 80.0, 100.0];
+  final IntensityCallback onIntensityChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -622,6 +737,7 @@ class LampIntensitySlider extends StatelessWidget {
               state(() {
                 currentValue = value;
               });
+              onIntensityChanged(currentValue);
             },
           ),
         ),

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../shared/addButton.dart';
-import '../shared/objectContainer.dart';
 import '../shared/textInformationStyle.dart';
 import '../shared/titlePageStyle.dart';
 import 'package:http/http.dart' as http;
@@ -15,13 +14,15 @@ class DevicesPage extends StatefulWidget {
   const DevicesPage({super.key, required this.roomId, required this.roomName});
   final String roomId;
   final String roomName;
+
   @override
   _DevicesPageState createState() => _DevicesPageState();
 }
 
 class _DevicesPageState extends State<DevicesPage> {
-
   TextEditingController _editDeviceNameController = TextEditingController();
+  late String newValue;
+
   @override
   void initState() {
     super.initState();
@@ -52,40 +53,50 @@ class _DevicesPageState extends State<DevicesPage> {
                 itemBuilder: (context, index) {
                   final device = deviceData.devices[index];
                   return DeviceContainer(
+                    newValue: (String newValue) async {
+                      await deviceData.updateDeviceValue(newValue, device);
+                    },
                     onDelete: () async => {
-                      if ((await deviceData.deleteDevice(
-                          device)).statusCode == 200) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => DevicesPage(
-                              roomId: widget.roomId,roomName: widget.roomName
-                            )))
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('La supression du capteur n\'a pu aboutir.'),
-                          ),
-                        )
-                      }},
+                      if ((await deviceData.deleteDevice(device)).statusCode ==
+                          200)
+                        {
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => DevicesPage(
+                                  roomId: widget.roomId,
+                                  roomName: widget.roomName)))
+                        }
+                      else
+                        {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'La supression du capteur n\'a pu aboutir.'),
+                            ),
+                          )
+                        }
+                    },
                     onTap: (value) async {
-                      switch (device.category){
+                      switch (device.category) {
                         case kLamp:
-                          if (value){
+                          if (value) {
                             await deviceData.updateDeviceValue("1,20", device);
                           } else {
                             await deviceData.updateDeviceValue("0,0", device);
                           }
                           break;
                         case kLampRgb:
-                          if (value){
-                            await deviceData.updateDeviceValue("1,20,255,255,255", device);
+                          if (value) {
+                            await deviceData.updateDeviceValue(
+                                "1,20,255,255,255", device);
                           } else {
-                            await deviceData.updateDeviceValue("0,0,0,0,0", device);
+                            await deviceData.updateDeviceValue(
+                                "0,0,0,0,0", device);
                           }
                           break;
                         case kRadiator:
                         case kAirConditioning:
                         case kBlind:
-                          if (value){
+                          if (value) {
                             await deviceData.updateDeviceValue("1", device);
                           } else {
                             await deviceData.updateDeviceValue("0", device);
@@ -110,19 +121,24 @@ class _DevicesPageState extends State<DevicesPage> {
       floatingActionButton: AddButton(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddDevicePage(room_id: widget.roomId, room_name: widget.roomName,),
+              builder: (context) => AddDevicePage(
+                room_id: widget.roomId,
+                room_name: widget.roomName,
+              ),
             ));
           },
           title: 'Ajouter un batiment'),
     );
   }
-  _editDevice(BuildContext context, Device device,
-      DeviceData deviceData) async {
+
+  _editDevice(
+      BuildContext context, Device device, DeviceData deviceData) async {
     setState(() {
       _editDeviceNameController.text = device.name ?? 'No name';
     });
     _editFormDialog(context, device, deviceData);
   }
+
   _editFormDialog(BuildContext context, Device device, DeviceData deviceData) {
     return showDialog(
       context: context,
@@ -133,13 +149,14 @@ class _DevicesPageState extends State<DevicesPage> {
               TextButton(
                 onPressed: () async {
                   print(_editDeviceNameController.text);
-                  http.Response response = await deviceData
-                      .updateDevice(_editDeviceNameController.text, device);
+                  http.Response response = await deviceData.updateDevice(
+                      _editDeviceNameController.text, device);
                   if (response.statusCode == 200) {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            DevicesPage(roomId: widget.roomId,roomName:widget.roomName,)));
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => DevicesPage(
+                              roomId: widget.roomId,
+                              roomName: widget.roomName,
+                            )));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -157,12 +174,12 @@ class _DevicesPageState extends State<DevicesPage> {
             title: const Text('Modifier un capteur'),
             content: SingleChildScrollView(
                 child: Column(children: <Widget>[
-                  TextField(
-                    controller: _editDeviceNameController,
-                    decoration: const InputDecoration(
-                        hintText: 'Nom', labelText: 'Nom du capteur'),
-                  )
-                ])));
+              TextField(
+                controller: _editDeviceNameController,
+                decoration: const InputDecoration(
+                    hintText: 'Nom', labelText: 'Nom du capteur'),
+              )
+            ])));
       },
     );
   }

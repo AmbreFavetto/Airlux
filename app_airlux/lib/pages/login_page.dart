@@ -137,32 +137,40 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: const Text('CONNEXION'),
                     onPressed: () async {
-                      final response =
-                          await userData.loginUser(email.text, password.text);
-                      if (response.statusCode == 200) {
-                        str = json.decode(response.body);
-                        token = str['data']['token'];
-                        userId = str['data']['user_id'];
-                        if (token != null) {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  ChangeNotifierProvider(
-                                create: (context) => DeviceData(),
-                                builder: (context, child) => BottomNavigation(),
+                      if (email.text.isEmpty ||  password.text.isEmpty){
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Formulaire invalide.'),
+                          ),
+                        );
+                      } else {
+                        final response =
+                        await userData.loginUser(email.text, password.text);
+                        if (response.statusCode == 200) {
+                          str = json.decode(response.body);
+                          token = str['data']['token'];
+                          userId = str['data']['user_id'];
+                          if (token != null) {
+                            Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ChangeNotifierProvider(
+                                      create: (context) => DeviceData(),
+                                      builder: (context, child) => BottomNavigation(),
+                                    ),
                               ),
-                            ),
-                            (Route<dynamic> route) => false,
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Connexion impossible'),
-                            ),
-                          );
+                                  (Route<dynamic> route) => false,
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Connexion impossible'),
+                              ),
+                            );
+                          }
+                        } else if (response.statusCode != 200) {
+                          throw Exception('Failed to load data');
                         }
-                      } else if (response.statusCode == 200) {
-                        throw Exception('Failed to load data');
                       }
                     },
                   ),
