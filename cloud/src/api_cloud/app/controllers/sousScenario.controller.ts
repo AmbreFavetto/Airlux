@@ -26,7 +26,7 @@ const tabDeviceCategoryAction: Record<string, Array<string>> = {
   air_conditioning: ["on", "off", "temperature"]
 };
 
-function verifyAction(category: string, action: string) {
+export function verifyAction(category: string, action: string) {
   return tabDeviceCategoryAction[category].includes(action) ? true : false
 }
 

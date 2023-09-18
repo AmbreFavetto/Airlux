@@ -218,15 +218,25 @@ class SignupPageState extends State<SignupPage> {
                           ),
                               (Route<dynamic> route) => false,
                         );
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Votre compte a bien été créé.'),
+                          ),
+                        );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Inscription impossible'),
+                            content: Text('Inscription impossible.'),
                           ),
                         );
                       }
                     } else if (response.statusCode != 200) {
-                      throw Exception('Failed to load data');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Inscription impossible.'),
+                        ),
+                      );
+                      throw Exception('Failed to load data.');
                     }
                   }
                 },
