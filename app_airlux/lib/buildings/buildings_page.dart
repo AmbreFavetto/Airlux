@@ -81,6 +81,8 @@ class _BuildingsPageState extends State<BuildingsPage> {
                           );
                         },
                       ));
+                      currentBuildingId = building.id.toString();
+                      currentBuildingName = building.name.toString();
                     },
                     title: building.name.toString(),
                     id: building.id.toString(),

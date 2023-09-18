@@ -11,6 +11,9 @@ class BuildingData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
+  //var prefixUrl = 'http://192.168.1.96';
+  var prefixUrl = 'http://10.0.2.2';
+
   List<Building> buildings = [];
   Building building = Building(name: 'building', id: '1');
   List<UserBuilding> userBuildings = [UserBuilding(building_id: '', user_id: '', id: ''), UserBuilding(building_id: '', user_id: '', id: '')];

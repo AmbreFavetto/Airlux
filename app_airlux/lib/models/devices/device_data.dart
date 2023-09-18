@@ -10,6 +10,10 @@ class DeviceData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
+
+  //var prefixUrl = 'http://192.168.1.96';
+  var prefixUrl = 'http://10.0.2.2';
+
   List<Device> devices = [];
 
   Future<bool> checkApiOnline() async {
@@ -41,6 +45,7 @@ class DeviceData extends ChangeNotifier {
   }
 
   void getDevicesByRoomId(String id) async{
+    //currentRoomId = id;
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 

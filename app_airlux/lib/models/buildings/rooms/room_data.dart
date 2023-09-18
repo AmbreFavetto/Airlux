@@ -11,6 +11,9 @@ class RoomData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
+  //var prefixUrl = 'http://192.168.1.96';
+  var prefixUrl = 'http://10.0.2.2';
+
   List<Room> rooms = [];
   Room room = Room(name: 'room', id: '1', floor_id: '1');
 
@@ -43,6 +46,7 @@ class RoomData extends ChangeNotifier {
   }
 
   void getRoomsByFloorId(String id) async{
+    //currentFloorId = id;
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 

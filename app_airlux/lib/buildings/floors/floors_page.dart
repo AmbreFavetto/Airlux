@@ -118,6 +118,8 @@ class _FloorsPageState extends State<FloorsPage> {
                           );
                         },
                       ));
+                      currentFloorId = floor.id.toString();
+                      currentFloorName = floor.name.toString();
                     },
                     title: floor.name.toString(),
                     id: floor.id.toString(),

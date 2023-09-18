@@ -11,6 +11,9 @@ class FloorData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
+  //var prefixUrl = 'http://192.168.1.96';
+  var prefixUrl = 'http://10.0.2.2';
+
   List<Floor> floors = [];
   Floor floor = Floor(name: '0', id: '1', building_id: '1');
   Building building = Building(name: '', id: '1');
@@ -45,10 +48,11 @@ class FloorData extends ChangeNotifier {
   }
 
   void getFloorsByBuildingId(String id) async{
+    //currentBuildingId = id;
     String sync = "0";
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
-print ('${prefixUrl}:${port.toString()}/floor');
+    print ('${prefixUrl}:${port.toString()}/floor');
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/floor'), headers: header(sync));
     if (response.statusCode == 200) {
       str = json.decode(response.body);

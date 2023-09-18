@@ -1,3 +1,4 @@
+import 'package:app_airlux/buildings/rooms/rooms_page.dart';
 import 'package:app_airlux/devices/addDevice_page.dart';
 import 'package:app_airlux/models/devices/device.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
@@ -28,7 +29,8 @@ class _DevicesPageState extends State<DevicesPage> {
     super.initState();
     //  socket = initSocket();
     //  connectSocket(socket);
-    Provider.of<DeviceData>(context, listen: false).getDevicesByRoomId(widget.roomId);
+    Provider.of<DeviceData>(context, listen: false)
+        .getDevicesByRoomId(widget.roomId);
   }
 
   @override
@@ -37,6 +39,26 @@ class _DevicesPageState extends State<DevicesPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          IconButton(
+            onPressed: () => {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ChangeNotifierProvider(
+                      create: (BuildContext context) => DeviceData(),
+                      child: MaterialApp(
+                        home: RoomsPage(
+                          floorId: currentFloorId,
+                          floorNumber: currentFloorName,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
           const SizedBox(width: 10.0, height: 20.0),
           const TitlePageStyle(text: "Devices"),
           const SizedBox(height: 15),

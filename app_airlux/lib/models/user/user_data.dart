@@ -10,6 +10,9 @@ class UserData extends ChangeNotifier {
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
+  //var prefixUrl = 'http://192.168.1.96';
+  var prefixUrl = 'http://10.0.2.2';
+
   List<User> user = [];
 
   Future<bool> checkApiOnline() async {

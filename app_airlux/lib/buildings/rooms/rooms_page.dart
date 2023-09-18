@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/rooms/room.dart';
 import 'package:app_airlux/models/buildings/rooms/room_data.dart';
@@ -50,6 +51,26 @@ class _RoomsPageState extends State<RoomsPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          IconButton(
+            onPressed: () => {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) {
+                    return ChangeNotifierProvider(
+                      create: (BuildContext context) => DeviceData(),
+                      child: MaterialApp(
+                        home: FloorsPage(
+                          buildingId: currentBuildingId,
+                          buildingName: currentBuildingName,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
           const SizedBox(width: 10.0, height: 20.0),
           const TitlePageStyle(text: "Salles"),
           const SizedBox(height: 15),
@@ -68,24 +89,29 @@ class _RoomsPageState extends State<RoomsPage> {
                   return ObjectContainer(
                     icon: Icons.chair,
                     onDelete: () async => {
-                      if ((await roomData.deleteRoom(
-                      room)).statusCode == 200) {ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Supression de la pièce'),
-                        ),
-                      ),
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => RoomsPage(
-                          floorId: widget.floorId,
-                          floorNumber: widget.floorNumber,
-                        )))
-                  } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                  content: Text('La supression de la pièce n\'a pu aboutir.'),
-                  ),
-                  )
-                  }},
+                      if ((await roomData.deleteRoom(room)).statusCode == 200)
+                        {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Supression de la pièce'),
+                            ),
+                          ),
+                          Navigator.of(context).push(MaterialPageRoute(
+                              builder: (context) => RoomsPage(
+                                    floorId: widget.floorId,
+                                    floorNumber: widget.floorNumber,
+                                  )))
+                        }
+                      else
+                        {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                  'La supression de la pièce n\'a pu aboutir.'),
+                            ),
+                          )
+                        }
+                    },
                     onEdit: () => _editRoom(context, room, roomData),
                     onSelect: () {
                       Navigator.of(context).push(MaterialPageRoute(
@@ -93,11 +119,16 @@ class _RoomsPageState extends State<RoomsPage> {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => DeviceData(),
                             child: MaterialApp(
-                              home: DevicesPage(roomId: room.id.toString(),roomName: room.name.toString(),),
+                              home: DevicesPage(
+                                roomId: room.id.toString(),
+                                roomName: room.name.toString(),
+                              ),
                             ),
                           );
                         },
                       ));
+                      currentRoomId = room.id.toString();
+                      currentRoomName = room.name.toString();
                     },
                     title: room.name.toString(),
                     id: room.id.toString(),
@@ -142,9 +173,9 @@ class _RoomsPageState extends State<RoomsPage> {
                   if (response.statusCode == 200) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => RoomsPage(
-                          floorId: widget.floorId,
-                          floorNumber: widget.floorNumber,
-                        )));
+                              floorId: widget.floorId,
+                              floorNumber: widget.floorNumber,
+                            )));
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -162,12 +193,12 @@ class _RoomsPageState extends State<RoomsPage> {
             title: const Text('Modifier une pièce'),
             content: SingleChildScrollView(
                 child: Column(children: <Widget>[
-                  TextField(
-                    controller: _editRoomNameController,
-                    decoration: const InputDecoration(
-                        hintText: 'Nom', labelText: 'Nom de la pièce'),
-                  )
-                ])));
+              TextField(
+                controller: _editRoomNameController,
+                decoration: const InputDecoration(
+                    hintText: 'Nom', labelText: 'Nom de la pièce'),
+              )
+            ])));
       },
     );
   }
