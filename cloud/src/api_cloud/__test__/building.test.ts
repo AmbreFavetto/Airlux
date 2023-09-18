@@ -3,8 +3,9 @@ import app from '../app/index';
 import supertest from 'supertest';
 import pool from '../app/config/db.config';
 import Query, { processData } from './testTools'
-
+import logger from '../app/util/logger'
 const request = supertest(app);
+const token = "";
 
 describe('Building controller', () => {
     afterEach(async () => {
@@ -15,6 +16,20 @@ describe('Building controller', () => {
         await pool.end();
     });
 
+    beforeAll(async () => {
+        // generate token, createUser
+        const user = await request
+            .post('/building')
+            .expect('Content-Type', /json/)
+            .send({
+                name: 'User',
+                forename: 'Test',
+                email: 'user.test@gmail.com',
+                password: 'azerty'
+            });
+        logger.info(user)
+
+    });
     describe('createBuilding', () => {
         test('should create a new building', async () => {
             const response = await request
