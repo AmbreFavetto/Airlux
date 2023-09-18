@@ -8,12 +8,12 @@ import 'package:http/http.dart' as http;
 
 class FloorData extends ChangeNotifier {
   var str;
-  //var prefixUrl = 'http://192.168.1.29';
+  // var prefixUrl = 'http://192.168.1.15';
   var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
-  List<Floor> floors = [Floor(name: ' ', id: '1', building_id: '1'), Floor(name: ' ', id: '2', building_id: '2')];
+  List<Floor> floors = [];
   Floor floor = Floor(name: '0', id: '1', building_id: '1');
   Building building = Building(name: '', id: '1');
 
@@ -38,6 +38,9 @@ class FloorData extends ChangeNotifier {
       final List<dynamic> results = str['data']['floors'];
       floors = results.map((e) => Floor.fromJson(e)).toList();
       notifyListeners();
+    } else if (response.statusCode == 404) {
+      floors = <Floor>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
@@ -56,6 +59,9 @@ print ('${prefixUrl}:${port.toString()}/floor');
       print (results);
       floors = results.map((e) => Floor.fromJson(e)).toList();
       notifyListeners();
+    } else if (response.statusCode == 404) {
+      floors = <Floor>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
@@ -71,6 +77,9 @@ print ('${prefixUrl}:${port.toString()}/floor');
       str = json.decode(response.body);
       final dynamic result = str['data']['floors'];
       floor = result.map((e) => Floor.fromJson(e));
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      floors = <Floor>[];
       notifyListeners();
     } else {
       throw Exception('Failed to load data');

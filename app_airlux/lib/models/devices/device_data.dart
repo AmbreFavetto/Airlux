@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 
 class DeviceData extends ChangeNotifier {
   var str;
-  //var prefixUrl = 'http://192.168.1.29';
+  // var prefixUrl = 'http://192.168.1.15';
   var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
   var portCloud = 3010;
   var portLocal = 3030;
@@ -34,6 +34,9 @@ class DeviceData extends ChangeNotifier {
       final List<dynamic> results = str['data']['devices'];
       devices = results.map((e) => Device.fromJson(e)).toList();
       notifyListeners();
+    } else if (response.statusCode == 404) {
+      devices = <Device>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }
@@ -49,6 +52,9 @@ class DeviceData extends ChangeNotifier {
       final List<dynamic> results = str['data']['devices'];
       results.removeWhere((item) => (item["room_id"]).toString()!=id);
       devices = results.map((e) => Device.fromJson(e)).toList();
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      devices = <Device>[];
       notifyListeners();
     } else {
       throw Exception('Failed to load data');
@@ -74,6 +80,9 @@ class DeviceData extends ChangeNotifier {
         notifyListeners();
       }
       else throw Exception('Unvalid State');
+    } else if (response.statusCode == 404) {
+      devices = <Device>[];
+      notifyListeners();
     } else {
       throw Exception('Failed to load data');
     }

@@ -5,13 +5,13 @@ import 'scenario.dart';
 import 'package:http/http.dart' as http;
 
 class ScenarioData extends ChangeNotifier {
-  //var prefixUrl = 'http://192.168.1.29';
+  // var prefixUrl = 'http://192.168.1.15';
   var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
   var port = 3010;
   var portCloud = 3010;
   var portLocal = 3030;
   var str;
-  List<Scenario> scenarios = [Scenario(name: 'firstScenario', id: '0'), Scenario(name: 'secondScenario', id: '1'), Scenario(name: 'thirdScenario', id: '2')];
+  List<Scenario> scenarios = [];
 
   Future<bool> checkApiOnline() async {
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
@@ -27,6 +27,9 @@ class ScenarioData extends ChangeNotifier {
       str = json.decode(response.body);
       final List<dynamic> results = str['data']['scenarios'];
       scenarios = results.map((e) => Scenario.fromJson(e)).toList();
+      notifyListeners();
+    } else if (response.statusCode == 404) {
+      scenarios = <Scenario>[];
       notifyListeners();
     } else {
       if (checkApiOnline() == true) {

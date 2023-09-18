@@ -9,9 +9,8 @@ import 'package:http/http.dart' as http;
 class SignupData extends ChangeNotifier {
   var str;
 
-  //var prefixUrl = 'http://192.168.1.29';
-  var prefixUrl =
-      'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
+  // var prefixUrl = 'http://192.168.1.15';
+  var prefixUrl = 'http://10.0.2.2'; // en attendant de réussir à récupérer automatique l'ip de la machine
   var portCloud = 3010;
   var portLocal = 3030;
   var port = 3010;
