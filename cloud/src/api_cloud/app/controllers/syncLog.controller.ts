@@ -16,7 +16,7 @@ const token = jwt.sign({
 }, secretKey, { expiresIn: '3 hours' })
 
 const headers = {
-  'Authorization': `Bearer ${token}`,
+  'Authorization': `${token}`,
 };
 
 export const syncLog = async (req: Request, res: Response) => {
