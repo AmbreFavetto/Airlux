@@ -62,6 +62,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => FloorData(),
                             child: MaterialApp(
+                              debugShowCheckedModeBanner: false,
                               home: FloorsPage(
                                   buildingId: building.id.toString(),
                                   buildingName: building.name.toString()),
@@ -96,7 +97,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
               ),
           ));
         },
-        title: 'Ajouter un batiment');
+        title: 'Ajouter un bâtiment');
     } else {
       return const DownButton();
     }

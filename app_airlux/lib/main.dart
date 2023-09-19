@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Airlux App',
+      debugShowCheckedModeBanner: false,
       initialRoute: '/welcome',
       routes: <String, WidgetBuilder>{
         '/home': (BuildContext context) => HomePage(),

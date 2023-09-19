@@ -49,6 +49,7 @@ class _RoomsPageState extends State<RoomsPage> {
                     return ChangeNotifierProvider(
                       create: (BuildContext context) => DeviceData(),
                       child: MaterialApp(
+                        debugShowCheckedModeBanner: false,
                         home: FloorsPage(
                           buildingId: currentBuildingId,
                           buildingName: currentBuildingName,
@@ -64,7 +65,7 @@ class _RoomsPageState extends State<RoomsPage> {
           const SizedBox(width: 10.0, height: 20.0),
           const TitlePageStyle(text: "Salles"),
           const SizedBox(height: 15),
-          TextInformationStyle(text: 'Etage : ${widget.floorNumber}'),
+          TextInformationStyle(text: 'Étage : ${widget.floorNumber}'),
           Expanded(
             child: Consumer<RoomData>(
               builder: (context, roomData, child) => GridView.builder(
@@ -108,7 +109,13 @@ class _RoomsPageState extends State<RoomsPage> {
                         builder: (context) {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => DeviceData(),
-                            child: DevicesPage(roomId: room.id.toString(),roomName: room.name.toString(),),
+                            child: MaterialApp(
+                              debugShowCheckedModeBanner: false,
+                              home: DevicesPage(
+                                roomId: room.id.toString(),
+                                roomName: room.name.toString(),
+                              ),
+                            ),
                           );
                         },
                       ));

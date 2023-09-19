@@ -132,6 +132,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                     ? ChangeNotifierProvider(
                         create: (BuildContext context) => BuildingData(),
                         child: MaterialApp(
+                          debugShowCheckedModeBanner: false,
                           home: BuildingsPage(),
                         ),
                       )
@@ -147,6 +148,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                         : ChangeNotifierProvider(
                             create: (BuildContext context) => DeviceData(),
                             child: const MaterialApp(
+                              debugShowCheckedModeBanner: false,
                               home: HomePage(),
                             ),
                           )
