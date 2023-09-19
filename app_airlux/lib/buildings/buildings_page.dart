@@ -2,6 +2,7 @@ import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
+import 'package:app_airlux/shared/downButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -19,23 +20,10 @@ class BuildingsPage extends StatefulWidget {
 }
 
 class _BuildingsPageState extends State<BuildingsPage> {
-  //late IO.Socket socket;
   TextEditingController _editBuildingNameController = TextEditingController();
   void initState() {
-    //  super.initState();
-    //  socket = initSocket();
-    //  connectSocket(socket);
-    //Provider.of<BuildingData>(context, listen: false).getAllBuildings();
     Provider.of<BuildingData>(context, listen: false).getBuildingsByUser();
-
   }
-
-  //@override
-  //void dispose() {
-  //  socket.disconnect();
-  //  socket.dispose();
-  //  super.dispose();
-  //}
 
   @override
   Widget build(BuildContext context) {
@@ -93,14 +81,25 @@ class _BuildingsPageState extends State<BuildingsPage> {
           )
         ],
       ),
-      floatingActionButton: AddButton(
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => const AddBuildingPage(),
-            ));
-          },
-          title: 'Ajouter un batiment'),
+      floatingActionButton: addButton(),
     );
+  }
+
+  Widget addButton(){
+    if (apiIsOnline == true) {
+      return AddButton(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ChangeNotifierProvider(
+              create: (BuildContext context) => BuildingData(),
+              child: const AddBuildingPage(),
+              ),
+          ));
+        },
+        title: 'Ajouter un batiment');
+    } else {
+      return const DownButton();
+    }
   }
 
   _editBuilding(BuildContext context, Building building,

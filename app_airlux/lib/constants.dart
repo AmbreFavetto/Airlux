@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 late var token;
-//var prefixUrl = 'http://192.168.1.96';
-//var prefixUrl = 'http://10.0.2.2';
+late bool apiIsOnline;
+//var prefixUrl = 'http://192.168.1.29';
+var prefixUrl = 'http://10.0.2.2';
 late String userId;
 
 late String currentBuildingId;
@@ -45,7 +47,7 @@ Map<String, String> header (String sync){
   return requestHeader;
 }
 
-
+const kRed = Color(0xFFFF5252);
 const kLightRed = Color(0xFFFD919E);
 const kDarkRed = Color(0xFFE8647C);
 const kDarkPurple = Color(0xFF4F4674);

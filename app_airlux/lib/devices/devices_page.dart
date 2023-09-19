@@ -3,6 +3,7 @@ import 'package:app_airlux/devices/addDevice_page.dart';
 import 'package:app_airlux/models/devices/device.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/shared/deviceContainer.dart';
+import 'package:app_airlux/shared/downButton.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../constants.dart';
@@ -27,8 +28,6 @@ class _DevicesPageState extends State<DevicesPage> {
   @override
   void initState() {
     super.initState();
-    //  socket = initSocket();
-    //  connectSocket(socket);
     Provider.of<DeviceData>(context, listen: false)
         .getDevicesByRoomId(widget.roomId);
   }
@@ -140,17 +139,22 @@ class _DevicesPageState extends State<DevicesPage> {
           ),
         ],
       ),
-      floatingActionButton: AddButton(
+      floatingActionButton: addButton(widget.roomId, widget.roomName),
+    );
+  }
+
+  Widget addButton(String room_id, String room_name){
+    if (apiIsOnline == true) {
+      return AddButton(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddDevicePage(
-                room_id: widget.roomId,
-                room_name: widget.roomName,
-              ),
+              builder: (context) => AddDevicePage(room_id: room_id, room_name: room_name),
             ));
           },
-          title: 'Ajouter un batiment'),
-    );
+          title: 'Ajouter un capteur ou un actuateur');
+    } else {
+      return DownButton();
+    }
   }
 
   _editDevice(

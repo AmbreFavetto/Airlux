@@ -5,6 +5,7 @@ import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/rooms/room.dart';
 import 'package:app_airlux/models/buildings/rooms/room_data.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
+import 'package:app_airlux/shared/downButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:app_airlux/shared/titlePageStyle.dart';
 import 'package:flutter/material.dart';
@@ -27,23 +28,12 @@ class RoomsPage extends StatefulWidget {
 }
 
 class _RoomsPageState extends State<RoomsPage> {
-  //late IO.Socket socket;
   http.Response response = new http.Response("body", 200);
   TextEditingController _editRoomNameController = TextEditingController();
   void initState() {
-    //super.initState();
-    //socket = initSocket();
-    //connectSocket(socket);
     Provider.of<RoomData>(context, listen: false)
         .getRoomsByFloorId(widget.floorId);
   }
-
-  //@override
-  //void dispose() {
-  //  socket.disconnect();
-  //  socket.dispose();
-  //  super.dispose();
-  //}
 
   @override
   Widget build(BuildContext context) {
@@ -118,12 +108,7 @@ class _RoomsPageState extends State<RoomsPage> {
                         builder: (context) {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => DeviceData(),
-                            child: MaterialApp(
-                              home: DevicesPage(
-                                roomId: room.id.toString(),
-                                roomName: room.name.toString(),
-                              ),
-                            ),
+                            child: DevicesPage(roomId: room.id.toString(),roomName: room.name.toString(),),
                           );
                         },
                       ));
@@ -139,17 +124,22 @@ class _RoomsPageState extends State<RoomsPage> {
           )
         ],
       ),
-      floatingActionButton: AddButton(
+      floatingActionButton: addButton(widget.floorId, widget.floorNumber),
+    );
+  }
+
+  Widget addButton(String floor_id, String floor_number){
+    if (apiIsOnline == true) {
+      return AddButton(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddRoomPage(
-                floor_id: widget.floorId,
-                floor_name: widget.floorNumber,
-              ),
+              builder: (context) => AddRoomPage(floor_id: floor_id, floor_name: floor_number),
             ));
           },
-          title: 'Ajouter une salle'),
-    );
+          title: 'Ajouter une salle');
+    } else {
+      return DownButton();
+    }
   }
 
   _editRoom(BuildContext context, Room room, RoomData roomData) async {

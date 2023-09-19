@@ -17,17 +17,30 @@ class RoomData extends ChangeNotifier {
   List<Room> rooms = [];
   Room room = Room(name: 'room', id: '1', floor_id: '1');
 
+  void checkApiLocalAvailable() async {
+    try {
+      final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
+      if (await response.statusCode == 200)
+        apiIsOnline = true;
+      else apiIsOnline = false;
+    }
+    catch(e){
+      apiIsOnline = false;
+    }
+  }
+
   Future<bool> checkApiOnline() async {
+    checkApiLocalAvailable();
     var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
     if (await response.statusCode == 200) {
-      final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
       return true;
     }
     else return false;
   }
 
-  void getAllRooms() async {
+ /* void getAllRooms() async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
@@ -43,9 +56,10 @@ class RoomData extends ChangeNotifier {
     } else {
       throw Exception('Failed to load data');
     }
-  }
+  }*/
 
   void getRoomsByFloorId(String id) async{
+    checkApiLocalAvailable();
     //currentFloorId = id;
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
@@ -65,7 +79,7 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  void getRoomById(int id) async {
+/*  void getRoomById(int id) async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
@@ -81,11 +95,11 @@ class RoomData extends ChangeNotifier {
     } else {
       throw Exception('Failed to load data');
     }
-  }
+  }*/
 
-  //TODO -> OK
   // Check if the current added room is based on local building
   Future<bool> checkIfLocalFloor(String floorId) async {
+    checkApiLocalAvailable();
     final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floorId}'), headers: header("0"));
     if (response.statusCode == 200) {
       return true;
@@ -94,7 +108,6 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  //TODO -> OK
   // Check if the current room action is based on local floor
   Future<bool> checkIfLocalRoom(String roomId) async {
     final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${roomId}'), headers: header("0"));
@@ -105,8 +118,7 @@ class RoomData extends ChangeNotifier {
     }
   }
 
-  //TODO -> OK
-  Future<bool> synchronizeLocalRoomAdd(String name, String floorId, String roomIdFromCloud) async {
+/*  Future<bool> synchronizeLocalRoomAdd(String name, String floorId, String roomIdFromCloud) async {
     if (await checkIfLocalFloor(floorId) == true){
       final response = await http.post(
         Uri.parse('${prefixUrl}:${portLocal.toString()}/room'), headers: header("0"),
@@ -119,36 +131,23 @@ class RoomData extends ChangeNotifier {
       if (await response.statusCode != 201) throw Exception('Failed to load data');
     }
     return true;
-  }
+  }*/
   
   Future<http.Response> addRoom(String name, String floorId) async {
-    String sync ="0";
-    if (await checkApiOnline() == false) {
-      port = portLocal;
-      sync = "1";
-    }
-    else port = portCloud;
+    checkApiLocalAvailable();
+    String sync ="1";
     final response = await http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/room'), headers: header(sync),
+      Uri.parse('${prefixUrl}:${portLocal.toString()}/room'), headers: header(sync),
       body: jsonEncode({
         'name': name,
         'floor_id': floorId
       }),
     );
-    if (await response.statusCode == 201) {
-      str = json.decode(response.body);
-      final String roomCreatedId = str['data']['id'];
-      //Synchro with local (if added in cloud)
-      if (port != portLocal) {
-        await synchronizeLocalRoomAdd(name, floorId, roomCreatedId);
-      }
-      //TODO ajouter else si on est en local alors appeller synchro log api
-    }
     return response;
   }
 
-  //TODO synchro OK 
   Future<http.Response> updateRoom(String roomName, Room room) async {
+    checkApiLocalAvailable();
     String sync ="0";
     if (await checkApiOnline() == false) {
       port = portLocal;
@@ -174,8 +173,8 @@ class RoomData extends ChangeNotifier {
     );
   }
 
-  //TODO synchro OK
   Future<http.Response> deleteRoom(Room room) async{
+    checkApiLocalAvailable();
     String sync ="0";
     if (await checkApiOnline() == false) {
       port = portLocal;

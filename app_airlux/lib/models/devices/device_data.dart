@@ -14,19 +14,31 @@ class DeviceData extends ChangeNotifier {
   //var prefixUrl = 'http://192.168.1.96';
   var prefixUrl = 'http://10.0.2.2';
 
+  void checkApiLocalAvailable() async {
+    try {
+      final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
+      if (await response.statusCode == 200)
+        apiIsOnline = true;
+      else apiIsOnline = false;
+    }
+    catch(e){
+      apiIsOnline = false;
+    }
+  }
+
   List<Device> devices = [];
 
   Future<bool> checkApiOnline() async {
     var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
     if (await response.statusCode == 200) {
-      final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
       return true;
     }
     else return false;
   }
 
-  void getAllDevices() async {
+/*  void getAllDevices() async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
@@ -42,9 +54,10 @@ class DeviceData extends ChangeNotifier {
     } else {
       throw Exception('Failed to load data');
     }
-  }
+  }*/
 
   void getDevicesByRoomId(String id) async{
+    checkApiLocalAvailable();
     //currentRoomId = id;
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
@@ -66,6 +79,7 @@ class DeviceData extends ChangeNotifier {
 
   // Set 'on' for state on and 'off' for state off
   void getDevicesByState(String state) async {
+    checkApiLocalAvailable();
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: header("0"));
@@ -91,9 +105,9 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  //TODO -> OK
   // Check if the current added device is based on local room
   Future<bool> checkIfLocalRoom(String roomId) async {
+    checkApiLocalAvailable();
     final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${roomId}'), headers: header("0"));
     if (response.statusCode == 200) {
       return true;
@@ -102,9 +116,9 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  //TODO synchro OK
   // Check if the current device action is based on local room
   Future<bool> checkIfLocalDevice(String deviceId) async {
+    checkApiLocalAvailable();
     final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${deviceId}'), headers: header("0"));
     if (response.statusCode == 200) {
       return true;
@@ -113,8 +127,7 @@ class DeviceData extends ChangeNotifier {
     }
   }
 
-  //TODO synchro OK
-  Future<bool> synchronizeLocalDeviceAdd(String name, String roomId,String category, String deviceIdFromCloud) async {
+ /* Future<bool> synchronizeLocalDeviceAdd(String name, String roomId,String category, String deviceIdFromCloud) async {
     if (await checkIfLocalRoom(roomId) == true){
       final response = await http.post(
         Uri.parse('${prefixUrl}:${portLocal.toString()}/device'), headers: header("0"),
@@ -128,39 +141,24 @@ class DeviceData extends ChangeNotifier {
       if (await response.statusCode != 201) throw Exception('Failed to load data');
     }
     return true;
-  }
+  }*/
 
-  //TODO synchro OK
   Future<http.Response> addDevice(String name,String category, String roomId) async {
-    String sync ="0";
-    if (await checkApiOnline() == false) {
-      port = portLocal;
-      sync = "1";
-    }
-    else port = portCloud;
-
+    checkApiLocalAvailable();
+    String sync ="1";
     final response = await http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/device'), headers: header(sync),
+      Uri.parse('${prefixUrl}:${portLocal.toString()}/device'), headers: header(sync),
       body: jsonEncode({
         'name': name,
         'category': category,
         'room_id': roomId
       }),
     );
-    if (await response.statusCode == 201) {
-      str = json.decode(response.body);
-      final String deviceCreatedId = str['data']['id'];
-      //Synchro with local (if added in cloud)
-      if (port != portLocal) {
-        await synchronizeLocalDeviceAdd(name, roomId,category, deviceCreatedId);
-      }
-      //TODO ajouter else si on est en local alors appeller synchro log api
-    }
     return response;
   }
 
-  //TODO synchro OK
   Future<http.Response> updateDevice(String deviceName, Device device) async {
+    checkApiLocalAvailable();
     String sync ="0";
     if (await checkApiOnline() == false) {
       port = portLocal;
@@ -188,6 +186,7 @@ class DeviceData extends ChangeNotifier {
 
   //TODO synchro TESTER BORDEL
   Future<http.Response> updateDeviceValue(String value, Device device) async {
+    checkApiLocalAvailable();
     String sync ="0";
     if (await checkApiOnline() == false) {
       port = portLocal;
@@ -213,8 +212,8 @@ class DeviceData extends ChangeNotifier {
     );
   }
 
-  //TODO synchro OK
   Future<http.Response> deleteDevice(Device device) async {
+    checkApiLocalAvailable();
     String sync ="0";
     if (await checkApiOnline() == false) {
       port = portLocal;
@@ -227,7 +226,6 @@ class DeviceData extends ChangeNotifier {
         throw Exception('Failed to load data');
       }
     }
-
     return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/device/' + device.id.toString()), headers: header(sync));
   }
 }

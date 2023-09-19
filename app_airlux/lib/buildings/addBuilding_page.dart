@@ -18,7 +18,6 @@ class AddBuildingPageState extends State<AddBuildingPage> {
   final _formKey = GlobalKey<FormState>();
 
   TextEditingController title = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(

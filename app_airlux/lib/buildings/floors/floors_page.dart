@@ -1,5 +1,7 @@
+import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/models/buildings/floors/floor.dart';
 import 'package:app_airlux/models/buildings/rooms/room_data.dart';
+import 'package:app_airlux/shared/downButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:app_airlux/shared/sockets.dart';
 import 'package:app_airlux/shared/titlePageStyle.dart';
@@ -29,17 +31,12 @@ class _FloorsPageState extends State<FloorsPage> {
   //late IO.Socket socket;
   TextEditingController _editFloorNameController = TextEditingController();
   void initState() {
-    //  super.initState();
-    //  socket = initSocket();
-    //  connectSocket(socket);
     Provider.of<FloorData>(context, listen: false)
         .getFloorsByBuildingId(widget.buildingId);
   }
 
   @override
   void dispose() {
-    //socket.disconnect();
-    //socket.dispose();
     super.dispose();
   }
 
@@ -67,7 +64,7 @@ class _FloorsPageState extends State<FloorsPage> {
             icon: const Icon(Icons.arrow_back),
           ),
           const SizedBox(width: 10.0, height: 20.0),
-          const TitlePageStyle(text: "Étage"),
+          const TitlePageStyle(text: "Étages"),
           const SizedBox(height: 15),
           TextInformationStyle(
               text: "Batiment : ${widget.buildingName}"),
@@ -130,17 +127,26 @@ class _FloorsPageState extends State<FloorsPage> {
           )
         ],
       ),
-      floatingActionButton: AddButton(
+      floatingActionButton: addButton(widget.buildingId, widget.buildingName),
+    );
+  }
+
+  Widget addButton(String building_id, String building_name){
+    if (apiIsOnline == true) {
+      return AddButton(
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
-              builder: (context) => AddFloorPage(
-                building_id: widget.buildingId,
-                building_name: widget.buildingName,
+              builder: (context) => ChangeNotifierProvider(
+                create: (BuildContext context) => FloorData(),
+                child: AddFloorPage(building_id: building_id, building_name: building_name),
               ),
+
             ));
           },
-          title: 'Ajouter un étage'),
-    );
+          title: 'Ajouter un étage');
+    } else {
+      return const DownButton();
+    }
   }
 
   _editFloor(BuildContext context, Floor floor, FloorData floorData) async {

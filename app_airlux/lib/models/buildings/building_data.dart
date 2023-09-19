@@ -20,17 +20,31 @@ class BuildingData extends ChangeNotifier {
   List<String> building_IDs = [];
 
   Future<bool> checkApiOnline() async {
+    checkApiLocalAvailable();
     var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
     if (await response.statusCode == 200) {
-      final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
       return true;
     }
     else return false;
   }
 
+  void checkApiLocalAvailable() async {
+    try {
+      final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
+      if (await response.statusCode == 200)
+        apiIsOnline = true;
+      else apiIsOnline = false;
+    }
+    catch(e){
+      apiIsOnline = false;
+    }
+  }
+
   // Check if the current added floor is based on local building
   Future<bool> checkIfLocalBuilding(String buildingId) async {
+    checkApiLocalAvailable();
     String sync = "0";
     final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${buildingId}'), headers: header(sync));
     if (response.statusCode == 200) {
@@ -40,7 +54,7 @@ class BuildingData extends ChangeNotifier {
     }
   }
 
-  void getAllBuildings() async {
+/*  void getAllBuildings() async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
     print('${prefixUrl} : ${port.toString()} /building');
@@ -56,9 +70,10 @@ class BuildingData extends ChangeNotifier {
     } else {
       throw Exception('Failed to load data');
     }
-  }
+  }*/
 
   void getBuildingsByUser() async{
+    checkApiLocalAvailable();
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
@@ -68,7 +83,6 @@ class BuildingData extends ChangeNotifier {
       final List<dynamic> results = str['data']['usersBuildings'];
       results.removeWhere((item) => item["user_id"]!=userId);
       userBuildings = results.map((e) => UserBuilding.fromJson(e)).toList();
-      print(userBuildings);
       userBuildings.forEach((element) { //Recover building IDs, related to the userID
         building_IDs.add(element.building_id);
       });
@@ -89,7 +103,7 @@ class BuildingData extends ChangeNotifier {
   }
   }
 
-  void getBuilding(int id) async {
+/*  void getBuilding(int id) async {
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
@@ -105,9 +119,10 @@ class BuildingData extends ChangeNotifier {
     } else {
       throw Exception('Failed to load data');
     }
-  }
+  }*/
 
-  Future<bool> synchronizeLocalBuildingAdd(String name, String buildingIdFromCloud) async {
+  //TO DELETE
+/* Future<bool> synchronizeLocalBuildingAdd(String name, String buildingIdFromCloud) async {
     String sync = "0";
     final response = await http.post(
       Uri.parse('${prefixUrl}:${portLocal.toString()}/building'), headers: header(sync),
@@ -120,7 +135,7 @@ class BuildingData extends ChangeNotifier {
     if (await response.statusCode != 201) throw Exception('Failed to load data');
     return true;
   }
-
+//TO DELETE
   Future<bool> synchronizeLocalUserBuildingAdd(String buildingIdFromCloud, String userBuildingCreatedId) async {
     String sync = "0";
     final response = await http.post(
@@ -133,9 +148,35 @@ class BuildingData extends ChangeNotifier {
     if (await response.statusCode == 400) return true;
     if (await response.statusCode != 201) throw Exception('Failed to load data');
     return true;
-  }
+  }*/
 
   Future<http.Response> addBuilding(String name) async {
+    String sync ="1";
+    final responseBuilding = await http.post(
+      Uri.parse('${prefixUrl}:${portLocal.toString()}/building'), headers: header(sync),
+      body: jsonEncode({
+        'name': name,
+        'building_id':"ytghbvg-108656YHBY-5"
+      }),
+    );
+    if (await responseBuilding.statusCode == 201) {
+        str = json.decode(responseBuilding.body);
+        final String buildingCreatedId = str['data']['id'];
+        final responseUserBuilding = await http.post(
+          Uri.parse('${prefixUrl}:${portLocal.toString()}/user-building'), headers: header(sync),
+          body: jsonEncode({
+            'building_id': buildingCreatedId,
+            'user_id': userId
+          }),
+        );
+        if (await responseUserBuilding.statusCode == 201) {
+          str = json.decode(responseUserBuilding.body);
+        }
+    }
+    return responseBuilding;
+  }
+
+/* Future<http.Response> addBuilding(String name) async {
     String sync ="0";
     final http.Response responseBuilding;
     if (await checkApiOnline() == false) {
@@ -159,33 +200,34 @@ class BuildingData extends ChangeNotifier {
       );
     }
 
-      if ((await responseBuilding.statusCode == 201) && (await responseBuilding.statusCode != 400)) {
-        str = json.decode(responseBuilding.body);
-        final String buildingCreatedId = str['data']['id'];
-        if (port != portLocal) {
-          await synchronizeLocalBuildingAdd(name, buildingCreatedId);
-        }
+    if ((await responseBuilding.statusCode == 201) && (await responseBuilding.statusCode != 400)) {
+      str = json.decode(responseBuilding.body);
+      final String buildingCreatedId = str['data']['id'];
+      if (port != portLocal) {
+        await synchronizeLocalBuildingAdd(name, buildingCreatedId);
+      }
 
-        //Related building and user
-        final responseUserBuilding = await http.post(
-          Uri.parse('${prefixUrl}:${port.toString()}/user-building'), headers: header(sync),
-          body: jsonEncode({
-            'building_id': buildingCreatedId,
-            'user_id': userId
-          }),
-        );
-        if (await responseUserBuilding.statusCode == 201) {
-          str = json.decode(responseUserBuilding.body);
-          final String userBuildingCreatedId = str['data']['id'];
-          if (port != portLocal) {
-            await synchronizeLocalUserBuildingAdd(buildingCreatedId, userBuildingCreatedId);
-          }
+      //Related building and user
+      final responseUserBuilding = await http.post(
+        Uri.parse('${prefixUrl}:${port.toString()}/user-building'), headers: header(sync),
+        body: jsonEncode({
+          'building_id': buildingCreatedId,
+          'user_id': userId
+        }),
+      );
+      if (await responseUserBuilding.statusCode == 201) {
+        str = json.decode(responseUserBuilding.body);
+        final String userBuildingCreatedId = str['data']['id'];
+        if (port != portLocal) {
+          await synchronizeLocalUserBuildingAdd(buildingCreatedId, userBuildingCreatedId);
         }
       }
-      return responseBuilding;
     }
+    return responseBuilding;
+  }*/
 
   Future<http.Response> updateBuilding(String buildingName, Building building) async {
+    checkApiLocalAvailable();
     String sync ="0";
     if (await checkApiOnline() == false) {
       port = portLocal;
@@ -193,7 +235,7 @@ class BuildingData extends ChangeNotifier {
     }
     else {
       port = portCloud;
-      if (await checkIfLocalBuilding(building.id!) == true){
+      if (await checkIfLocalBuilding(building.id) == true){
         final response = await http.put(
           Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${building.id.toString()}'), headers: header(sync),
           body: jsonEncode(<String, String>{
@@ -213,6 +255,7 @@ class BuildingData extends ChangeNotifier {
   }
 
   void deleteBuilding(Building building) async {
+    checkApiLocalAvailable();
     String sync ="0";
     if (await checkApiOnline() == false) {
       port = portLocal;

@@ -17,11 +17,24 @@ class SignupData extends ChangeNotifier {
 
   List<Signup> user = [];
 
+  void checkApiLocalAvailable() async {
+    try {
+      final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
+      if (await response.statusCode == 200)
+        apiIsOnline = true;
+      else apiIsOnline = false;
+    }
+    catch(e){
+      apiIsOnline = false;
+    }
+  }
+
   Future<bool> checkApiOnline() async {
+    checkApiLocalAvailable();
     var port = 3010;
     final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
     if (await response.statusCode == 200) {
-      final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
       return true;
     }
     else return false;
@@ -29,6 +42,7 @@ class SignupData extends ChangeNotifier {
 
   //TODO synchro OK
   Future<bool> synchronizeLocalSignup(String email, String password, String name, String forename, String userCreatedId) async {
+    checkApiLocalAvailable();
     final response = await http.post(
       Uri.parse('${prefixUrl}:${portLocal.toString()}/user'),
       headers: <String, String>{
