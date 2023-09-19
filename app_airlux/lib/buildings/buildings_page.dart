@@ -2,6 +2,7 @@ import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/floors/floors_page.dart';
 import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
+import 'package:app_airlux/shared/allDownButton.dart';
 import 'package:app_airlux/shared/downButton.dart';
 import 'package:app_airlux/shared/objectContainer.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ class BuildingsPage extends StatefulWidget {
 class _BuildingsPageState extends State<BuildingsPage> {
   TextEditingController _editBuildingNameController = TextEditingController();
   void initState() {
+    checkApiOnline();
     Provider.of<BuildingData>(context, listen: false).getBuildingsByUser();
   }
   var cron = new Cron();
@@ -87,8 +89,17 @@ class _BuildingsPageState extends State<BuildingsPage> {
       floatingActionButton: addButton(),
     );
   }
+  void checkApiOnline() async {
+    var port = 3010;
+    final response = await http.get(Uri.parse('${prefixUrl}:${port.toString()}/health'));
+    if (await response.statusCode == 200) {
+      //final syncResponse = await http.post(Uri.parse('${prefixUrl}:${portLocal.toString()}/send'));
+      apiCloudConnected = true;
+    }
+    else apiCloudConnected = false;
+  }
 
-  Widget addButton(){
+  StatelessWidget addButton() {
     if (apiIsOnline == true) {
       return AddButton(
         onTap: () {
@@ -100,7 +111,10 @@ class _BuildingsPageState extends State<BuildingsPage> {
           ));
         },
         title: 'Ajouter un bâtiment');
-    } else {
+    } else if ((apiIsOnline == false) && ((apiCloudConnected) == false)){
+      return const AllDownButton();
+    }
+    else {
       return const DownButton();
     }
   }

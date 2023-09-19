@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 late var token;
 late bool apiIsOnline;
+late bool apiCloudConnected = true;
 //var prefixUrl = 'http://192.168.1.29';
 var prefixUrl = 'http://10.0.2.2';
 late String userId;
