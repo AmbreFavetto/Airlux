@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:app_airlux/models/devices/device_data.dart';
+import 'package:app_airlux/models/signup/signup_data.dart';
 import 'package:app_airlux/models/user/user.dart';
 import 'package:app_airlux/models/user/user_data.dart';
 import 'package:app_airlux/pages/home_page.dart';
@@ -191,7 +192,10 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const SignupPage(),
+                            builder: (context) => ChangeNotifierProvider(
+                              create: (BuildContext context) => SignupData(),
+                              child: SignupPage(),
+                            ),
                           ),
                         );
                       },

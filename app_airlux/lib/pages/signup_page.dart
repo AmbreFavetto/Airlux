@@ -252,7 +252,10 @@ class SignupPageState extends State<SignupPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => LoginPage(),
+                        builder: (context) => ChangeNotifierProvider(
+                          create: (BuildContext context) => UserData(),
+                          child: LoginPage(),
+                        ),
                       ),
                     );
                   },
