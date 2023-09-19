@@ -50,6 +50,7 @@ class _BuildingsPageState extends State<BuildingsPage> {
                     icon: Icons.business,
                     onDelete: () => {
                       buildingData.deleteBuilding(building),
+                      buildingData.getBuildingsByUser(),
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Bâtiment supprimé.'),
