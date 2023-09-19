@@ -204,8 +204,8 @@ class SignupPageState extends State<SignupPage> {
                     );
                   } else {
                     final response = await signupData.signupUser(mail.text, password.text,name.text, forename.text);
+                    str = json.decode(response.body);
                     if (response.statusCode == 201) {
-                      str = json.decode(response.body);
                       token = str['data']['token'];
                       if (token != null) {
                         Navigator.of(context).pushAndRemoveUntil(
@@ -219,21 +219,21 @@ class SignupPageState extends State<SignupPage> {
                               (Route<dynamic> route) => false,
                         );
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
+                          SnackBar(
                             content: Text('Votre compte a bien été créé.'),
                           ),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Inscription impossible.'),
+                          SnackBar(
+                            content: Text(str['message']),
                           ),
                         );
                       }
                     } else if (response.statusCode != 200) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Inscription impossible.'),
+                        SnackBar(
+                          content: Text(str['message']),
                         ),
                       );
                       throw Exception('Failed to load data.');

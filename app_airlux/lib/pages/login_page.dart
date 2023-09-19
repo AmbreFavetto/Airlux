@@ -148,8 +148,8 @@ class _LoginPageState extends State<LoginPage> {
                       } else {
                         final response =
                         await userData.loginUser(email.text, password.text);
+                        str = json.decode(response.body);
                         if (response.statusCode == 200) {
-                          str = json.decode(response.body);
                           token = str['data']['token'];
                           userId = str['data']['user_id'];
                           if (token != null) {
@@ -165,15 +165,15 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Connexion impossible'),
+                              SnackBar(
+                                content: Text(str['message']),
                               ),
                             );
                           }
                         } else if (response.statusCode != 200) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Connexion impossible'),
+                            SnackBar(
+                              content: Text(str['message']),
                             ),
                           );
                           throw Exception('Failed to load data');
