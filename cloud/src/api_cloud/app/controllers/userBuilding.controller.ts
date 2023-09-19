@@ -7,6 +7,7 @@ import userBuildingCreateSchema, { userBuildingUpdateSchema } from '../models/us
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import UserBuilding from '@/interfaces/userBuilding.interface';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request, id: string) {
   const data: UserBuilding = {
@@ -42,6 +43,9 @@ export const createUserBuilding = async (req: Request, res: Response) => {
     }
     const data = setData(req, id);
     database.query(QUERY.CREATE_USER_BUILDING, Object.values(data), () => {
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', "POST /user-building/ " + JSON.stringify(req.body))
+      }
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `userBuilding with id ${id} created`, { id }));
     });
@@ -93,6 +97,9 @@ export const deleteUserBuilding = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
     database.query(QUERY.DELETE_USER_BUILDING, req.params.id, () => {
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /user-building/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding deleted`));
     });

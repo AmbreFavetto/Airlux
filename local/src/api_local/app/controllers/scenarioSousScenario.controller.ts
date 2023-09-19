@@ -6,7 +6,6 @@ import scenarioSousScenarioCreateSchema from '../models/scenarioSousScenario.mod
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { deleteElt } from '../util/devTools.js';
 import scenarioSousScenario from '../interfaces/scenarioSousScenario.interface'
-import { addLog } from '../util/logFile.js';
 
 function setData(req: Request) {
   const data: scenarioSousScenario = {
@@ -40,9 +39,6 @@ export const createScenarioSousScenario = async (req: Request, res: Response) =>
       req.body.id = uuidv4();
     }
     await database.hmset(`scenariosSousScenarios:${req.body.id}`, data);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("POST", `/scenario-sous-scenario`, JSON.stringify(req.body))
-    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `scenarioSousScenario with id ${req.body.id} created`, { id: req.body.id }));
   } catch (err) {
@@ -93,9 +89,6 @@ export const deleteScenarioSousScenario = async (req: Request, res: Response) =>
   logger.info(`${req.method} ${req.originalUrl}, deleting ScenarioSousScenario`);
   try {
     await deleteElt(req.params.id);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("DELETE", `/scenario-sous-scenario/${req.params.id}`, JSON.stringify(req.body))
-    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `scenarioSousScenario deleted`));
   } catch (err) {

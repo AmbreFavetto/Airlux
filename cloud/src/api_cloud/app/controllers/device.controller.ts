@@ -7,6 +7,7 @@ import deviceCreateSchema, { deviceUpdateSchema } from '../models/device.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Device from '../interfaces/device.interface';
+import { sendToKafka } from '../config/kafka.config';
 
 const listActuator = ["lamp", "lamp_rgb", "blind", "radiator", "air_conditioning"]
 
@@ -150,6 +151,9 @@ export const updateDevice = async (req: Request, res: Response) => {
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating device`);
     database.query(QUERY.UPDATE_DEVICE, [...Object.values(data), req.params.id], () => {
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `PUT /device/${req.params.id} ` + JSON.stringify(req.body))
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device updated`, { id: req.params.id, ...req.body }));
     });
@@ -168,10 +172,12 @@ export const deleteDevice = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_DEVICE, req.params.id);
     database.query(QUERY.DELETE_DEVICE, req.params.id, () => {
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /device/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`));
     });
-
   } catch (err) {
     if ((err as Error).message === "not_found") {
       return res.status(HttpStatus.NOT_FOUND.code)
