@@ -17,7 +17,7 @@ io.on('connection', (socket) => {
     console.log('A client connected');
     // You can perform WebSocket-related actions here, e.g., send initial data to clients
 });
-subscribeToKafkaTopic('sendToRedis');
+subscribeToKafkaTopic('sendToMysql');
 
 const start = (port: number) => {
     try {

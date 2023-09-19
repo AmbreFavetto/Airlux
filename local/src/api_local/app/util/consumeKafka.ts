@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import logger from './logger'
 
 const regex = /(POST|PUT|DELETE) ([^"]+) ({.*})?/g;
-const routePfx = 'http://api_cloud:3010';
+const routePfx = 'http://api_local:3030';
 
 const secretKey = process.env.SECRET_KEY || "secret_key"
 
