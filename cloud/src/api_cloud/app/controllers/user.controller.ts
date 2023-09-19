@@ -73,6 +73,7 @@ export const createUser = async (req: Request, res: Response) => {
       }, secretKey, { expiresIn: '3 hours' })
       database.query(QUERY.CREATE_USER, Object.values(data), () => {
         if (req.headers.sync && req.headers.sync === "1"){
+          req.body.user_id = id
           sendToKafka('sendToRedis', "POST /user/ " + JSON.stringify(req.body))
         }
         res.status(HttpStatus.CREATED.code)
