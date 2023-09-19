@@ -31,7 +31,7 @@ export const createScenario = async (req: Request, res: Response) => {
       req.body.scenario_id = uuidv4();
     }
     await database.hmset(`scenarios:${req.body.scenario_id}`, data);
-    sendToKafka('sendToMysql', "POST /scenario/ " + JSON.stringify(data))
+    sendToKafka('sendToMysql', "POST /scenario/ " + JSON.stringify(req.body))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario with id ${req.body.scenario_id} created`, { id: req.body.scenario_id }));
   } catch (error) {

@@ -38,7 +38,7 @@ export const createFloor = async (req: Request, res: Response) => {
   var data = setData(req);
   try {
     await database.hmset(`floors:${req.body.floor_id}`, data);
-    sendToKafka('sendToMysql', "POST /floor/ " + JSON.stringify(data))
+    sendToKafka('sendToMysql', "POST /floor/ " + JSON.stringify(req.body))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor with id ${req.body.floor_id} created`, { id: req.body.floor_id }));
   } catch (err) {

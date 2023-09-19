@@ -33,8 +33,7 @@ export const createBuilding = async (req: Request, res: Response) => {
 
   try {
     await database.hmset(key, data);
-    data.building_id = req.body.building_id
-    sendToKafka('sendToMysql', "POST /building/ " + JSON.stringify(data))
+    sendToKafka('sendToMysql', "POST /building/ " + JSON.stringify(req.body))
     return res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building with id ${req.body.building_id} created`, { id: req.body.building_id }));
   } catch (err) {

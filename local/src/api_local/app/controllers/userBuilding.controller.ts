@@ -40,7 +40,7 @@ export const createUserBuilding = async (req: Request, res: Response) => {
       req.body.id = uuidv4();
     }
     await database.hmset(`usersBuildings:${req.body.id}`, data);
-    sendToKafka('sendToMysql', "POST /user-building/ " + JSON.stringify(data))
+    sendToKafka('sendToMysql', "POST /user-building/ " + JSON.stringify(req.body))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `userBuilding with id ${req.body.id} created`, { id: req.body.id }));
   } catch (err) {

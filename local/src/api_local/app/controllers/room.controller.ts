@@ -38,7 +38,7 @@ export const createRoom = async (req: Request, res: Response) => {
     var data = setData(req);
 
     await database.hmset(`rooms:${req.body.room_id}`, data);
-    sendToKafka('sendToMysql', "POST /room/ " + JSON.stringify(data))
+    sendToKafka('sendToMysql', "POST /room/ " + JSON.stringify(req.body))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room with id ${req.body.room_id} created`, { id: req.body.room_id }));
   } catch (err) {

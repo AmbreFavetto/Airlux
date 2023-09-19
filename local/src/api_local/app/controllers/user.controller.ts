@@ -57,7 +57,7 @@ export const createUser = async (req: Request, res: Response) => {
       }, secretKey, { expiresIn: '3 hours' })
 
       await database.hmset(`users:${req.body.user_id}`, dataUser);
-      sendToKafka('sendToMysql', "POST /user/ " + JSON.stringify(data))
+      sendToKafka('sendToMysql', "POST /user/ " + JSON.stringify(req.body))
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User with id ${req.body.user_id} created`, { id: req.body.user_id, token: token }));
     }

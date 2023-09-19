@@ -83,7 +83,7 @@ export const createDevice = async (req: Request, res: Response) => {
     req.body.value = setDefaultValue(req.body.category)
     var data = setData(req);
     await database.hmset(`devices:${req.body.device_id}`, data);
-    sendToKafka('sendToMysql', "POST /device/ " + JSON.stringify(data))
+    sendToKafka('sendToMysql', "POST /device/ " + JSON.stringify(req.body))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device with id ${req.body.device_id} created`, { id: req.body.device_id }));
   } catch (err) {
