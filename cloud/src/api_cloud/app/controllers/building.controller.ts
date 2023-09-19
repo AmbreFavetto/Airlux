@@ -41,7 +41,7 @@ export const createBuilding = async (req: Request, res: Response) => {
     }
     const data = setData(req, id);
     database.query(QUERY.CREATE_BUILDING, Object.values(data), () => {
-      sendToKafka('sendToMysql', "POST /building/ " + JSON.stringify(data))
+      sendToKafka('sendToRedis', "POST /building/ " + JSON.stringify(req.body))
       return res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building with id ${id} created`, { id }));
     });
@@ -94,7 +94,7 @@ export const updateBuilding = async (req: Request, res: Response) => {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
     const data = setUpdateData(req, results)
     database.query(QUERY.UPDATE_BUILDING, [...Object.values(data), req.params.id]);
-    sendToKafka('sendToMysql', `PUT /building/${req.params.id} ` + JSON.stringify(req.body))
+    sendToKafka('sendToRedis', `PUT /building/${req.params.id} ` + JSON.stringify(req.body))
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building updated`, { id: req.params.id, ...req.body }));
   } catch (err) {
@@ -112,6 +112,7 @@ export const deleteBuilding = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_BUILDING, req.params.id);
     database.query(QUERY.DELETE_BUILDING, req.params.id, () => {
+      sendToKafka('sendToRedis', `DELETE /building/${req.params.id} `)
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
     });

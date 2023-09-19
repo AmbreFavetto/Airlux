@@ -7,6 +7,7 @@ import floorCreateSchema, { floorUpdateSchema } from '../models/floor.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Floor from '../interfaces/floor.interface';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request, id: string) {
   const data: Floor = {
@@ -42,6 +43,7 @@ export const createFloor = async (req: Request, res: Response) => {
     }
     const data = setData(req, id);
     database.query(QUERY.CREATE_FLOOR, Object.values(data), () => {
+      sendToKafka('sendToRedis', "POST /floor/ " + JSON.stringify(req.body))
       return res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor with id ${id} created`, { id }));
     });
@@ -99,6 +101,7 @@ export const updateFloor = async (req: Request, res: Response) => {
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating floor`);
     database.query(QUERY.UPDATE_FLOOR, [...Object.values(data), req.params.id], () => {
+      sendToKafka('sendToRedis', `PUT /floor/${req.params.id} ` + JSON.stringify(req.body))
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor updated`, { id: req.params.id, ...req.body }));
     });
@@ -117,6 +120,7 @@ export const deleteFloor = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_FLOOR, req.params.id);
     database.query(QUERY.DELETE_FLOOR, req.params.id, () => {
+      sendToKafka('sendToRedis', `DELETE /floor/${req.params.id} `)
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
     });
