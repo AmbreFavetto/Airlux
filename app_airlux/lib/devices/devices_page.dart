@@ -46,6 +46,7 @@ class _DevicesPageState extends State<DevicesPage> {
                     return ChangeNotifierProvider(
                       create: (BuildContext context) => DeviceData(),
                       child: MaterialApp(
+                        debugShowCheckedModeBanner: false,
                         home: RoomsPage(
                           floorId: currentFloorId,
                           floorNumber: currentFloorName,
@@ -151,7 +152,7 @@ class _DevicesPageState extends State<DevicesPage> {
               builder: (context) => AddDevicePage(room_id: room_id, room_name: room_name),
             ));
           },
-          title: 'Ajouter un capteur ou un actuateur');
+          title: 'Ajouter un capteur');
     } else {
       return DownButton();
     }

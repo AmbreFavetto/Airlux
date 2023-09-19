@@ -54,6 +54,7 @@ class _FloorsPageState extends State<FloorsPage> {
                     return ChangeNotifierProvider(
                       create: (BuildContext context) => RoomData(),
                       child: MaterialApp(
+                        debugShowCheckedModeBanner: false,
                         home: BuildingsPage(),
                       ),
                     );
@@ -67,7 +68,7 @@ class _FloorsPageState extends State<FloorsPage> {
           const TitlePageStyle(text: "Étages"),
           const SizedBox(height: 15),
           TextInformationStyle(
-              text: "Batiment : ${widget.buildingName}"),
+              text: "Bâtiment : ${widget.buildingName}"),
           Expanded(
             child: Consumer<FloorData>(
               builder: (context, floorData, child) => GridView.builder(
@@ -86,7 +87,7 @@ class _FloorsPageState extends State<FloorsPage> {
                           floor)).statusCode == 200) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Etage supprimé'),
+                            content: Text('Étage supprimé'),
                           ),
                         ),
                         Navigator.of(context).push(MaterialPageRoute(
@@ -108,6 +109,7 @@ class _FloorsPageState extends State<FloorsPage> {
                           return ChangeNotifierProvider(
                             create: (BuildContext context) => RoomData(),
                             child: MaterialApp(
+                              debugShowCheckedModeBanner: false,
                               home: RoomsPage(
                                   floorId: floor.id.toString(),
                                   floorNumber: floor.name.toString()),
@@ -194,7 +196,7 @@ class _FloorsPageState extends State<FloorsPage> {
                   TextField(
                     controller: _editFloorNameController,
                     decoration: const InputDecoration(
-                        hintText: 'Etage', labelText: "Numéro de l'étage"),
+                        hintText: 'Étage', labelText: "Numéro de l'étage"),
                   )
                 ])));
       },
