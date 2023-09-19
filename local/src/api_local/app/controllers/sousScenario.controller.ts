@@ -56,7 +56,7 @@ export const createSousScenario = async (req: Request, res: Response) => {
       req.body.sousScenario_id = uuidv4();
     }
     await database.hmset(`sousScenarios:${req.body.sousScenario_id}`, data);
-    if (req.headers.sync && req.headers.sync === "1") {
+    if (req.headers.sync && req.headers.sync && req.headers.sync === "1") {
       addLog("POST", `/sous-scenario`, JSON.stringify(req.body))
     }
     res.status(HttpStatus.CREATED.code)
@@ -115,7 +115,7 @@ export const deleteSousScenario = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("sousScenarios:" + req.params.id)
     await deleteElt("sousScenarios:" + req.params.id)
-    if (req.headers.sync && req.headers.sync === "1") {
+    if (req.headers.sync && req.headers.sync && req.headers.sync === "1") {
       addLog("DELETE", `/sous-scenario/${req.params.id}`, JSON.stringify(req.body))
     }
     res.status(HttpStatus.OK.code)

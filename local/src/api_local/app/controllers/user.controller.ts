@@ -6,9 +6,9 @@ import userCreateSchema, { userUpdateSchema, userLoginSchema } from '../models/u
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { deleteElt, getRelationToDelete } from '../util/devTools';
 import User from '../interfaces/user.interface';
-import { addLog } from '../util/logFile.js';
 import jwt from 'jsonwebtoken';
 import argon2 from "argon2";
+import { sendToKafka } from '../config/kafka.config';
 
 async function setData(req: Request) {
   const data: User = {
@@ -57,9 +57,9 @@ export const createUser = async (req: Request, res: Response) => {
       }, secretKey, { expiresIn: '3 hours' })
 
       await database.hmset(`users:${req.body.user_id}`, dataUser);
-      if (req.headers.sync && req.headers.sync === "1") {
-        addLog("POST", `/user`, JSON.stringify(req.body))
-      }
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /user/ " + JSON.stringify(req.body))
+    }
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User with id ${req.body.user_id} created`, { id: req.body.user_id, token: token }));
     }
@@ -104,7 +104,6 @@ export const login = async (req: Request, res: Response) => {
         email: req.body.email,
         isadmin: isadmin
       }, secretKey, { expiresIn: '3 hours' })
-      logger.info(user_id)
       res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Login succes`, { token, user_id }));
     } else {
@@ -170,8 +169,8 @@ export const updateUser = async (req: Request, res: Response) => {
       return;
     }
     await database.hmset(`users:${req.params.id}`, req.body);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("PUT", `/user/${req.params.id}`, JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `PUT /user/${req.params.id} ` + JSON.stringify(req.body))
     }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User updated`));
@@ -191,8 +190,8 @@ export const deleteUser = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("users:" + req.params.id)
     await deleteElt("users:" + req.params.id)
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("DELETE", `/user/${req.params.id}`, JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /user/${req.params.id} `)
     }
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));

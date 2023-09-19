@@ -5,7 +5,7 @@ import logger from '../util/logger';
 import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.model';
 import HttpStatus, { getRelationToDelete, getEltToDelete } from '../util/devTools';
 import Building from '../interfaces/building.interface';
-import { addLog } from "../util/logFile";
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request) {
   const data: Building = {
@@ -30,10 +30,11 @@ export const createBuilding = async (req: Request, res: Response) => {
   }
   const key = `buildings:${req.body.building_id}`;
   var data = setData(req);
+
   try {
     await database.hmset(key, data);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("POST", "/building", JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /building/ " + JSON.stringify(req.body))
     }
     return res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building with id ${req.body.building_id} created`, { id: req.body.building_id }));
@@ -95,9 +96,9 @@ export const updateBuilding = async (req: Request, res: Response) => {
   } else {
     try {
       await database.hmset(`buildings:${req.params.id}`, req.body);
-      if (req.headers.sync && req.headers.sync === "1") {
-        addLog("PUT", `/building/${req.params.id}`, JSON.stringify(req.body))
-      }
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `PUT /building/${req.params.id} ` + JSON.stringify(req.body))
+    }
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building updated`, { id: req.params.id, ...req.body }));
     } catch (error) {
@@ -118,8 +119,8 @@ export const deleteBuilding = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("buildings:" + req.params.id)
     await getEltToDelete("floors", "buildings:" + req.params.id)
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("DELETE", `/building/${req.params.id}`, JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /building/${req.params.id} `)
     }
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));

@@ -7,6 +7,7 @@ import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.m
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Building from '../interfaces/building.interface';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request, id: string) {
   const data: Building = {
@@ -92,6 +93,9 @@ export const updateBuilding = async (req: Request, res: Response) => {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
     const data = setUpdateData(req, results)
     database.query(QUERY.UPDATE_BUILDING, [...Object.values(data), req.params.id]);
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToRedis', `PUT /building/${req.params.id} ` + JSON.stringify(req.body))
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building updated`, { id: req.params.id, ...req.body }));
   } catch (err) {
@@ -109,6 +113,9 @@ export const deleteBuilding = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_BUILDING, req.params.id);
     database.query(QUERY.DELETE_BUILDING, req.params.id, () => {
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /building/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
     });

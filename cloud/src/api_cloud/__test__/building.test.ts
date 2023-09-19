@@ -24,7 +24,7 @@ describe('Building controller', () => {
             id: "fix-id-token",
             email: "fix-email-token",
             isadmin: "fix-admin-token"
-          }, secretKey, { expiresIn: '3 hours' })
+        }, secretKey, { expiresIn: '3 hours' })
 
     });
     describe('createBuilding', () => {
@@ -114,11 +114,11 @@ describe('Building controller', () => {
         test('should update the building', async () => {
             await processData(Query.CREATE_BUILDING);
             const response = await request
-            .put('/building/123')
-            .set('Authorization', `${token}`)
-            .send({
-                name: "TestUpdate"
-            });
+                .put('/building/123')
+                .set('Authorization', `${token}`)
+                .send({
+                    name: "TestUpdate"
+                });
             expect(response.statusCode).toBe(HttpStatus.OK.code);
             expect(response.body.httpStatus).toBe(HttpStatus.OK.status);
         });

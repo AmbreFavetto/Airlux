@@ -34,6 +34,7 @@ services:
     networks:
       - local_network
       - api_cloud_cloud_network
+      - kafka_kafka_network
 
   mqtt:
     image: eclipse-mosquitto
@@ -46,5 +47,8 @@ services:
 networks:
   local_network:
   api_cloud_cloud_network:
+    external:
+      true
+  kafka_kafka_network:
     external:
       true

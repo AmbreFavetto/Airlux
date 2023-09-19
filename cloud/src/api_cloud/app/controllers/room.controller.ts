@@ -7,6 +7,7 @@ import roomCreateSchema, { roomUpdateSchema } from '../models/room.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Room from '../interfaces/room.interface';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request, id: string) {
   const data: Room = {
@@ -96,6 +97,9 @@ export const updateRoom = async (req: Request, res: Response) => {
     const results: Room = await processData(QUERY.SELECT_ROOM, req.params.id)
     const data = setUpdateData(req, results);
     database.query(QUERY.UPDATE_ROOM, [...Object.values(data), req.params.id]);
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToRedis', `PUT /room/${req.params.id} ` + JSON.stringify(req.body))
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room updated`, { id: req.params.id, ...req.body }));
   } catch (err) {
@@ -113,6 +117,9 @@ export const deleteRoom = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_ROOM, req.params.id);
     database.query(QUERY.DELETE_ROOM, req.params.id, () => {
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /room/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room deleted`));
     });

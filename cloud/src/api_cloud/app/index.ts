@@ -11,7 +11,6 @@ import routesUser from './routes/user.routes';
 import routesUserBuilding from './routes/userBuilding.routes';
 import routesTimeseries from './routes/timeseries.routes';
 import routesHealth from './routes/health.routes';
-import routesSyncLog from './routes/syncLog.routes';
 
 const app = express();
 app.use(cors({ origin: '*' }));
@@ -19,9 +18,6 @@ app.use(express.json());
 
 //Health
 app.use('/health', routesHealth);
-
-//syncLog
-app.use('/syncLog', routesSyncLog);
 
 //Building
 app.use('/building', routesBuilding);

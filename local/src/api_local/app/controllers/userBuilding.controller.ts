@@ -6,7 +6,7 @@ import userBuildingCreateSchema from '../models/userBuilding.model.js';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { deleteElt } from '../util/devTools';
 import UserBuilding from '../interfaces/userBuilding.interface.js';
-import { addLog } from '../util/logFile.js';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request) {
   const data: UserBuilding = {
@@ -40,8 +40,8 @@ export const createUserBuilding = async (req: Request, res: Response) => {
       req.body.id = uuidv4();
     }
     await database.hmset(`usersBuildings:${req.body.id}`, data);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("POST", `/user-building`, JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /user-building/ " + JSON.stringify(req.body))
     }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `userBuilding with id ${req.body.id} created`, { id: req.body.id }));
@@ -93,8 +93,8 @@ export const deleteUserBuilding = async (req: Request, res: Response) => {
   logger.info(`${req.method} ${req.originalUrl}, deleting userBuilding`);
   try {
     await deleteElt(req.params.id);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("DELETE", `/user-building/${req.params.id}`, JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /user-building/${req.params.id} `)
     }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding deleted`));
