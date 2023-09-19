@@ -58,6 +58,7 @@ services:
       - db_cloud
     networks:
       - cloud_network
+      - kafka_kafka_network
 
   grafana:
     image: grafana/grafana
@@ -87,9 +88,14 @@ services:
       - 9090:9090
     networks:
       - cloud_network
+      
 
 networks:
   cloud_network:
+  kafka_kafka_network:
+    external:
+      true
+
 
 
 

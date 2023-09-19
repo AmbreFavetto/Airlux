@@ -6,6 +6,8 @@ import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.m
 import HttpStatus, { getRelationToDelete, getEltToDelete } from '../util/devTools';
 import Building from '../interfaces/building.interface';
 import { addLog } from "../util/logFile";
+import { syncEvents } from '../util/syncEvents'
+import { socketServer } from '../main';
 
 function setData(req: Request) {
   const data: Building = {
@@ -32,9 +34,9 @@ export const createBuilding = async (req: Request, res: Response) => {
   var data = setData(req);
   try {
     await database.hmset(key, data);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("POST", "/building", JSON.stringify(req.body))
-    }
+    const io = await syncEvents(socketServer)
+    const response = await io.emit('nouvelleDonneeRedis', data);
+    logger.info(response)
     return res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building with id ${req.body.building_id} created`, { id: req.body.building_id }));
   } catch (err) {

@@ -2,8 +2,16 @@ import app from "./index";
 import dotenv from 'dotenv';
 import ip from 'ip';
 import logger from './util/logger';
+import http from 'http';
+import { Server } from 'socket.io';
+import { syncEvents } from './util/syncEvents'
 
 dotenv.config();
+
+const server = http.createServer(app);
+const socketServer = new Server(server);
+
+syncEvents(socketServer);
 
 const start = (port: number) => {
     try {
@@ -14,3 +22,4 @@ const start = (port: number) => {
 };
 
 start(Number(process.env.SERVER_PORT));
+export { socketServer };
