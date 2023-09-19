@@ -27,8 +27,6 @@ describe('Building controller', () => {
                 email: 'user.test@gmail.com',
                 password: 'azerty'
             });
-        logger.info(user)
-
     });
     describe('createBuilding', () => {
         test('should create a new building', async () => {

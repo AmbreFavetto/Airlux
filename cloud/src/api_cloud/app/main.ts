@@ -10,13 +10,11 @@ dotenv.config();
 
 const server = http.createServer(app);
 const io = new Server(server);
-//const io = syncEvents(socketServer);
 
-//io.connect();
 io.on('connection', (socket) => {
     console.log('A client connected');
-    // You can perform WebSocket-related actions here, e.g., send initial data to clients
 });
+
 subscribeToKafkaTopic('sendToMysql');
 
 const start = (port: number) => {
