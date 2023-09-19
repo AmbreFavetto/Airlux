@@ -84,6 +84,8 @@ export const createDevice = async (req: Request, res: Response) => {
     var data = setData(req);
     await database.hmset(`devices:${req.body.device_id}`, data);
     if (req.headers.sync && req.headers.sync === "1"){
+      delete req.body.type
+      delete req.body.value
       sendToKafka('sendToMysql', "POST /device/ " + JSON.stringify(req.body))
     }
     res.status(HttpStatus.CREATED.code)
