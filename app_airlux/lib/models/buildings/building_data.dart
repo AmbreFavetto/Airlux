@@ -30,7 +30,7 @@ class BuildingData extends ChangeNotifier {
     else return false;
   }
 
-  void checkApiLocalAvailable() async {
+  Future<bool> checkApiLocalAvailable() async {
     try {
       final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
       if (await response.statusCode == 200)
@@ -40,6 +40,7 @@ class BuildingData extends ChangeNotifier {
     catch(e){
       apiIsOnline = false;
     }
+    return apiIsOnline;
   }
 
   // Check if the current added floor is based on local building
@@ -161,14 +162,15 @@ class BuildingData extends ChangeNotifier {
     );
     if (await responseBuilding.statusCode == 201) {
         str = json.decode(responseBuilding.body);
-        final String buildingCreatedId = str['data']['id'];
+        //final String buildingCreatedId = str['data']['id'];
         final responseUserBuilding = await http.post(
           Uri.parse('${prefixUrl}:${portLocal.toString()}/user-building'), headers: header(sync),
           body: jsonEncode({
-            'building_id': buildingCreatedId,
+            'building_id': "ytghbvg-108656YHBY-5",
             'user_id': userId
           }),
         );
+        print(responseUserBuilding);
         if (await responseUserBuilding.statusCode == 201) {
           str = json.decode(responseUserBuilding.body);
         }
@@ -227,11 +229,31 @@ class BuildingData extends ChangeNotifier {
   }*/
 
   Future<http.Response> updateBuilding(String buildingName, Building building) async {
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      return await http.put(
+        Uri.parse('${prefixUrl}:${portCloud.toString()}/building/${building.id.toString()}'), headers: header(sync),
+        body: jsonEncode(<String, String>{
+          'name': buildingName,
+        }),
+      );
+    }
+    else {
+      return await http.put(
+        Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${building.id.toString()}'), headers: header(sync),
+        body: jsonEncode(<String, String>{
+          'name': buildingName,
+        }),
+      );
+    }
+
+  }
+
+/*  Future<http.Response> updateBuilding(String buildingName, Building building) async {
     checkApiLocalAvailable();
-    String sync ="0";
+    String sync ="1";
     if (await checkApiOnline() == false) {
       port = portLocal;
-      sync = "1";
     }
     else {
       port = portCloud;
@@ -252,14 +274,13 @@ class BuildingData extends ChangeNotifier {
         'name': buildingName,
       }),
     );
-  }
+  }*/
 
-  void deleteBuilding(Building building) async {
+ /* void deleteBuilding(Building building) async {
     checkApiLocalAvailable();
-    String sync ="0";
+    String sync ="1";
     if (await checkApiOnline() == false) {
       port = portLocal;
-      sync = "1";
     }
     else {
       port = portCloud;
@@ -267,13 +288,22 @@ class BuildingData extends ChangeNotifier {
       if (response.statusCode != 200) {
         throw Exception('Failed to load data');
       }
-    }
+    }*/
 
-    final response = await http.delete(Uri.parse('${prefixUrl}:${port.toString()}/building/${building.id.toString()}'), headers: header(sync));
-    if (response.statusCode == 200) {
-      getBuildingsByUser();
-    } else {
-      throw Exception('Failed to load data');
+  void deleteBuilding(Building building) async {
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portCloud.toString()}/building/${building.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
     }
+    else {
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/building/${building.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
+    }
+    getBuildingsByUser();
   }
 }

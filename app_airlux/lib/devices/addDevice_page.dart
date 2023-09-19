@@ -17,8 +17,7 @@ enum Category {
   radiator,
   air_conditioning,
   humidity,
-  temperature,
-  pressure
+  temperature
 }
 
 class AddDevicePage extends StatefulWidget {
@@ -135,17 +134,6 @@ class _AddDevicePageState extends State<AddDevicePage> {
                   title: const Text("Température"),
                   leading: Radio<Category>(
                     value: Category.temperature,
-                    groupValue: _category,
-                    onChanged: (Category? value) {
-                      setState(() {
-                        _category = value;
-                      });
-                    },
-                  )),
-              ListTile(
-                  title: const Text("Capteur de pression"),
-                  leading: Radio<Category>(
-                    value: Category.pressure,
                     groupValue: _category,
                     onChanged: (Category? value) {
                       setState(() {

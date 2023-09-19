@@ -62,14 +62,12 @@ class SignupData extends ChangeNotifier {
   }
 
   Future<http.Response> signupUser(String email, String password, String name, String forename) async {
+    String sync ="1";
     if (await checkApiOnline() == false) port = portLocal;
     else port = portCloud;
 
     final response = await http.post(
-      Uri.parse('${prefixUrl}:${port.toString()}/user'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
+      Uri.parse('${prefixUrl}:${port.toString()}/user'), headers: headerLessToken(sync),
       body: jsonEncode({
         'name': name,
         'forename': forename,
@@ -83,7 +81,7 @@ class SignupData extends ChangeNotifier {
       final String userCreatedId = str['data']['id'];
       //Synchro with local (if added in cloud)
       if (port != portLocal) {
-        await synchronizeLocalSignup(email, password, name, forename, userCreatedId);
+        //await synchronizeLocalSignup(email, password, name, forename, userCreatedId);
       }
     }
     return response;

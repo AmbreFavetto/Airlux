@@ -14,7 +14,7 @@ class FloorData extends ChangeNotifier {
   //var prefixUrl = 'http://192.168.1.96';
   var prefixUrl = 'http://10.0.2.2';
 
-  void checkApiLocalAvailable() async {
+  Future<bool> checkApiLocalAvailable() async {
     try {
       final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
       if (await response.statusCode == 200)
@@ -24,6 +24,7 @@ class FloorData extends ChangeNotifier {
     catch(e){
       apiIsOnline = false;
     }
+    return apiIsOnline;
   }
 
   List<Floor> floors = [];
@@ -155,12 +156,31 @@ class FloorData extends ChangeNotifier {
   }
 
   Future<http.Response> updateFloor(String floorName, Floor floor) async {
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      return await http.put(
+        Uri.parse('${prefixUrl}:${portCloud.toString()}/floor/${floor.id.toString()}'), headers: header(sync),
+        body: jsonEncode(<String, String>{
+          'name': floorName,
+        }),
+      );
+    }
+    else {
+      return await http.put(
+        Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floor.id.toString()}'), headers: header(sync),
+        body: jsonEncode(<String, String>{
+          'name': floorName,
+        }),
+      );
+    }
+  }
+
+  /*Future<http.Response> updateFloor(String floorName, Floor floor) async {
     checkApiLocalAvailable();
 
-    String sync ="0";
+    String sync ="1";
     if (await checkApiOnline() == false) {
       port = portLocal;
-      sync = "1";
     }
     else {
       port = portCloud;
@@ -180,14 +200,13 @@ class FloorData extends ChangeNotifier {
         'name': floorName,
       }),
     );
-  }
+  }*/
 
-  Future<http.Response> deleteFloor(Floor floor) async{
+/*  Future<http.Response> deleteFloor(Floor floor) async{
     checkApiLocalAvailable();
-    String sync ="0";
+    String sync ="1";
     if (await checkApiOnline() == false) {
       port = portLocal;
-      sync = "1";
     }
     else {
       port = portCloud;
@@ -197,6 +216,24 @@ class FloorData extends ChangeNotifier {
       }
     }
     return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/floor/' + floor.id.toString()), headers: header(sync));
+  }*/
+  Future<http.Response> deleteFloor(Floor floor) async{
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portCloud.toString()}/floor/${floor.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
+      return await response;
+    }
+    else {
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/floor/${floor.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
+      return await response;
+    }
+
   }
 
 }

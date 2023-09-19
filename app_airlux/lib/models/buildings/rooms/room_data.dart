@@ -17,7 +17,7 @@ class RoomData extends ChangeNotifier {
   List<Room> rooms = [];
   Room room = Room(name: 'room', id: '1', floor_id: '1');
 
-  void checkApiLocalAvailable() async {
+  Future<bool> checkApiLocalAvailable() async {
     try {
       final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
       if (await response.statusCode == 200)
@@ -27,6 +27,7 @@ class RoomData extends ChangeNotifier {
     catch(e){
       apiIsOnline = false;
     }
+    return apiIsOnline;
   }
 
   Future<bool> checkApiOnline() async {
@@ -143,15 +144,37 @@ class RoomData extends ChangeNotifier {
         'floor_id': floorId
       }),
     );
-    return response;
+    return await response;
   }
 
   Future<http.Response> updateRoom(String roomName, Room room) async {
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      final response = await http.put(
+        Uri.parse('${prefixUrl}:${portCloud.toString()}/room/${room.id.toString()}'), headers: header(sync),
+        body: jsonEncode(<String, String>{
+          'name': roomName,
+        }),
+      );
+      return await response;
+    }
+    else {
+      final response = await http.put(
+        Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${room.id.toString()}'), headers: header(sync),
+        body: jsonEncode(<String, String>{
+          'name': roomName,
+        }),
+      );
+      if (await response.statusCode != 201) throw Exception('Failed to load data');
+      return await response;
+      }
+  }
+
+ /* Future<http.Response> updateRoom(String roomName, Room room) async {
     checkApiLocalAvailable();
-    String sync ="0";
+    String sync ="1";
     if (await checkApiOnline() == false) {
       port = portLocal;
-      sync = "1";
     }
     else {
       port = portCloud;
@@ -171,14 +194,32 @@ class RoomData extends ChangeNotifier {
         'name': roomName,
       }),
     );
-  }
+  }*/
 
   Future<http.Response> deleteRoom(Room room) async{
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portCloud.toString()}/room/${room.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
+      return await response;
+    }
+    else {
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/room/${room.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
+      return await response;
+    }
+    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/room/' + room.id.toString()), headers: header(sync));
+  }
+
+/*  Future<http.Response> deleteRoom(Room room) async{
     checkApiLocalAvailable();
-    String sync ="0";
+    String sync ="1";
     if (await checkApiOnline() == false) {
       port = portLocal;
-      sync = "1";
     }
     else {
       port = portCloud;
@@ -188,6 +229,6 @@ class RoomData extends ChangeNotifier {
       }
     }
     return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/room/' + room.id.toString()), headers: header(sync));
-  }
+  }*/
 
 }

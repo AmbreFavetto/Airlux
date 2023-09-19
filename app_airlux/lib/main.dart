@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:app_airlux/buildings/addBuilding_page.dart';
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/buildings/rooms/addRoom_page.dart';
+import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/models/buildings/building_data.dart';
 import 'package:app_airlux/models/devices/device_data.dart';
 import 'package:app_airlux/models/signup/signup_data.dart';
@@ -16,9 +19,30 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'buildings/floors/addFloor_page.dart';
 import 'models/scenarios/scenario_data.dart';
+import 'package:cron/cron.dart';
+import 'package:http/http.dart' as http;
+
+void checkApiLocalAvailable() async {
+  try {
+    final response = await http.get(Uri.parse('${prefixUrl}:${3030.toString()}/health'), headers: header("0"));
+    if (await response.statusCode == 200)
+      apiIsOnline = true;
+    else apiIsOnline = false;
+  }
+  catch(e){
+    apiIsOnline = false;
+  }
+}
 
 void main() {
   runApp(MyApp());
+  var cron = new Cron();
+  cron.schedule(new Schedule.parse('* * * * *'), () async {
+    checkApiLocalAvailable();
+    sleep(22 as Duration);
+    print (apiIsOnline);
+    //print('every three minutes');
+  });
 }
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.

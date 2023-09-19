@@ -1,7 +1,7 @@
 import 'package:app_airlux/constants.dart';
 import 'package:app_airlux/buildings/buildings_page.dart';
 import 'package:app_airlux/pages/home_page.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge ;
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:provider/provider.dart';
 import '../models/buildings/building_data.dart';

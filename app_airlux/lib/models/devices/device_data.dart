@@ -14,7 +14,7 @@ class DeviceData extends ChangeNotifier {
   //var prefixUrl = 'http://192.168.1.96';
   var prefixUrl = 'http://10.0.2.2';
 
-  void checkApiLocalAvailable() async {
+  Future<bool> checkApiLocalAvailable() async {
     try {
       final response = await http.get(Uri.parse('${prefixUrl}:${portLocal.toString()}/health'), headers: header("0"));
       if (await response.statusCode == 200)
@@ -24,6 +24,7 @@ class DeviceData extends ChangeNotifier {
     catch(e){
       apiIsOnline = false;
     }
+    return apiIsOnline;
   }
 
   List<Device> devices = [];
@@ -158,11 +159,33 @@ class DeviceData extends ChangeNotifier {
   }
 
   Future<http.Response> updateDevice(String deviceName, Device device) async {
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      final response = await http.put(
+          Uri.parse('${prefixUrl}:${portCloud.toString()}/device/${device.id.toString()}'), headers: header(sync),
+          body: jsonEncode(<String, String>{
+            'name': deviceName,
+          })
+      );
+      return await response;
+    }
+    else {
+      final response = await http.put(
+          Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'), headers: header(sync),
+          body: jsonEncode(<String, String>{
+            'name': deviceName,
+          })
+      );
+      if (await response.statusCode != 201) throw Exception('Failed to load data');
+      return await response;
+    }
+  }
+
+/*  Future<http.Response> updateDevice(String deviceName, Device device) async {
     checkApiLocalAvailable();
-    String sync ="0";
+    String sync ="1";
     if (await checkApiOnline() == false) {
       port = portLocal;
-      sync = "1";
     }
     else {
       port = portCloud;
@@ -182,50 +205,47 @@ class DeviceData extends ChangeNotifier {
         'name': deviceName,
       }),
     );
-  }
+  }*/
 
   //TODO synchro TESTER BORDEL
   Future<http.Response> updateDeviceValue(String value, Device device) async {
-    checkApiLocalAvailable();
-    String sync ="0";
-    if (await checkApiOnline() == false) {
-      port = portLocal;
-      sync = "1";
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      final response = await http.put(
+          Uri.parse('${prefixUrl}:${portCloud.toString()}/device/${device.id.toString()}'), headers: header(sync),
+          body: jsonEncode(<String, String>{
+            'value': value,
+          })
+      );
+      return await response;
     }
     else {
-      port = portCloud;
-      if (await checkIfLocalDevice(device.id!) == true){
-        final response = await http.put(
-            Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'), headers: header(sync),
-            body: jsonEncode(<String, String>{
-              'value': value,
-            })
-        );
-        if (await response.statusCode != 201) throw Exception('Failed to load data');
-      }
+      final response = await http.put(
+          Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'), headers: header(sync),
+          body: jsonEncode(<String, String>{
+            'value': value,
+          })
+      );
+      if (await response.statusCode != 201) throw Exception('Failed to load data');
+      return await response;
     }
-    return await http.put(
-      Uri.parse('${prefixUrl}:${port.toString()}/device/${device.id.toString()}'), headers: header(sync),
-      body: jsonEncode(<String, String>{
-        'value': value,
-      }),
-    );
   }
 
   Future<http.Response> deleteDevice(Device device) async {
-    checkApiLocalAvailable();
-    String sync ="0";
-    if (await checkApiOnline() == false) {
-      port = portLocal;
-      sync = "1";
+    String sync ="1";
+    if (await checkApiOnline() == true) {
+      final response = await http.delete(Uri.parse('${prefixUrl}:${portCloud.toString()}/device/${device.id.toString()}'), headers: header(sync));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load data');
+      }
+      return await response;
     }
     else {
-      port = portCloud;
       final response = await http.delete(Uri.parse('${prefixUrl}:${portLocal.toString()}/device/${device.id.toString()}'), headers: header(sync));
       if (response.statusCode != 200) {
         throw Exception('Failed to load data');
       }
+      return await response;
     }
-    return http.delete(Uri.parse('${prefixUrl}:${port.toString()}/device/' + device.id.toString()), headers: header(sync));
   }
 }

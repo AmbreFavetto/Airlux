@@ -167,7 +167,7 @@ class _RoomsPageState extends State<RoomsPage> {
                 onPressed: () async {
                   http.Response response = await roomData.updateRoom(
                       _editRoomNameController.text, room);
-                  if (response.statusCode == 200) {
+                  if ((await response.statusCode == 200) || (await response.statusCode == 201)) {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (context) => RoomsPage(
                               floorId: widget.floorId,
