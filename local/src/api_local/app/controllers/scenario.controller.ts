@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { deleteElt, getRelationToDelete } from '../util/devTools';
 import Scenario from '../interfaces/scenario.interface';
 import { addLog } from '../util/logFile.js';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request) {
   const data: Scenario = {
@@ -30,9 +31,7 @@ export const createScenario = async (req: Request, res: Response) => {
       req.body.scenario_id = uuidv4();
     }
     await database.hmset(`scenarios:${req.body.scenario_id}`, data);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("POST", `/scenario`, JSON.stringify(req.body))
-    }
+    sendToKafka('sendToMysql', "POST /scenario/ " + JSON.stringify(data))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario with id ${req.body.scenario_id} created`, { id: req.body.scenario_id }));
   } catch (error) {

@@ -6,7 +6,7 @@ import floorCreateSchema, { floorUpdateSchema } from '../models/floor.model';
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { getEltToDelete } from '../util/devTools';
 import Floor from '../interfaces/floor.interface';
-import { addLog } from '../util/logFile.js';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request) {
   const data: Floor = {
@@ -38,9 +38,7 @@ export const createFloor = async (req: Request, res: Response) => {
   var data = setData(req);
   try {
     await database.hmset(`floors:${req.body.floor_id}`, data);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("POST", "/floor", JSON.stringify(req.body))
-    }
+    sendToKafka('sendToMysql', "POST /floor/ " + JSON.stringify(data))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor with id ${req.body.floor_id} created`, { id: req.body.floor_id }));
   } catch (err) {
@@ -102,9 +100,7 @@ export const updateFloor = async (req: Request, res: Response) => {
       return;
     }
     await database.hmset(`floors:${req.params.id}`, req.body);
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("PUT", `/floor/${req.params.id}`, JSON.stringify(req.body))
-    }
+    sendToKafka('sendToMysql', `PUT /floor/${req.params.id} ` + JSON.stringify(req.body))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor updated`));
   } catch (error) {
@@ -122,9 +118,7 @@ export const deleteFloor = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id}  was not found`));
     }
     await getEltToDelete("rooms", "floors:" + req.params.id)
-    if (req.headers.sync && req.headers.sync === "1") {
-      addLog("DELETE", `/floor/${req.params.id}`, JSON.stringify(req.body))
-    }
+    sendToKafka('sendToMysql', `DELETE /floor/${req.params.id} `)
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
   } catch (err) {

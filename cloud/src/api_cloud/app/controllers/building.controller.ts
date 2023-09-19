@@ -7,6 +7,7 @@ import buildingCreateSchema, { buildingUpdateSchema } from '../models/building.m
 import { v4 as uuidv4 } from 'uuid';
 import HttpStatus, { processDatas, processData } from '../util/devTools';
 import Building from '../interfaces/building.interface';
+import { sendToKafka } from '../config/kafka.config';
 
 function setData(req: Request, id: string) {
   const data: Building = {
@@ -40,6 +41,7 @@ export const createBuilding = async (req: Request, res: Response) => {
     }
     const data = setData(req, id);
     database.query(QUERY.CREATE_BUILDING, Object.values(data), () => {
+      sendToKafka('sendToMysql', "POST /building/ " + JSON.stringify(data))
       return res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building with id ${id} created`, { id }));
     });
@@ -92,6 +94,7 @@ export const updateBuilding = async (req: Request, res: Response) => {
     const results: Building = await processData(QUERY.SELECT_BUILDING, req.params.id);
     const data = setUpdateData(req, results)
     database.query(QUERY.UPDATE_BUILDING, [...Object.values(data), req.params.id]);
+    sendToKafka('sendToMysql', `PUT /building/${req.params.id} ` + JSON.stringify(req.body))
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building updated`, { id: req.params.id, ...req.body }));
   } catch (err) {
