@@ -43,7 +43,9 @@ export const createUserBuilding = async (req: Request, res: Response) => {
     }
     const data = setData(req, id);
     database.query(QUERY.CREATE_USER_BUILDING, Object.values(data), () => {
-      sendToKafka('sendToRedis', "POST /user-building/ " + JSON.stringify(req.body))
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', "POST /user-building/ " + JSON.stringify(req.body))
+      }
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `userBuilding with id ${id} created`, { id }));
     });
@@ -95,7 +97,9 @@ export const deleteUserBuilding = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_USER_BUILDING, req.params.id);
     database.query(QUERY.DELETE_USER_BUILDING, req.params.id, () => {
-      sendToKafka('sendToRedis', `DELETE /user-building/${req.params.id} `)
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /user-building/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `userBuilding deleted`));
     });

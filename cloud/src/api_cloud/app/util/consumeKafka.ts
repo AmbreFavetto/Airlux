@@ -16,6 +16,7 @@ const token = jwt.sign({
 
 const headers = {
     'Authorization': `${token}`,
+    'sync': "0"
 };
 
 const consumer = kafka.consumer({ groupId: 'airlux-mysql' });

@@ -38,7 +38,9 @@ export const createFloor = async (req: Request, res: Response) => {
   var data = setData(req);
   try {
     await database.hmset(`floors:${req.body.floor_id}`, data);
-    sendToKafka('sendToMysql', "POST /floor/ " + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /floor/ " + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor with id ${req.body.floor_id} created`, { id: req.body.floor_id }));
   } catch (err) {
@@ -100,7 +102,9 @@ export const updateFloor = async (req: Request, res: Response) => {
       return;
     }
     await database.hmset(`floors:${req.params.id}`, req.body);
-    sendToKafka('sendToMysql', `PUT /floor/${req.params.id} ` + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `PUT /floor/${req.params.id} ` + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Floor updated`));
   } catch (error) {
@@ -118,7 +122,9 @@ export const deleteFloor = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Floor by id ${req.params.id}  was not found`));
     }
     await getEltToDelete("rooms", "floors:" + req.params.id)
-    sendToKafka('sendToMysql', `DELETE /floor/${req.params.id} `)
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /floor/${req.params.id} `)
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Floor deleted`));
   } catch (err) {

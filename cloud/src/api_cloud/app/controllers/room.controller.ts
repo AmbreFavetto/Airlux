@@ -42,7 +42,6 @@ export const createRoom = async (req: Request, res: Response) => {
     }
     const data = setData(req, id);
     database.query(QUERY.CREATE_ROOM, Object.values(data));
-    sendToKafka('sendToRedis', "POST /room/ " + JSON.stringify(req.body))
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room with id ${id} created`, { id }));
   } catch (err) {
@@ -98,7 +97,9 @@ export const updateRoom = async (req: Request, res: Response) => {
     const results: Room = await processData(QUERY.SELECT_ROOM, req.params.id)
     const data = setUpdateData(req, results);
     database.query(QUERY.UPDATE_ROOM, [...Object.values(data), req.params.id]);
-    sendToKafka('sendToRedis', `PUT /room/${req.params.id} ` + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToRedis', `PUT /room/${req.params.id} ` + JSON.stringify(req.body))
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room updated`, { id: req.params.id, ...req.body }));
   } catch (err) {
@@ -116,7 +117,9 @@ export const deleteRoom = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_ROOM, req.params.id);
     database.query(QUERY.DELETE_ROOM, req.params.id, () => {
-      sendToKafka('sendToRedis', `DELETE /room/${req.params.id} `)
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /room/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room deleted`));
     });

@@ -90,7 +90,6 @@ export const createDevice = async (req: Request, res: Response) => {
     req.body.value = setDefaultValue(req.body.category)
     const data = setData(req, id);
     database.query(QUERY.CREATE_DEVICE, Object.values(data), () => {
-      sendToKafka('sendToRedis', "POST /device/ " + JSON.stringify(req.body))
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device with id ${id} created`, { id }));
     });
@@ -152,7 +151,9 @@ export const updateDevice = async (req: Request, res: Response) => {
     const data = setUpdateData(req, results);
     logger.info(`${req.method} ${req.originalUrl}, updating device`);
     database.query(QUERY.UPDATE_DEVICE, [...Object.values(data), req.params.id], () => {
-      sendToKafka('sendToRedis', `PUT /device/${req.params.id} ` + JSON.stringify(req.body))
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `PUT /device/${req.params.id} ` + JSON.stringify(req.body))
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device updated`, { id: req.params.id, ...req.body }));
     });
@@ -171,7 +172,9 @@ export const deleteDevice = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_DEVICE, req.params.id);
     database.query(QUERY.DELETE_DEVICE, req.params.id, () => {
-      sendToKafka('sendToRedis', `DELETE /device/${req.params.id} `)
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /device/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`));
     });

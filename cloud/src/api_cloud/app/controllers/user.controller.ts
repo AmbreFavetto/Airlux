@@ -72,7 +72,9 @@ export const createUser = async (req: Request, res: Response) => {
         isadmin: data.is_admin
       }, secretKey, { expiresIn: '3 hours' })
       database.query(QUERY.CREATE_USER, Object.values(data), () => {
-        sendToKafka('sendToRedis', "POST /user/ " + JSON.stringify(req.body))
+        if (req.headers.sync && req.headers.sync === "1"){
+          sendToKafka('sendToRedis', "POST /user/ " + JSON.stringify(req.body))
+        }
         res.status(HttpStatus.CREATED.code)
           .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User with id ${id} created`, { id, token }));
       });
@@ -169,7 +171,9 @@ export const updateUser = async (req: Request, res: Response) => {
     const results: User = await processData(QUERY.SELECT_USER, req.params.id);
     const data = setUpdateData(req, results)
     database.query(QUERY.UPDATE_USER, [...Object.values(data), req.params.id], () => {
-      sendToKafka('sendToRedis', `PUT /user/${req.params.id} ` + JSON.stringify(req.body))
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `PUT /user/${req.params.id} ` + JSON.stringify(req.body))
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User updated`, { id: req.params.id, ...req.body }));
     });
@@ -188,7 +192,9 @@ export const deleteUser = async (req: Request, res: Response) => {
   try {
     await processData(QUERY.SELECT_USER, req.params.id);
     database.query(QUERY.DELETE_USER, req.params.id, () => {
-      sendToKafka('sendToRedis', `DELETE /user/${req.params.id} `)
+      if (req.headers.sync && req.headers.sync === "1"){
+        sendToKafka('sendToRedis', `DELETE /user/${req.params.id} `)
+      }
       return res.status(HttpStatus.OK.code)
         .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));
     });

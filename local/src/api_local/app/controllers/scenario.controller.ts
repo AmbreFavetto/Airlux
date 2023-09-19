@@ -31,7 +31,9 @@ export const createScenario = async (req: Request, res: Response) => {
       req.body.scenario_id = uuidv4();
     }
     await database.hmset(`scenarios:${req.body.scenario_id}`, data);
-    sendToKafka('sendToMysql', "POST /scenario/ " + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /scenario/ " + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Scenario with id ${req.body.scenario_id} created`, { id: req.body.scenario_id }));
   } catch (error) {
@@ -93,7 +95,7 @@ export const updateScenario = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Scenario by id ${req.params.id} was not found`));
     }
     await database.hmset(`scenarios:${req.params.id}`, req.body);
-    if (req.headers.sync && req.headers.sync === "1") {
+    if (req.headers.sync && req.headers.sync && req.headers.sync === "1") {
       addLog("PUT", `/scenario/${req.params.id}`, JSON.stringify(req.body))
     }
     res.status(HttpStatus.CREATED.code)
@@ -114,7 +116,7 @@ export const deleteScenario = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("scenarios:" + req.params.id)
     await deleteElt("scenarios:" + req.params.id)
-    if (req.headers.sync && req.headers.sync === "1") {
+    if (req.headers.sync && req.headers.sync && req.headers.sync === "1") {
       addLog("DELETE", `/scenario/${req.params.id}`, JSON.stringify(req.body))
     }
     res.status(HttpStatus.OK.code)

@@ -38,7 +38,9 @@ export const createRoom = async (req: Request, res: Response) => {
     var data = setData(req);
 
     await database.hmset(`rooms:${req.body.room_id}`, data);
-    sendToKafka('sendToMysql', "POST /room/ " + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /room/ " + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room with id ${req.body.room_id} created`, { id: req.body.room_id }));
   } catch (err) {
@@ -99,7 +101,9 @@ export const updateRoom = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.params.id} was not found`));
     }
     await database.hmset(`rooms:${req.params.id}`, req.body);
-    sendToKafka('sendToMysql', `PUT /room/${req.params.id} ` + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `PUT /room/${req.params.id} ` + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Room updated`, { id: req.params.id, ...req.body }));
   } catch (error) {
@@ -117,7 +121,9 @@ export const deleteRoom = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, `Room by id ${req.params.id} was not found`));
     }
     await getEltToDelete("devices", "rooms:" + req.params.id)
-    sendToKafka('sendToMysql', `DELETE /room/${req.params.id} `)
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /room/${req.params.id} `)
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Room deleted`));
   } catch (err) {

@@ -33,7 +33,9 @@ export const createBuilding = async (req: Request, res: Response) => {
 
   try {
     await database.hmset(key, data);
-    sendToKafka('sendToMysql', "POST /building/ " + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /building/ " + JSON.stringify(req.body))
+    }
     return res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building with id ${req.body.building_id} created`, { id: req.body.building_id }));
   } catch (err) {
@@ -94,7 +96,9 @@ export const updateBuilding = async (req: Request, res: Response) => {
   } else {
     try {
       await database.hmset(`buildings:${req.params.id}`, req.body);
+    if (req.headers.sync && req.headers.sync === "1"){
       sendToKafka('sendToMysql', `PUT /building/${req.params.id} ` + JSON.stringify(req.body))
+    }
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Building updated`, { id: req.params.id, ...req.body }));
     } catch (error) {
@@ -115,7 +119,9 @@ export const deleteBuilding = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("buildings:" + req.params.id)
     await getEltToDelete("floors", "buildings:" + req.params.id)
-    sendToKafka('sendToMysql', `DELETE /building/${req.params.id} `)
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /building/${req.params.id} `)
+    }
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Building deleted`));
   } catch (error) {

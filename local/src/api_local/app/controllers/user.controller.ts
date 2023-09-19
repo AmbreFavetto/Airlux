@@ -57,7 +57,9 @@ export const createUser = async (req: Request, res: Response) => {
       }, secretKey, { expiresIn: '3 hours' })
 
       await database.hmset(`users:${req.body.user_id}`, dataUser);
+    if (req.headers.sync && req.headers.sync === "1"){
       sendToKafka('sendToMysql', "POST /user/ " + JSON.stringify(req.body))
+    }
       res.status(HttpStatus.CREATED.code)
         .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User with id ${req.body.user_id} created`, { id: req.body.user_id, token: token }));
     }
@@ -167,7 +169,9 @@ export const updateUser = async (req: Request, res: Response) => {
       return;
     }
     await database.hmset(`users:${req.params.id}`, req.body);
-    sendToKafka('sendToMysql', `PUT /user/${req.params.id} ` + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `PUT /user/${req.params.id} ` + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `User updated`));
   } catch (error) {
@@ -186,7 +190,9 @@ export const deleteUser = async (req: Request, res: Response) => {
     }
     await getRelationToDelete("users:" + req.params.id)
     await deleteElt("users:" + req.params.id)
-    sendToKafka('sendToMysql', `DELETE /user/${req.params.id} `)
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /user/${req.params.id} `)
+    }
     res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `User deleted`));
   } catch (err) {

@@ -40,7 +40,7 @@ export const createScenarioSousScenario = async (req: Request, res: Response) =>
       req.body.id = uuidv4();
     }
     await database.hmset(`scenariosSousScenarios:${req.body.id}`, data);
-    if (req.headers.sync && req.headers.sync === "1") {
+    if (req.headers.sync && req.headers.sync && req.headers.sync === "1") {
       addLog("POST", `/scenario-sous-scenario`, JSON.stringify(req.body))
     }
     res.status(HttpStatus.CREATED.code)
@@ -93,7 +93,7 @@ export const deleteScenarioSousScenario = async (req: Request, res: Response) =>
   logger.info(`${req.method} ${req.originalUrl}, deleting ScenarioSousScenario`);
   try {
     await deleteElt(req.params.id);
-    if (req.headers.sync && req.headers.sync === "1") {
+    if (req.headers.sync && req.headers.sync && req.headers.sync === "1") {
       addLog("DELETE", `/scenario-sous-scenario/${req.params.id}`, JSON.stringify(req.body))
     }
     return res.status(HttpStatus.OK.code)

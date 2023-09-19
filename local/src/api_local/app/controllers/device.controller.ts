@@ -83,7 +83,9 @@ export const createDevice = async (req: Request, res: Response) => {
     req.body.value = setDefaultValue(req.body.category)
     var data = setData(req);
     await database.hmset(`devices:${req.body.device_id}`, data);
-    sendToKafka('sendToMysql', "POST /device/ " + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', "POST /device/ " + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device with id ${req.body.device_id} created`, { id: req.body.device_id }));
   } catch (err) {
@@ -146,7 +148,9 @@ export const updateDevice = async (req: Request, res: Response) => {
       return;
     }
     await database.hmset(`devices:${req.params.id}`, req.body);
-    sendToKafka('sendToMysql', `PUT /device/${req.params.id} ` + JSON.stringify(req.body))
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `PUT /device/${req.params.id} ` + JSON.stringify(req.body))
+    }
     res.status(HttpStatus.CREATED.code)
       .send(new ResponseFormat(HttpStatus.CREATED.code, HttpStatus.CREATED.status, `Device updated`, { id: req.params.id, ...req.body }));
   } catch (error) {
@@ -164,7 +168,9 @@ export const deleteDevice = async (req: Request, res: Response) => {
         .send(new ResponseFormat(HttpStatus.NOT_FOUND.code, HttpStatus.NOT_FOUND.status, 'device_id provided does not exist'));
     }
     await getEltToDelete("sousscenarios", "devices:" + req.params.id);
-    sendToKafka('sendToMysql', `DELETE /device/${req.params.id} `)
+    if (req.headers.sync && req.headers.sync === "1"){
+      sendToKafka('sendToMysql', `DELETE /device/${req.params.id} `)
+    }
     return res.status(HttpStatus.OK.code)
       .send(new ResponseFormat(HttpStatus.OK.code, HttpStatus.OK.status, `Device deleted`));
   } catch (err) {
